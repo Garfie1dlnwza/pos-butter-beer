@@ -255,6 +255,523 @@ async function main() {
   console.log("   ✅ สร้างสินค้า 5 รายการ");
 
   // =============================================
+  // สร้างสูตร (Recipes) - เชื่อมสินค้ากับวัตถุดิบ
+  // =============================================
+  console.log("\n📋 สร้างสูตรการผลิต (Recipe)...");
+
+  // สูตร Butter Beer 14oz
+  await Promise.all([
+    prisma.recipeItem.upsert({
+      where: {
+        productId_ingredientId: {
+          productId: "prod_bb_14oz",
+          ingredientId: "ing_soda",
+        },
+      },
+      update: {},
+      create: {
+        productId: "prod_bb_14oz",
+        ingredientId: "ing_soda",
+        amountUsed: 0.15,
+      }, // 0.15 ขวด (≈225ml)
+    }),
+    prisma.recipeItem.upsert({
+      where: {
+        productId_ingredientId: {
+          productId: "prod_bb_14oz",
+          ingredientId: "ing_butterscotch",
+        },
+      },
+      update: {},
+      create: {
+        productId: "prod_bb_14oz",
+        ingredientId: "ing_butterscotch",
+        amountUsed: 0.04,
+      }, // 0.04 ขวด (≈30ml)
+    }),
+    prisma.recipeItem.upsert({
+      where: {
+        productId_ingredientId: {
+          productId: "prod_bb_14oz",
+          ingredientId: "ing_cream",
+        },
+      },
+      update: {},
+      create: {
+        productId: "prod_bb_14oz",
+        ingredientId: "ing_cream",
+        amountUsed: 0.1,
+      }, // 0.1 กระป๋อง
+    }),
+    prisma.recipeItem.upsert({
+      where: {
+        productId_ingredientId: {
+          productId: "prod_bb_14oz",
+          ingredientId: "ing_cup_14oz",
+        },
+      },
+      update: {},
+      create: {
+        productId: "prod_bb_14oz",
+        ingredientId: "ing_cup_14oz",
+        amountUsed: 1,
+      }, // 1 ใบ
+    }),
+    prisma.recipeItem.upsert({
+      where: {
+        productId_ingredientId: {
+          productId: "prod_bb_14oz",
+          ingredientId: "ing_lid",
+        },
+      },
+      update: {},
+      create: {
+        productId: "prod_bb_14oz",
+        ingredientId: "ing_lid",
+        amountUsed: 1,
+      }, // 1 ใบ
+    }),
+    prisma.recipeItem.upsert({
+      where: {
+        productId_ingredientId: {
+          productId: "prod_bb_14oz",
+          ingredientId: "ing_straw",
+        },
+      },
+      update: {},
+      create: {
+        productId: "prod_bb_14oz",
+        ingredientId: "ing_straw",
+        amountUsed: 1,
+      }, // 1 อัน
+    }),
+    prisma.recipeItem.upsert({
+      where: {
+        productId_ingredientId: {
+          productId: "prod_bb_14oz",
+          ingredientId: "ing_ice",
+        },
+      },
+      update: {},
+      create: {
+        productId: "prod_bb_14oz",
+        ingredientId: "ing_ice",
+        amountUsed: 0.05,
+      }, // 0.05 ถุง (≈150g)
+    }),
+  ]);
+
+  // สูตร Butter Beer 16oz (ใช้มากกว่า 14oz เล็กน้อย)
+  await Promise.all([
+    prisma.recipeItem.upsert({
+      where: {
+        productId_ingredientId: {
+          productId: "prod_bb_16oz",
+          ingredientId: "ing_soda",
+        },
+      },
+      update: {},
+      create: {
+        productId: "prod_bb_16oz",
+        ingredientId: "ing_soda",
+        amountUsed: 0.2,
+      }, // 0.2 ขวด (≈300ml)
+    }),
+    prisma.recipeItem.upsert({
+      where: {
+        productId_ingredientId: {
+          productId: "prod_bb_16oz",
+          ingredientId: "ing_butterscotch",
+        },
+      },
+      update: {},
+      create: {
+        productId: "prod_bb_16oz",
+        ingredientId: "ing_butterscotch",
+        amountUsed: 0.05,
+      }, // 0.05 ขวด (≈37ml)
+    }),
+    prisma.recipeItem.upsert({
+      where: {
+        productId_ingredientId: {
+          productId: "prod_bb_16oz",
+          ingredientId: "ing_cream",
+        },
+      },
+      update: {},
+      create: {
+        productId: "prod_bb_16oz",
+        ingredientId: "ing_cream",
+        amountUsed: 0.12,
+      }, // 0.12 กระป๋อง
+    }),
+    prisma.recipeItem.upsert({
+      where: {
+        productId_ingredientId: {
+          productId: "prod_bb_16oz",
+          ingredientId: "ing_cup_16oz",
+        },
+      },
+      update: {},
+      create: {
+        productId: "prod_bb_16oz",
+        ingredientId: "ing_cup_16oz",
+        amountUsed: 1,
+      }, // 1 ใบ
+    }),
+    prisma.recipeItem.upsert({
+      where: {
+        productId_ingredientId: {
+          productId: "prod_bb_16oz",
+          ingredientId: "ing_lid",
+        },
+      },
+      update: {},
+      create: {
+        productId: "prod_bb_16oz",
+        ingredientId: "ing_lid",
+        amountUsed: 1,
+      }, // 1 ใบ
+    }),
+    prisma.recipeItem.upsert({
+      where: {
+        productId_ingredientId: {
+          productId: "prod_bb_16oz",
+          ingredientId: "ing_straw",
+        },
+      },
+      update: {},
+      create: {
+        productId: "prod_bb_16oz",
+        ingredientId: "ing_straw",
+        amountUsed: 1,
+      }, // 1 อัน
+    }),
+    prisma.recipeItem.upsert({
+      where: {
+        productId_ingredientId: {
+          productId: "prod_bb_16oz",
+          ingredientId: "ing_ice",
+        },
+      },
+      update: {},
+      create: {
+        productId: "prod_bb_16oz",
+        ingredientId: "ing_ice",
+        amountUsed: 0.07,
+      }, // 0.07 ถุง (≈210g)
+    }),
+  ]);
+
+  // สูตรโปรโมชั่น 2 แก้ว (ใช้เท่า 14oz x 2)
+  await Promise.all([
+    prisma.recipeItem.upsert({
+      where: {
+        productId_ingredientId: {
+          productId: "prod_promo_2",
+          ingredientId: "ing_soda",
+        },
+      },
+      update: {},
+      create: {
+        productId: "prod_promo_2",
+        ingredientId: "ing_soda",
+        amountUsed: 0.3,
+      },
+    }),
+    prisma.recipeItem.upsert({
+      where: {
+        productId_ingredientId: {
+          productId: "prod_promo_2",
+          ingredientId: "ing_butterscotch",
+        },
+      },
+      update: {},
+      create: {
+        productId: "prod_promo_2",
+        ingredientId: "ing_butterscotch",
+        amountUsed: 0.08,
+      },
+    }),
+    prisma.recipeItem.upsert({
+      where: {
+        productId_ingredientId: {
+          productId: "prod_promo_2",
+          ingredientId: "ing_cream",
+        },
+      },
+      update: {},
+      create: {
+        productId: "prod_promo_2",
+        ingredientId: "ing_cream",
+        amountUsed: 0.2,
+      },
+    }),
+    prisma.recipeItem.upsert({
+      where: {
+        productId_ingredientId: {
+          productId: "prod_promo_2",
+          ingredientId: "ing_cup_14oz",
+        },
+      },
+      update: {},
+      create: {
+        productId: "prod_promo_2",
+        ingredientId: "ing_cup_14oz",
+        amountUsed: 2,
+      },
+    }),
+    prisma.recipeItem.upsert({
+      where: {
+        productId_ingredientId: {
+          productId: "prod_promo_2",
+          ingredientId: "ing_lid",
+        },
+      },
+      update: {},
+      create: {
+        productId: "prod_promo_2",
+        ingredientId: "ing_lid",
+        amountUsed: 2,
+      },
+    }),
+    prisma.recipeItem.upsert({
+      where: {
+        productId_ingredientId: {
+          productId: "prod_promo_2",
+          ingredientId: "ing_straw",
+        },
+      },
+      update: {},
+      create: {
+        productId: "prod_promo_2",
+        ingredientId: "ing_straw",
+        amountUsed: 2,
+      },
+    }),
+    prisma.recipeItem.upsert({
+      where: {
+        productId_ingredientId: {
+          productId: "prod_promo_2",
+          ingredientId: "ing_ice",
+        },
+      },
+      update: {},
+      create: {
+        productId: "prod_promo_2",
+        ingredientId: "ing_ice",
+        amountUsed: 0.1,
+      },
+    }),
+  ]);
+
+  // สูตรโปรโมชั่น 3 แก้ว
+  await Promise.all([
+    prisma.recipeItem.upsert({
+      where: {
+        productId_ingredientId: {
+          productId: "prod_promo_3",
+          ingredientId: "ing_soda",
+        },
+      },
+      update: {},
+      create: {
+        productId: "prod_promo_3",
+        ingredientId: "ing_soda",
+        amountUsed: 0.45,
+      },
+    }),
+    prisma.recipeItem.upsert({
+      where: {
+        productId_ingredientId: {
+          productId: "prod_promo_3",
+          ingredientId: "ing_butterscotch",
+        },
+      },
+      update: {},
+      create: {
+        productId: "prod_promo_3",
+        ingredientId: "ing_butterscotch",
+        amountUsed: 0.12,
+      },
+    }),
+    prisma.recipeItem.upsert({
+      where: {
+        productId_ingredientId: {
+          productId: "prod_promo_3",
+          ingredientId: "ing_cream",
+        },
+      },
+      update: {},
+      create: {
+        productId: "prod_promo_3",
+        ingredientId: "ing_cream",
+        amountUsed: 0.3,
+      },
+    }),
+    prisma.recipeItem.upsert({
+      where: {
+        productId_ingredientId: {
+          productId: "prod_promo_3",
+          ingredientId: "ing_cup_14oz",
+        },
+      },
+      update: {},
+      create: {
+        productId: "prod_promo_3",
+        ingredientId: "ing_cup_14oz",
+        amountUsed: 3,
+      },
+    }),
+    prisma.recipeItem.upsert({
+      where: {
+        productId_ingredientId: {
+          productId: "prod_promo_3",
+          ingredientId: "ing_lid",
+        },
+      },
+      update: {},
+      create: {
+        productId: "prod_promo_3",
+        ingredientId: "ing_lid",
+        amountUsed: 3,
+      },
+    }),
+    prisma.recipeItem.upsert({
+      where: {
+        productId_ingredientId: {
+          productId: "prod_promo_3",
+          ingredientId: "ing_straw",
+        },
+      },
+      update: {},
+      create: {
+        productId: "prod_promo_3",
+        ingredientId: "ing_straw",
+        amountUsed: 3,
+      },
+    }),
+    prisma.recipeItem.upsert({
+      where: {
+        productId_ingredientId: {
+          productId: "prod_promo_3",
+          ingredientId: "ing_ice",
+        },
+      },
+      update: {},
+      create: {
+        productId: "prod_promo_3",
+        ingredientId: "ing_ice",
+        amountUsed: 0.15,
+      },
+    }),
+  ]);
+
+  // สูตรโปรโมชั่น 5 แก้ว (Family)
+  await Promise.all([
+    prisma.recipeItem.upsert({
+      where: {
+        productId_ingredientId: {
+          productId: "prod_promo_family",
+          ingredientId: "ing_soda",
+        },
+      },
+      update: {},
+      create: {
+        productId: "prod_promo_family",
+        ingredientId: "ing_soda",
+        amountUsed: 0.75,
+      },
+    }),
+    prisma.recipeItem.upsert({
+      where: {
+        productId_ingredientId: {
+          productId: "prod_promo_family",
+          ingredientId: "ing_butterscotch",
+        },
+      },
+      update: {},
+      create: {
+        productId: "prod_promo_family",
+        ingredientId: "ing_butterscotch",
+        amountUsed: 0.2,
+      },
+    }),
+    prisma.recipeItem.upsert({
+      where: {
+        productId_ingredientId: {
+          productId: "prod_promo_family",
+          ingredientId: "ing_cream",
+        },
+      },
+      update: {},
+      create: {
+        productId: "prod_promo_family",
+        ingredientId: "ing_cream",
+        amountUsed: 0.5,
+      },
+    }),
+    prisma.recipeItem.upsert({
+      where: {
+        productId_ingredientId: {
+          productId: "prod_promo_family",
+          ingredientId: "ing_cup_14oz",
+        },
+      },
+      update: {},
+      create: {
+        productId: "prod_promo_family",
+        ingredientId: "ing_cup_14oz",
+        amountUsed: 5,
+      },
+    }),
+    prisma.recipeItem.upsert({
+      where: {
+        productId_ingredientId: {
+          productId: "prod_promo_family",
+          ingredientId: "ing_lid",
+        },
+      },
+      update: {},
+      create: {
+        productId: "prod_promo_family",
+        ingredientId: "ing_lid",
+        amountUsed: 5,
+      },
+    }),
+    prisma.recipeItem.upsert({
+      where: {
+        productId_ingredientId: {
+          productId: "prod_promo_family",
+          ingredientId: "ing_straw",
+        },
+      },
+      update: {},
+      create: {
+        productId: "prod_promo_family",
+        ingredientId: "ing_straw",
+        amountUsed: 5,
+      },
+    }),
+    prisma.recipeItem.upsert({
+      where: {
+        productId_ingredientId: {
+          productId: "prod_promo_family",
+          ingredientId: "ing_ice",
+        },
+      },
+      update: {},
+      create: {
+        productId: "prod_promo_family",
+        ingredientId: "ing_ice",
+        amountUsed: 0.25,
+      },
+    }),
+  ]);
+
+  console.log("   ✅ สร้างสูตรการผลิตทั้งหมด");
+
+  // =============================================
   // สร้าง Toppings (ตัวเลือกเพิ่มเติม)
   // =============================================
   console.log("\n🧁 สร้าง Toppings...");

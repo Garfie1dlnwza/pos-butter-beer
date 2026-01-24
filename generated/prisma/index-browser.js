@@ -266,6 +266,18 @@ exports.Prisma.AuditLogScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.ExpenseScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  amount: 'amount',
+  category: 'category',
+  description: 'description',
+  date: 'date',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -299,7 +311,8 @@ exports.Prisma.ModelName = {
   OrderItem: 'OrderItem',
   Topping: 'Topping',
   StockLot: 'StockLot',
-  AuditLog: 'AuditLog'
+  AuditLog: 'AuditLog',
+  Expense: 'Expense'
 };
 
 /**

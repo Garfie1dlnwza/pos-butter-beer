@@ -71,6 +71,7 @@ model User {
     posts         Post[]
     orders        Order[]
     auditLogs     AuditLog[]
+    expenses      Expense[]  @relation("UserExpenses")
 }
 
 model VerificationToken {
@@ -215,4 +216,19 @@ model AuditLog {
     createdAt DateTime @default(now())
 
     user User @relation(fields: [userId], references: [id])
+}
+
+// Expense - รายจ่ายทั่วไป (ไม่ใช่วัตถุดิบ)
+model Expense {
+    id          String   @id @default(cuid())
+    title       String // ชื่อรายจ่าย
+    amount      Float // จำนวนเงิน
+    category    String // rent, utilities, labor, marketing, equipment, supplies, other
+    description String? // รายละเอียดเพิ่มเติม
+    date        DateTime @default(now()) // วันที่เกิดรายจ่าย
+    createdById String?
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    createdBy User? @relation("UserExpenses", fields: [createdById], references: [id])
 }

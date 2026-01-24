@@ -26,6 +26,7 @@ interface ProductsTableProps {
   onEdit: (product: Product) => void;
   onDelete: (product: Product) => void;
   onToggleActive: (product: Product) => void;
+  onRecipe: (product: Product) => void;
 }
 
 export function ProductsTable({
@@ -33,6 +34,7 @@ export function ProductsTable({
   onEdit,
   onDelete,
   onToggleActive,
+  onRecipe,
 }: ProductsTableProps) {
   if (products.length === 0) {
     return (
@@ -192,6 +194,26 @@ export function ProductsTable({
                   </td>
                   <td className="max-w-fit px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center justify-end gap-1">
+                      {/* Recipe */}
+                      <button
+                        onClick={() => onRecipe(product)}
+                        className="cursor-pointer rounded-lg p-2 text-amber-600 transition hover:bg-amber-50 hover:text-amber-700"
+                        title="จัดการสูตร"
+                      >
+                        <svg
+                          className="h-4 w-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+                          />
+                        </svg>
+                      </button>
                       {/* Edit */}
                       <button
                         onClick={() => onEdit(product)}

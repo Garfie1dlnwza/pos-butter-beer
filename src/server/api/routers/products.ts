@@ -154,4 +154,50 @@ export const productsRouter = createTRPCRouter({
         data: { image: null },
       });
     }),
+
+  // Update product recipe (ADMIN only)
+  updateRecipe: protectedProcedure
+    .input(
+      z.object({
+        productId: z.string(),
+        recipe: z.array(
+          z.object({
+            ingredientId: z.string(),
+            amountUsed: z.number().min(0),
+          }),
+        ),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.session.user.role !== "ADMIN") {
+        throw new Error("Unauthorized");
+      }
+
+      // Delete all existing recipe items for this product
+      await ctx.db.recipeItem.deleteMany({
+        where: { productId: input.productId },
+      });
+
+      // Create new recipe items (only non-zero amounts)
+      const recipeItems = input.recipe.filter((r) => r.amountUsed > 0);
+
+      if (recipeItems.length > 0) {
+        await ctx.db.recipeItem.createMany({
+          data: recipeItems.map((r) => ({
+            productId: input.productId,
+            ingredientId: r.ingredientId,
+            amountUsed: r.amountUsed,
+          })),
+        });
+      }
+
+      return ctx.db.product.findUnique({
+        where: { id: input.productId },
+        include: {
+          recipe: {
+            include: { ingredient: true },
+          },
+        },
+      });
+    }),
 });
