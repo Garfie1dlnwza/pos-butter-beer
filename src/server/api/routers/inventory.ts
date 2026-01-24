@@ -212,17 +212,15 @@ export const inventoryRouter = createTRPCRouter({
       > = {};
 
       for (const t of transactions) {
-        if (!report[t.ingredientId]) {
-          report[t.ingredientId] = {
-            name: t.ingredient.name,
-            unit: t.ingredient.unit,
-            purchased: 0,
-            sold: 0,
-            adjusted: 0,
-            waste: 0,
-            stockTake: 0,
-          };
-        }
+        report[t.ingredientId] ??= {
+          name: t.ingredient.name,
+          unit: t.ingredient.unit,
+          purchased: 0,
+          sold: 0,
+          adjusted: 0,
+          waste: 0,
+          stockTake: 0,
+        };
 
         const r = report[t.ingredientId];
         if (r) {

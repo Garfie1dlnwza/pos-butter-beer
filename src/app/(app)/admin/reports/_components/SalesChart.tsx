@@ -52,7 +52,7 @@ export function SalesChart({ data }: SalesChartProps) {
             />
             <XAxis
               dataKey="date"
-              tickFormatter={(str) => {
+              tickFormatter={(str: string) => {
                 const date = new Date(str);
                 return `${date.getDate()}/${date.getMonth() + 1}`;
               }}
@@ -71,8 +71,10 @@ export function SalesChart({ data }: SalesChartProps) {
               formatter={(value: number | string | undefined) => [
                 `฿${Number(value ?? 0).toLocaleString()}`,
                 "ยอดขาย",
+                "ยอดขาย",
               ]}
-              labelFormatter={(label) => {
+              labelFormatter={(label: string | number | undefined) => {
+                if (!label) return "";
                 const date = new Date(label);
                 return date.toLocaleDateString("th-TH", {
                   year: "numeric",

@@ -162,15 +162,13 @@ export const reportsRouter = createTRPCRouter({
       > = {};
 
       for (const item of orderItems) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
         const name = item.product.nameTh ?? item.product.name;
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
         const categoryName = item.product.category?.name ?? "Uncategorized";
 
         productStats[item.productId] ??= {
           id: item.productId,
-          name: name as string,
-          category: categoryName as string,
+          name: name,
+          category: categoryName,
           quantity: 0,
           revenue: 0,
           cost: 0,

@@ -80,7 +80,7 @@ export function ProductModal({
       name: formData.name,
       nameTh: formData.nameTh,
       price: parseFloat(formData.price) || 0,
-      categoryId: formData.categoryId || null,
+      categoryId: formData.categoryId ?? null,
       image: formData.image,
     });
   };

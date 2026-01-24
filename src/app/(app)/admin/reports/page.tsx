@@ -20,8 +20,14 @@ export default function ReportsPage() {
   const startDateParam = searchParams.get("startDate");
   const endDateParam = searchParams.get("endDate");
 
-  const startDate = startDateParam ? new Date(startDateParam) : today;
-  const endDate = endDateParam ? new Date(endDateParam) : today;
+  const startDate = useMemo(
+    () => (startDateParam ? new Date(startDateParam) : today),
+    [startDateParam, today],
+  );
+  const endDate = useMemo(
+    () => (endDateParam ? new Date(endDateParam) : today),
+    [endDateParam, today],
+  );
 
   // Set end of day for endDate (for expenses query)
   const endDateEnd = useMemo(() => {

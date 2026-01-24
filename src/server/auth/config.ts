@@ -39,7 +39,7 @@ export const authConfig = {
   ],
   adapter: PrismaAdapter(db) as Adapter,
   callbacks: {
-    signIn: async ({ user, account }) => {
+    signIn: async ({ user }) => {
       // Check if email exists in whitelist (pre-created users)
       if (!user.email) {
         return false;
@@ -62,7 +62,7 @@ export const authConfig = {
         ...session.user,
         id: user.id,
         role: user.role,
-        image : user.image,
+        image: user.image,
       },
     }),
   },

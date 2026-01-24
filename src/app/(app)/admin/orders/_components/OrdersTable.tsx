@@ -209,7 +209,7 @@ export function OrdersTable({ orders, onViewDetail }: OrdersTableProps) {
                     </div>
                     <div className="line-clamp-1 text-xs text-[#8D6E63]">
                       {order.items
-                        .map((item) => item.product.nameTh || item.product.name)
+                        .map((item) => item.product.nameTh ?? item.product.name)
                         .join(", ")}
                     </div>
                   </td>

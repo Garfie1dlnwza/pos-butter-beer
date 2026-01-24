@@ -124,7 +124,7 @@ export function OrderDetailModal({
                   <tr key={item.id}>
                     <td className="px-4 py-3">
                       <p className="font-bold text-[#3E2723]">
-                        {item.product.nameTh || item.product.name}
+                        {item.product.nameTh ?? item.product.name}
                       </p>
                       <p className="text-xs text-[#8D6E63]">
                         ความหวาน: {item.sweetness}%

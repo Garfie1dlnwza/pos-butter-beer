@@ -84,7 +84,7 @@ export function Sidebar() {
 
       {/* 2. Navigation Menu with Sections */}
       <nav className="scrollbar-hide flex-1 overflow-y-auto px-4 py-2">
-        {menuGroups.map((group, groupIndex) => {
+        {menuGroups.map((group) => {
           // Filter items based on Role inside the group
           const visibleItems = group.items.filter((item) =>
             item.roles.includes(userRole),
@@ -134,12 +134,13 @@ export function Sidebar() {
       <div className="border-t border-[#D7CCC8]/60 bg-[#FFF8E1] p-6">
         <div className="mb-4 flex items-center gap-3">
           {/* Avatar */}
-          <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full border border-[#D7CCC8] shadow-sm">
+          <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full border border-[#D7CCC8] shadow-sm">
             {session?.user?.image ? (
-              <img
+              <Image
                 src={session.user.image}
                 alt="User"
-                className="h-full w-full object-cover"
+                fill
+                className="object-cover"
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center bg-[#D7CCC8] font-bold text-[#3E2723]">

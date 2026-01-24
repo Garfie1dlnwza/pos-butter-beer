@@ -67,7 +67,7 @@ export function TopProducts() {
               </div>
               <div>
                 <p className="line-clamp-1 font-bold text-[#3E2723]">
-                  {item.product.nameTh || item.product.name}
+                  {item.product.nameTh ?? item.product.name}
                 </p>
                 <p className="text-xs text-[#8D6E63]">{item.quantity} แก้ว</p>
               </div>

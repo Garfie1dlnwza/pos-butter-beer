@@ -39,7 +39,7 @@ export function SalesChart() {
   }
 
   const data = Object.entries(salesByChannel).map(([key, value]) => ({
-    name: PAYMENT_LABELS[key] || key,
+    name: PAYMENT_LABELS[key] ?? key,
     value: value.amount,
   }));
 

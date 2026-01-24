@@ -75,9 +75,9 @@ export default function ProductsPage() {
   const handleCreate = (data: ProductFormData) => {
     createMutation.mutate({
       name: data.name,
-      nameTh: data.nameTh || undefined,
+      nameTh: data.nameTh ?? undefined,
       price: data.price,
-      categoryId: data.categoryId || undefined,
+      categoryId: data.categoryId ?? undefined,
       image: data.image ?? undefined,
     });
   };

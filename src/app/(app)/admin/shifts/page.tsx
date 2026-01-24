@@ -4,7 +4,7 @@ import { api } from "@/trpc/react";
 import { useState } from "react";
 
 export default function AdminShiftsPage() {
-  const [dateRange, setDateRange] = useState<{ start: Date; end: Date }>({
+  const [dateRange] = useState<{ start: Date; end: Date }>({
     start: new Date(new Date().setHours(0, 0, 0, 0)),
     end: new Date(new Date().setHours(23, 59, 59, 999)),
   });
@@ -97,7 +97,7 @@ export default function AdminShiftsPage() {
                   let qrSales = 0;
 
                   if (shift.orders && Array.isArray(shift.orders)) {
-                    shift.orders.forEach((o: any) => {
+                    shift.orders.forEach((o) => {
                       if (o.paymentMethod === "CASH") cashSales += o.netAmount;
                       else qrSales += o.netAmount;
                     });
