@@ -1,6 +1,22 @@
 @import "tailwindcss";
+@tailwind utilities;
 
 @theme {
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
+  --font-sans:
+    var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-playfair: var(--font-playfair), serif;
+  --font-thai: var(--font-ibm-plex-thai), var(--font-geist-sans), sans-serif;
+}
+
+:root {
+  /* กำหนดให้ IBM Plex Sans Thai เป็นฟอนต์หลัก */
+  --font-sans:
+    var(--font-ibm-plex-thai), var(--font-geist-sans), ui-sans-serif, system-ui;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #fff8e1; /* สีครีมสว่าง */
+  color: #3e2723; /* สีน้ำตาลเข้ม */
 }

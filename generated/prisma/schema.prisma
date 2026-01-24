@@ -16,12 +16,11 @@ datasource db {
 }
 
 model Post {
-  id        Int      @id @default(autoincrement())
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  createdBy   User   @relation(fields: [createdById], references: [id])
+  id          Int      @id @default(autoincrement())
+  name        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   User     @relation(fields: [createdById], references: [id])
   createdById String
 
   @@index([name])
@@ -55,15 +54,23 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+enum Role {
+  ADMIN
+  STAFF
+}
+
 model User {
-  id            String    @id @default(cuid())
+  id            String     @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?    @unique
   emailVerified DateTime?
   image         String?
+  role          Role       @default(STAFF)
   accounts      Account[]
   sessions      Session[]
   posts         Post[]
+  orders        Order[]
+  auditLogs     AuditLog[]
 }
 
 model VerificationToken {
@@ -72,4 +79,116 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+// ==========================================
+// POS System Models
+// ==========================================
+
+// Product - เมนูที่ขายหน้าร้าน
+model Product {
+  id        String   @id @default(cuid())
+  name      String
+  nameTh    String? // ชื่อภาษาไทย
+  price     Float // ราคาขาย
+  image     String? // รูปภาพสินค้า
+  category  String? // หมวดหมู่
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  recipe     RecipeItem[] // สูตรการผลิต
+  orderItems OrderItem[] // รายการสั่งซื้อ
+}
+
+// Ingredient - วัตถุดิบหลังร้าน
+model Ingredient {
+  id           String   @id @default(cuid())
+  name         String
+  unit         String // หน่วย (ml, g, piece)
+  costPerUnit  Float // ต้นทุนต่อหน่วย
+  currentStock Float    @default(0) // สต็อกคงเหลือ
+  minStock     Float    @default(0) // จุดสั่งซื้อใหม่
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  usedIn    RecipeItem[] // ใช้ในสูตรไหนบ้าง
+  stockLots StockLot[] // ล็อตสต็อก
+}
+
+// RecipeItem - สูตรการผลิต (เชื่อม Product กับ Ingredient)
+model RecipeItem {
+  id           String @id @default(cuid())
+  productId    String
+  ingredientId String
+  amountUsed   Float // จำนวนที่ใช้ต่อ 1 แก้ว
+
+  product    Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  ingredient Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, ingredientId])
+}
+
+// Order - รายการขาย
+model Order {
+  id            String   @id @default(cuid())
+  orderNumber   String   @unique
+  totalAmount   Float // ยอดรวม
+  paymentMethod String // cash, qr, card, delivery
+  status        String   @default("completed") // pending, completed, cancelled
+  createdAt     DateTime @default(now())
+  createdById   String?
+
+  createdBy User?       @relation(fields: [createdById], references: [id])
+  items     OrderItem[]
+}
+
+// OrderItem - รายการสินค้าในออเดอร์
+model OrderItem {
+  id          String   @id @default(cuid())
+  orderId     String
+  productId   String
+  quantity    Int
+  unitPrice   Float // ราคาต่อชิ้น ณ เวลาขาย
+  sweetness   Int      @default(100) // 0, 50, 100
+  toppings    String[] // array of topping IDs
+  toppingCost Float    @default(0) // ราคา topping รวม
+  modifiers   String? // JSON string for additional modifiers
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+}
+
+// Topping - ท็อปปิ้งที่เพิ่มราคา
+model Topping {
+  id       String  @id @default(cuid())
+  name     String
+  nameTh   String?
+  price    Float // ราคาเพิ่ม
+  isActive Boolean @default(true)
+}
+
+// StockLot - ล็อตสต็อกสำหรับติดตามต้นทุน
+model StockLot {
+  id           String   @id @default(cuid())
+  ingredientId String
+  quantity     Float // จำนวนที่รับเข้า
+  costPerUnit  Float // ต้นทุนล็อตนี้
+  remainingQty Float // คงเหลือ
+  note         String?
+  createdAt    DateTime @default(now())
+
+  ingredient Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+}
+
+// AuditLog - บันทึกการกระทำสำคัญ
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String // CREATE_ORDER, VOID_ORDER, EDIT_STOCK, EDIT_PRODUCT
+  entityId  String? // ID ของ entity ที่เกี่ยวข้อง
+  details   String? // JSON details
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
 }

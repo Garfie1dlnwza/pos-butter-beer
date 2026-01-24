@@ -1,69 +1,81 @@
-import Link from "next/link";
+import { auth, signIn } from "@/server/auth";
+import { redirect } from "next/navigation";
+import Image from "next/image"; 
 
-import { LatestPost } from "@/app/_components/post";
-import { auth } from "@/server/auth";
-import { api, HydrateClient } from "@/trpc/server";
-
-export default async function Home() {
-  const hello = await api.post.hello({ text: "from tRPC" });
+export default async function LoginPage() {
   const session = await auth();
 
+  // If already logged in, redirect to POS
   if (session?.user) {
-    void api.post.getLatest.prefetch();
+    redirect("/pos");
   }
 
   return (
-    <HydrateClient>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
-          <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-            Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
-          </h1>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-              href="https://create.t3.gg/en/usage/first-steps"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">First Steps →</h3>
-              <div className="text-lg">
-                Just the basics - Everything you need to know to set up your
-                database and authentication.
-              </div>
-            </Link>
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-              href="https://create.t3.gg/en/introduction"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">Documentation →</h3>
-              <div className="text-lg">
-                Learn more about Create T3 App, the libraries it uses, and how
-                to deploy it.
-              </div>
-            </Link>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <p className="text-2xl text-white">
-              {hello ? hello.greeting : "Loading tRPC query..."}
-            </p>
-
-            <div className="flex flex-col items-center justify-center gap-4">
-              <p className="text-center text-2xl text-white">
-                {session && <span>Logged in as {session.user?.name}</span>}
-              </p>
-              <Link
-                href={session ? "/api/auth/signout" : "/api/auth/signin"}
-                className="rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
-              >
-                {session ? "Sign out" : "Sign in"}
-              </Link>
+    <main className="flex min-h-screen items-center justify-center bg-[#FFF8E1]">
+      {/* Login Card */}
+      <div className="w-full max-w-md px-6">
+        <div className="rounded-3xl bg-[#3E2723] p-12 shadow-2xl shadow-[#3E2723]/20">
+          {/* Logo & Brand */}
+          <div className="mb-10 text-center">
+            {/* Beer Mug Icon */}
+            <div className="mx-auto mb-6 flex h-40 w-40 items-center justify-center">
+              <Image
+                src="/logo-german.svg"
+                alt="Butter Beer Logo"
+                width={200}
+                height={200}
+              />
             </div>
+
+            <h1 className="font-[family-name:var(--font-playfair)] text-4xl font-bold tracking-tight text-white">
+              Butter Beer
+            </h1>
+            <p className="mt-2 text-lg font-medium text-[#D7CCC8]">
+              Point of Sale System
+            </p>
           </div>
 
-          {session?.user && <LatestPost />}
+          {/* Google Sign In Button - Server Action */}
+          <form
+            action={async () => {
+              "use server";
+              await signIn("google", { redirectTo: "/pos" });
+            }}
+          >
+            <button
+              type="submit"
+              className="group flex w-full cursor-pointer items-center justify-center gap-3 rounded-xl border-2 border-[#5D4037] bg-white px-6 py-4 font-medium text-[#3E2723] transition-all duration-200 hover:border-[#FFF8E1] hover:shadow-lg"
+            >
+              <svg className="h-5 w-5" viewBox="0 0 24 24">
+                <path
+                  fill="#4285F4"
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                />
+                <path
+                  fill="#EA4335"
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                />
+              </svg>
+              Sign in with Google
+            </button>
+          </form>
+
+          {/* Footer */}
+          <div className="mt-10 text-center">
+            <p className="text-sm text-[#8D6E63]">
+              © 2026 Butter Beer Co. All rights reserved.
+            </p>
+          </div>
         </div>
-      </main>
-    </HydrateClient>
+      </div>
+    </main>
   );
 }
