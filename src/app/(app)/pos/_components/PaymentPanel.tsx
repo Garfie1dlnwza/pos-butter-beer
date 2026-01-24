@@ -21,7 +21,7 @@ const PAYMENT_METHODS = [
 ] as const;
 
 // TODO: Move to settings
-const MERCHANT_PROMPTPAY_ID = "0933244055"; // Replace with actual PromptPay ID
+const MERCHANT_PROMPTPAY_ID = "1129901860315"; // Replace with actual PromptPay ID
 
 export function PaymentPanel({
   items,

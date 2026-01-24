@@ -64,14 +64,33 @@ export const productsRouter = createTRPCRouter({
         price: z.number().positive(),
         categoryId: z.string().optional(),
         image: z.string().optional(),
+        recipe: z
+          .array(
+            z.object({
+              ingredientId: z.string(),
+              amountUsed: z.number(),
+            }),
+          )
+          .optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       if (ctx.session.user.role !== "ADMIN") {
         throw new Error("Unauthorized");
       }
+      const { recipe, ...productData } = input;
       return ctx.db.product.create({
-        data: input,
+        data: {
+          ...productData,
+          recipe: recipe
+            ? {
+                create: recipe.map((r) => ({
+                  ingredientId: r.ingredientId,
+                  amountUsed: r.amountUsed,
+                })),
+              }
+            : undefined,
+        },
       });
     }),
 
@@ -86,16 +105,50 @@ export const productsRouter = createTRPCRouter({
         categoryId: z.string().nullish(),
         image: z.string().optional(),
         isActive: z.boolean().optional(),
+        recipe: z
+          .array(
+            z.object({
+              ingredientId: z.string(),
+              amountUsed: z.number(),
+            }),
+          )
+          .optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       if (ctx.session.user.role !== "ADMIN") {
         throw new Error("Unauthorized");
       }
-      const { id, ...data } = input;
-      return ctx.db.product.update({
-        where: { id },
-        data,
+      const { id, recipe, ...data } = input;
+
+      // Use transaction to update product and recipe
+      return ctx.db.$transaction(async (tx) => {
+        // 1. Update Product Details
+        const product = await tx.product.update({
+          where: { id },
+          data,
+        });
+
+        // 2. Update Recipe if provided
+        if (recipe) {
+          // Delete existing
+          await tx.recipeItem.deleteMany({
+            where: { productId: id },
+          });
+
+          // Create new
+          if (recipe.length > 0) {
+            await tx.recipeItem.createMany({
+              data: recipe.map((r) => ({
+                productId: id,
+                ingredientId: r.ingredientId,
+                amountUsed: r.amountUsed,
+              })),
+            });
+          }
+        }
+
+        return product;
       });
     }),
 

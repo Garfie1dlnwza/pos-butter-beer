@@ -53,6 +53,12 @@ export const authConfig = {
       if (!existingUser) {
         return "/api/auth/signin?error=AccessDenied";
       }
+      if (user.image && existingUser.image !== user.image) {
+        await db.user.update({
+          where: { email: user.email },
+          data: { image: user.image },
+        });
+      }
 
       return true;
     },

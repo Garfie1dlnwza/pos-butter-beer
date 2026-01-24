@@ -33,7 +33,6 @@ interface AddStockModalProps {
   ingredient: Ingredient | null;
   onSave: (data: StockFormData) => void;
   isLoading: boolean;
-  title?: string; // Optional title prop
 }
 
 export function AddStockModal({
@@ -42,7 +41,6 @@ export function AddStockModal({
   ingredient,
   onSave,
   isLoading,
-  title,
 }: AddStockModalProps) {
   const [formData, setFormData] = useState<StockFormData>({
     quantity: 0,
@@ -69,7 +67,7 @@ export function AddStockModal({
   if (!ingredient) return null;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={title ?? "เพิ่มสต็อก"}>
+    <Modal isOpen={isOpen} onClose={onClose} title="เพิ่มสต็อก">
       {/* Ingredient Info */}
       <div className="mb-5 rounded-xl bg-[#FFF8E1] p-4">
         <p className="text-lg font-bold text-[#3E2723]">{ingredient.name}</p>

@@ -48,128 +48,142 @@ export const ordersRouter = createTRPCRouter({
         });
       }
 
-      return await ctx.db.$transaction(async (tx) => {
-        // 2. Fetch Data (Products, Recipes, Toppings)
-        const productIds = input.items.map((i) => i.id);
-        const products = await tx.product.findMany({
-          where: { id: { in: productIds } },
-          include: {
-            recipe: {
-              include: { ingredient: true },
+      try {
+        return await ctx.db.$transaction(async (tx) => {
+          // 2. Fetch Data (Products, Recipes, Toppings)
+          const productIds = input.items.map((i) => i.id);
+          const products = await tx.product.findMany({
+            where: { id: { in: productIds } },
+            include: {
+              recipe: {
+                include: { ingredient: true },
+              },
             },
-          },
-        });
-        const productMap = new Map(products.map((p) => [p.id, p]));
+          });
+          const productMap = new Map(products.map((p) => [p.id, p]));
 
-        // Fetch toppings to get their recipes
-        const allToppingIds = input.items.flatMap((i) =>
-          i.toppings.map((t) => t.id),
-        );
-        const toppings = await tx.topping.findMany({
-          where: { id: { in: allToppingIds } },
-          include: {
-            recipe: {
-              include: { ingredient: true },
-            },
-          },
-        });
-        const toppingMap = new Map(toppings.map((t) => [t.id, t]));
-
-        // 3. Generate Order Number
-        const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-        const todayCount = await tx.order.count({
-          where: {
-            createdAt: {
-              gte: new Date(new Date().setHours(0, 0, 0, 0)),
-              lt: new Date(new Date().setHours(23, 59, 59, 999)),
-            },
-          },
-        });
-        const orderNumber = `ORD-${dateStr}-${String(todayCount + 1).padStart(4, "0")}`;
-
-        // 4. Create Order & Items
-        const order = await tx.order.create({
-          data: {
-            orderNumber,
-            totalAmount: input.totalAmount,
-            discount: input.discount,
-            netAmount: input.netAmount,
-            paymentMethod: input.paymentMethod,
-            status: "completed",
-            customerName: input.customerName,
-            note: input.note,
-            createdById: ctx.session.user.id,
-            shiftId: currentShift?.id, // Link to Shift!
-            items: {
-              create: input.items.map((item) => {
-                const product = productMap.get(item.id);
-
-                // Calculate Product Cost
-                let productCost = 0;
-                if (product?.recipe) {
-                  productCost = product.recipe.reduce(
-                    (sum, r) => sum + r.amountUsed * r.ingredient.costPerUnit,
-                    0,
-                  );
-                }
-
-                // Calculate Topping Cost (from Recipes) for this item
-                // Note: item.toppings has price, but we need cost from recipe
-                const toppingCost = item.toppings.reduce((acc, tItem) => {
-                  const topping = toppingMap.get(tItem.id);
-                  if (!topping?.recipe) return acc;
-                  const cost = topping.recipe.reduce(
-                    (rSum, r) => rSum + r.amountUsed * r.ingredient.costPerUnit,
-                    0,
-                  );
-                  return acc + cost;
-                }, 0);
-
-                const totalUnitCost = productCost + toppingCost;
-
-                return {
-                  productId: item.id,
-                  quantity: item.quantity,
-                  unitPrice: item.price,
-                  cost: totalUnitCost * item.quantity,
-                  sweetness: item.sweetness,
-                  toppings: JSON.stringify(item.toppings),
-                  toppingCost: item.toppings.reduce(
-                    (acc, t) => acc + t.price,
-                    0,
-                  ),
-                  note: item.note,
-                };
-              }),
-            },
-          },
-          include: { items: true },
-        });
-
-        // 5. Deduct Stock & Create Transactions
-        const ingredientsToDeduct = new Map<string, number>();
-
-        // Aggregate total usage per ingredient first
-        for (const item of input.items) {
-          // Product Ingredients
-          const product = productMap.get(item.id);
-          if (product?.recipe) {
-            for (const r of product.recipe) {
-              const current = ingredientsToDeduct.get(r.ingredientId) ?? 0;
-              ingredientsToDeduct.set(
-                r.ingredientId,
-                current + r.amountUsed * item.quantity,
-              );
+          // Validate Products
+          for (const item of input.items) {
+            if (!productMap.has(item.id)) {
+              throw new TRPCError({
+                code: "BAD_REQUEST",
+                message: `ไม่พบสินค้าในระบบ (ID: ${item.id})`,
+              });
             }
           }
 
-          // Topping Ingredients
-          for (const tItem of item.toppings) {
-            const topping = toppingMap.get(tItem.id);
-            if (topping?.recipe) {
-              for (const r of topping.recipe) {
-                // Topping usage is 1 per instance per item quantity
-                // item.quantity (cups) * 1 (portion)
+          // Fetch toppings to get their recipes
+          const allToppingIds = input.items.flatMap((i) =>
+            i.toppings.map((t) => t.id),
+          );
+          const toppings = await tx.topping.findMany({
+            where: { id: { in: allToppingIds } },
+            include: {
+              recipe: {
+                include: { ingredient: true },
+              },
+            },
+          });
+          const toppingMap = new Map(toppings.map((t) => [t.id, t]));
+
+          // 3. Generate Order Number
+          const dateStr = new Date()
+            .toISOString()
+            .slice(0, 10)
+            .replace(/-/g, "");
+
+          // Find the last order of the day to determine the next sequence number
+          const lastOrder = await tx.order.findFirst({
+            where: {
+              orderNumber: {
+                startsWith: `ORD-${dateStr}-`,
+              },
+            },
+            orderBy: {
+              orderNumber: "desc",
+            },
+          });
+
+          let nextSequence = 1;
+          if (lastOrder) {
+            const parts = lastOrder.orderNumber.split("-");
+            const lastSeq = parseInt(parts[parts.length - 1]);
+            if (!isNaN(lastSeq)) {
+              nextSequence = lastSeq + 1;
+            }
+          }
+
+          const orderNumber = `ORD-${dateStr}-${String(nextSequence).padStart(4, "0")}`;
+
+          // 4. Create Order & Items
+          const order = await tx.order.create({
+            data: {
+              orderNumber,
+              totalAmount: input.totalAmount,
+              discount: input.discount,
+              netAmount: input.netAmount,
+              paymentMethod: input.paymentMethod,
+              status: "completed",
+              customerName: input.customerName,
+              note: input.note,
+              createdById: ctx.session.user.id,
+              shiftId: currentShift?.id ?? null, // Link to Shift! (Explicit null)
+              items: {
+                create: input.items.map((item) => {
+                  const product = productMap.get(item.id)!; // Safe because we validated
+
+                  // Calculate Product Cost
+                  let productCost = 0;
+                  if (product.recipe) {
+                    productCost = product.recipe.reduce(
+                      (sum, r) => sum + r.amountUsed * r.ingredient.costPerUnit,
+                      0,
+                    );
+                  }
+
+                  // Calculate Topping Cost (from Recipes) for this item
+                  // Note: item.toppings has price, but we need cost from recipe
+                  const toppingCost = item.toppings.reduce((acc, tItem) => {
+                    const topping = toppingMap.get(tItem.id);
+                    if (!topping?.recipe) return acc;
+                    const cost = topping.recipe.reduce(
+                      (rSum, r) =>
+                        rSum + r.amountUsed * r.ingredient.costPerUnit,
+                      0,
+                    );
+                    return acc + cost;
+                  }, 0);
+
+                  const totalUnitCost = productCost + toppingCost;
+
+                  return {
+                    productId: item.id,
+                    quantity: item.quantity,
+                    unitPrice: item.price,
+                    cost: totalUnitCost * item.quantity,
+                    sweetness: item.sweetness,
+                    toppings: JSON.stringify(item.toppings),
+                    toppingCost: item.toppings.reduce(
+                      (acc, t) => acc + t.price,
+                      0,
+                    ),
+                    note: item.note,
+                  };
+                }),
+              },
+            },
+            include: { items: true },
+          });
+
+          // 5. Deduct Stock & Create Transactions
+          const ingredientsToDeduct = new Map<string, number>();
+
+          // Aggregate total usage per ingredient first
+          for (const item of input.items) {
+            // Product Ingredients
+            const product = productMap.get(item.id);
+            if (product?.recipe) {
+              for (const r of product.recipe) {
                 const current = ingredientsToDeduct.get(r.ingredientId) ?? 0;
                 ingredientsToDeduct.set(
                   r.ingredientId,
@@ -177,48 +191,72 @@ export const ordersRouter = createTRPCRouter({
                 );
               }
             }
+
+            // Topping Ingredients
+            for (const tItem of item.toppings) {
+              const topping = toppingMap.get(tItem.id);
+              if (topping?.recipe) {
+                for (const r of topping.recipe) {
+                  // Topping usage is 1 per instance per item quantity
+                  // item.quantity (cups) * 1 (portion)
+                  const current = ingredientsToDeduct.get(r.ingredientId) ?? 0;
+                  ingredientsToDeduct.set(
+                    r.ingredientId,
+                    current + r.amountUsed * item.quantity,
+                  );
+                }
+              }
+            }
           }
-        }
 
-        // Execute Deductions
-        for (const [ingredientId, amount] of ingredientsToDeduct.entries()) {
-          // A. Update Current Stock
-          await tx.ingredient.update({
-            where: { id: ingredientId },
-            data: { currentStock: { decrement: amount } },
-          });
-
-          // B. Create Inventory Transaction
-          await tx.inventoryTransaction.create({
-            data: {
-              type: "SALE",
-              quantity: -amount, // Negative for deduction
-              ingredientId: ingredientId,
-              note: `Order: ${orderNumber}`,
-              userId: ctx.session.user.id,
-            },
-          });
-
-          // C. FIFO Lot Deduction (Optional but good)
-          let remainingNeeded = amount;
-          const stockLots = await tx.stockLot.findMany({
-            where: { ingredientId: ingredientId, remainingQty: { gt: 0 } },
-            orderBy: { createdAt: "asc" },
-          });
-
-          for (const lot of stockLots) {
-            if (remainingNeeded <= 0) break;
-            const deduct = Math.min(lot.remainingQty, remainingNeeded);
-            await tx.stockLot.update({
-              where: { id: lot.id },
-              data: { remainingQty: { decrement: deduct } },
+          // Execute Deductions
+          for (const [ingredientId, amount] of ingredientsToDeduct.entries()) {
+            // A. Update Current Stock
+            await tx.ingredient.update({
+              where: { id: ingredientId },
+              data: { currentStock: { decrement: amount } },
             });
-            remainingNeeded -= deduct;
-          }
-        }
 
-        return order;
-      });
+            // B. Create Inventory Transaction
+            await tx.inventoryTransaction.create({
+              data: {
+                type: "SALE",
+                quantity: -amount, // Negative for deduction
+                ingredientId: ingredientId,
+                note: `Order: ${orderNumber}`,
+                createdById: ctx.session.user.id,
+              },
+            });
+
+            // C. FIFO Lot Deduction (Optional but good)
+            let remainingNeeded = amount;
+            const stockLots = await tx.stockLot.findMany({
+              where: { ingredientId: ingredientId, remainingQty: { gt: 0 } },
+              orderBy: { createdAt: "asc" },
+            });
+
+            for (const lot of stockLots) {
+              if (remainingNeeded <= 0) break;
+              const deduct = Math.min(lot.remainingQty, remainingNeeded);
+              await tx.stockLot.update({
+                where: { id: lot.id },
+                data: { remainingQty: { decrement: deduct } },
+              });
+              remainingNeeded -= deduct;
+            }
+          }
+
+          return order;
+        });
+      } catch (error) {
+        console.error("Failed to create order:", error);
+        if (error instanceof TRPCError) throw error;
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message:
+            error instanceof Error ? error.message : "Failed to create order",
+        });
+      }
     }),
 
   getAll: protectedProcedure.query(async ({ ctx }) => {

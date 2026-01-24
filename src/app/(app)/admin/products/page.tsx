@@ -29,6 +29,7 @@ interface ProductFormData {
   price: number;
   categoryId: string | null;
   image: string | null;
+  recipe?: Array<{ ingredientId: string; amountUsed: number }>;
 }
 
 export default function ProductsPage() {
@@ -75,10 +76,11 @@ export default function ProductsPage() {
   const handleCreate = (data: ProductFormData) => {
     createMutation.mutate({
       name: data.name,
-      nameTh: data.nameTh ?? undefined,
+      nameTh: data.nameTh || undefined,
       price: data.price,
-      categoryId: data.categoryId ?? undefined,
-      image: data.image ?? undefined,
+      categoryId: data.categoryId || undefined,
+      image: data.image || undefined,
+      recipe: data.recipe,
     });
   };
 
@@ -90,7 +92,8 @@ export default function ProductsPage() {
       nameTh: data.nameTh || undefined,
       price: data.price,
       categoryId: data.categoryId,
-      image: data.image ?? undefined,
+      image: data.image || undefined,
+      recipe: data.recipe,
     });
   };
 
