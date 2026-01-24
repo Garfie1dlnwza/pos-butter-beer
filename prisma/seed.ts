@@ -7,22 +7,25 @@ import { PrismaClient } from "../generated/prisma";
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("🌱 เริ่มสร้างข้อมูลตัวอย่าง...");
+  console.log("🍺 เริ่มสร้างข้อมูล Butter Beer Shop...\n");
 
   // =============================================
   // สร้างวัตถุดิบ (Ingredients)
   // =============================================
+  console.log("📦 สร้างวัตถุดิบ...");
+
   const ingredients = await Promise.all([
+    // เครื่องดื่ม
     prisma.ingredient.upsert({
       where: { id: "ing_soda" },
       update: {},
       create: {
         id: "ing_soda",
         name: "โซดา",
-        unit: "ml",
-        costPerUnit: 0.05, // 0.05 บาท/ml
-        currentStock: 10000,
-        minStock: 2000,
+        unit: "ขวด",
+        costPerUnit: 15, // 15 บาท/ขวด (1.5L)
+        currentStock: 100,
+        minStock: 20,
       },
     }),
     prisma.ingredient.upsert({
@@ -31,10 +34,10 @@ async function main() {
       create: {
         id: "ing_butterscotch",
         name: "ไซรัปบัตเตอร์สก็อต",
-        unit: "ml",
-        costPerUnit: 0.3, // 0.30 บาท/ml
-        currentStock: 5000,
-        minStock: 1000,
+        unit: "ขวด",
+        costPerUnit: 350, // 350 บาท/ขวด (750ml)
+        currentStock: 10,
+        minStock: 3,
       },
     }),
     prisma.ingredient.upsert({
@@ -43,22 +46,48 @@ async function main() {
       create: {
         id: "ing_cream",
         name: "วิปครีม",
-        unit: "g",
-        costPerUnit: 0.2, // 0.20 บาท/g
-        currentStock: 3000,
-        minStock: 500,
+        unit: "กระป๋อง",
+        costPerUnit: 120, // 120 บาท/กระป๋อง
+        currentStock: 20,
+        minStock: 5,
       },
     }),
+
+    // บรรจุภัณฑ์
     prisma.ingredient.upsert({
-      where: { id: "ing_cup" },
+      where: { id: "ing_cup_14oz" },
       update: {},
       create: {
-        id: "ing_cup",
-        name: "แก้ว 16 oz",
-        unit: "piece",
+        id: "ing_cup_14oz",
+        name: "แก้ว 14 oz",
+        unit: "ใบ",
         costPerUnit: 3.5, // 3.50 บาท/ใบ
         currentStock: 500,
         minStock: 100,
+      },
+    }),
+    prisma.ingredient.upsert({
+      where: { id: "ing_cup_16oz" },
+      update: {},
+      create: {
+        id: "ing_cup_16oz",
+        name: "แก้ว 16 oz",
+        unit: "ใบ",
+        costPerUnit: 4.0, // 4 บาท/ใบ
+        currentStock: 500,
+        minStock: 100,
+      },
+    }),
+    prisma.ingredient.upsert({
+      where: { id: "ing_lid" },
+      update: {},
+      create: {
+        id: "ing_lid",
+        name: "ฝาแก้ว",
+        unit: "ใบ",
+        costPerUnit: 1.5, // 1.50 บาท/ใบ
+        currentStock: 1000,
+        minStock: 200,
       },
     }),
     prisma.ingredient.upsert({
@@ -67,365 +96,169 @@ async function main() {
       create: {
         id: "ing_straw",
         name: "หลอด",
-        unit: "piece",
+        unit: "อัน",
         costPerUnit: 0.5, // 0.50 บาท/อัน
         currentStock: 1000,
         minStock: 200,
       },
     }),
     prisma.ingredient.upsert({
-      where: { id: "ing_caramel" },
+      where: { id: "ing_ice" },
       update: {},
       create: {
-        id: "ing_caramel",
-        name: "ซอสคาราเมล",
-        unit: "ml",
-        costPerUnit: 0.25,
-        currentStock: 2000,
-        minStock: 500,
+        id: "ing_ice",
+        name: "น้ำแข็ง",
+        unit: "ถุง",
+        costPerUnit: 25, // 25 บาท/ถุง (3kg)
+        currentStock: 50,
+        minStock: 10,
+      },
+    }),
+
+    // ของตกแต่ง/อุปกรณ์
+    prisma.ingredient.upsert({
+      where: { id: "ing_vinyl" },
+      update: {},
+      create: {
+        id: "ing_vinyl",
+        name: "ไวนิล (ป้ายโฆษณา)",
+        unit: "แผ่น",
+        costPerUnit: 500, // 500 บาท/แผ่น
+        currentStock: 5,
+        minStock: 2,
       },
     }),
     prisma.ingredient.upsert({
-      where: { id: "ing_boba" },
+      where: { id: "ing_sticker" },
       update: {},
       create: {
-        id: "ing_boba",
-        name: "ไข่มุก",
-        unit: "g",
-        costPerUnit: 0.15,
-        currentStock: 5000,
-        minStock: 1000,
+        id: "ing_sticker",
+        name: "สติ๊กเกอร์แบรนด์",
+        unit: "แผ่น",
+        costPerUnit: 3, // 3 บาท/แผ่น
+        currentStock: 500,
+        minStock: 100,
+      },
+    }),
+    prisma.ingredient.upsert({
+      where: { id: "ing_sign" },
+      update: {},
+      create: {
+        id: "ing_sign",
+        name: "ป้ายราคา/เมนู",
+        unit: "อัน",
+        costPerUnit: 50, // 50 บาท/อัน
+        currentStock: 20,
+        minStock: 5,
       },
     }),
   ]);
 
-  console.log(`✅ สร้างวัตถุดิบ ${ingredients.length} รายการ`);
+  console.log(`   ✅ สร้างวัตถุดิบ ${ingredients.length} รายการ`);
 
   // =============================================
   // สร้างหมวดหมู่ (Categories)
   // =============================================
+  console.log("\n🏷️ สร้างหมวดหมู่...");
+
   const catDrinks = await prisma.category.upsert({
     where: { name: "เครื่องดื่ม" },
     update: {},
-    create: { name: "เครื่องดื่ม", sortOrder: 1, color: "#795548" },
-  });
-
-  const catSnacks = await prisma.category.upsert({
-    where: { name: "ของหวาน" },
-    update: {},
-    create: { name: "ของหวาน", sortOrder: 2, color: "#FF9800" },
+    create: { name: "เครื่องดื่ม", sortOrder: 1, color: "#8D6E63" },
   });
 
   const catPromotion = await prisma.category.upsert({
     where: { name: "โปรโมชั่น" },
     update: {},
-    create: { name: "โปรโมชั่น", sortOrder: 3, color: "#FFC107" },
+    create: { name: "โปรโมชั่น", sortOrder: 2, color: "#E91E63" },
   });
 
-  console.log("✅ สร้างหมวดหมู่");
+  console.log("   ✅ สร้างหมวดหมู่ 2 รายการ");
 
   // =============================================
   // สร้างสินค้า (Products)
   // =============================================
-  const butterBeerClassic = await prisma.product.upsert({
-    where: { id: "prod_classic" },
-    update: {},
-    create: {
-      id: "prod_classic",
-      name: "Butter Beer Classic",
-      nameTh: "บัตเตอร์เบียร์ คลาสสิค",
-      price: 79,
-      categoryId: catDrinks.id,
-      isActive: true,
-    },
-  });
+  console.log("\n🍺 สร้างเมนูสินค้า...");
 
-  const butterBeerCaramel = await prisma.product.upsert({
-    where: { id: "prod_caramel" },
+  // เครื่องดื่มหลัก
+  const butterBeer14 = await prisma.product.upsert({
+    where: { id: "prod_bb_14oz" },
     update: {},
     create: {
-      id: "prod_caramel",
-      name: "Butter Beer Caramel",
-      nameTh: "บัตเตอร์เบียร์ คาราเมล",
+      id: "prod_bb_14oz",
+      name: "Butter Beer 14oz",
+      nameTh: "บัตเตอร์เบียร์ 14oz",
       price: 89,
+      cost: 25, // ต้นทุนประมาณ 25 บาท
       categoryId: catDrinks.id,
       isActive: true,
     },
   });
 
-  const butterBeerBoba = await prisma.product.upsert({
-    where: { id: "prod_boba" },
+  const butterBeer16 = await prisma.product.upsert({
+    where: { id: "prod_bb_16oz" },
     update: {},
     create: {
-      id: "prod_boba",
-      name: "Butter Beer Boba",
-      nameTh: "บัตเตอร์เบียร์ ไข่มุก",
+      id: "prod_bb_16oz",
+      name: "Butter Beer 16oz",
+      nameTh: "บัตเตอร์เบียร์ 16oz",
       price: 99,
+      cost: 30, // ต้นทุนประมาณ 30 บาท
       categoryId: catDrinks.id,
       isActive: true,
     },
   });
 
-  console.log("✅ สร้างสินค้า 3 รายการ");
+  // โปรโมชั่น
+  const promoSet2 = await prisma.product.upsert({
+    where: { id: "prod_promo_2" },
+    update: {},
+    create: {
+      id: "prod_promo_2",
+      name: "Set 2 Cups",
+      nameTh: "โปรโมชั่น 2 แก้ว",
+      price: 169, // ปกติ 178 (89*2) ลด 9 บาท
+      cost: 50,
+      categoryId: catPromotion.id,
+      isActive: true,
+    },
+  });
+
+  const promoSet3 = await prisma.product.upsert({
+    where: { id: "prod_promo_3" },
+    update: {},
+    create: {
+      id: "prod_promo_3",
+      name: "Set 3 Cups",
+      nameTh: "โปรโมชั่น 3 แก้ว",
+      price: 249, // ปกติ 267 (89*3) ลด 18 บาท
+      cost: 75,
+      categoryId: catPromotion.id,
+      isActive: true,
+    },
+  });
+
+  const promoFamily = await prisma.product.upsert({
+    where: { id: "prod_promo_family" },
+    update: {},
+    create: {
+      id: "prod_promo_family",
+      name: "Family Set (5 Cups)",
+      nameTh: "เซ็ทครอบครัว 5 แก้ว",
+      price: 399, // ปกติ 445 (89*5) ลด 46 บาท
+      cost: 125,
+      categoryId: catPromotion.id,
+      isActive: true,
+    },
+  });
+
+  console.log("   ✅ สร้างสินค้า 5 รายการ");
 
   // =============================================
-  // สร้างสูตร (Recipes) - Classic
+  // สร้าง Toppings (ตัวเลือกเพิ่มเติม)
   // =============================================
-  await Promise.all([
-    // Classic Recipe
-    prisma.recipeItem.upsert({
-      where: {
-        productId_ingredientId: {
-          productId: butterBeerClassic.id,
-          ingredientId: "ing_soda",
-        },
-      },
-      update: {},
-      create: {
-        productId: butterBeerClassic.id,
-        ingredientId: "ing_soda",
-        amountUsed: 200, // 200ml โซดา
-      },
-    }),
-    prisma.recipeItem.upsert({
-      where: {
-        productId_ingredientId: {
-          productId: butterBeerClassic.id,
-          ingredientId: "ing_butterscotch",
-        },
-      },
-      update: {},
-      create: {
-        productId: butterBeerClassic.id,
-        ingredientId: "ing_butterscotch",
-        amountUsed: 30, // 30ml ไซรัป
-      },
-    }),
-    prisma.recipeItem.upsert({
-      where: {
-        productId_ingredientId: {
-          productId: butterBeerClassic.id,
-          ingredientId: "ing_cream",
-        },
-      },
-      update: {},
-      create: {
-        productId: butterBeerClassic.id,
-        ingredientId: "ing_cream",
-        amountUsed: 20, // 20g วิปครีม
-      },
-    }),
-    prisma.recipeItem.upsert({
-      where: {
-        productId_ingredientId: {
-          productId: butterBeerClassic.id,
-          ingredientId: "ing_cup",
-        },
-      },
-      update: {},
-      create: {
-        productId: butterBeerClassic.id,
-        ingredientId: "ing_cup",
-        amountUsed: 1, // 1 แก้ว
-      },
-    }),
-    prisma.recipeItem.upsert({
-      where: {
-        productId_ingredientId: {
-          productId: butterBeerClassic.id,
-          ingredientId: "ing_straw",
-        },
-      },
-      update: {},
-      create: {
-        productId: butterBeerClassic.id,
-        ingredientId: "ing_straw",
-        amountUsed: 1, // 1 หลอด
-      },
-    }),
-  ]);
+  console.log("\n🧁 สร้าง Toppings...");
 
-  // Caramel Recipe (เพิ่มซอสคาราเมล)
-  await Promise.all([
-    prisma.recipeItem.upsert({
-      where: {
-        productId_ingredientId: {
-          productId: butterBeerCaramel.id,
-          ingredientId: "ing_soda",
-        },
-      },
-      update: {},
-      create: {
-        productId: butterBeerCaramel.id,
-        ingredientId: "ing_soda",
-        amountUsed: 200,
-      },
-    }),
-    prisma.recipeItem.upsert({
-      where: {
-        productId_ingredientId: {
-          productId: butterBeerCaramel.id,
-          ingredientId: "ing_butterscotch",
-        },
-      },
-      update: {},
-      create: {
-        productId: butterBeerCaramel.id,
-        ingredientId: "ing_butterscotch",
-        amountUsed: 30,
-      },
-    }),
-    prisma.recipeItem.upsert({
-      where: {
-        productId_ingredientId: {
-          productId: butterBeerCaramel.id,
-          ingredientId: "ing_caramel",
-        },
-      },
-      update: {},
-      create: {
-        productId: butterBeerCaramel.id,
-        ingredientId: "ing_caramel",
-        amountUsed: 15, // +15ml ซอสคาราเมล
-      },
-    }),
-    prisma.recipeItem.upsert({
-      where: {
-        productId_ingredientId: {
-          productId: butterBeerCaramel.id,
-          ingredientId: "ing_cream",
-        },
-      },
-      update: {},
-      create: {
-        productId: butterBeerCaramel.id,
-        ingredientId: "ing_cream",
-        amountUsed: 25,
-      },
-    }),
-    prisma.recipeItem.upsert({
-      where: {
-        productId_ingredientId: {
-          productId: butterBeerCaramel.id,
-          ingredientId: "ing_cup",
-        },
-      },
-      update: {},
-      create: {
-        productId: butterBeerCaramel.id,
-        ingredientId: "ing_cup",
-        amountUsed: 1,
-      },
-    }),
-    prisma.recipeItem.upsert({
-      where: {
-        productId_ingredientId: {
-          productId: butterBeerCaramel.id,
-          ingredientId: "ing_straw",
-        },
-      },
-      update: {},
-      create: {
-        productId: butterBeerCaramel.id,
-        ingredientId: "ing_straw",
-        amountUsed: 1,
-      },
-    }),
-  ]);
-
-  // Boba Recipe (เพิ่มไข่มุก)
-  await Promise.all([
-    prisma.recipeItem.upsert({
-      where: {
-        productId_ingredientId: {
-          productId: butterBeerBoba.id,
-          ingredientId: "ing_soda",
-        },
-      },
-      update: {},
-      create: {
-        productId: butterBeerBoba.id,
-        ingredientId: "ing_soda",
-        amountUsed: 200,
-      },
-    }),
-    prisma.recipeItem.upsert({
-      where: {
-        productId_ingredientId: {
-          productId: butterBeerBoba.id,
-          ingredientId: "ing_butterscotch",
-        },
-      },
-      update: {},
-      create: {
-        productId: butterBeerBoba.id,
-        ingredientId: "ing_butterscotch",
-        amountUsed: 30,
-      },
-    }),
-    prisma.recipeItem.upsert({
-      where: {
-        productId_ingredientId: {
-          productId: butterBeerBoba.id,
-          ingredientId: "ing_boba",
-        },
-      },
-      update: {},
-      create: {
-        productId: butterBeerBoba.id,
-        ingredientId: "ing_boba",
-        amountUsed: 50, // +50g ไข่มุก
-      },
-    }),
-    prisma.recipeItem.upsert({
-      where: {
-        productId_ingredientId: {
-          productId: butterBeerBoba.id,
-          ingredientId: "ing_cream",
-        },
-      },
-      update: {},
-      create: {
-        productId: butterBeerBoba.id,
-        ingredientId: "ing_cream",
-        amountUsed: 20,
-      },
-    }),
-    prisma.recipeItem.upsert({
-      where: {
-        productId_ingredientId: {
-          productId: butterBeerBoba.id,
-          ingredientId: "ing_cup",
-        },
-      },
-      update: {},
-      create: {
-        productId: butterBeerBoba.id,
-        ingredientId: "ing_cup",
-        amountUsed: 1,
-      },
-    }),
-    prisma.recipeItem.upsert({
-      where: {
-        productId_ingredientId: {
-          productId: butterBeerBoba.id,
-          ingredientId: "ing_straw",
-        },
-      },
-      update: {},
-      create: {
-        productId: butterBeerBoba.id,
-        ingredientId: "ing_straw",
-        amountUsed: 1,
-      },
-    }),
-  ]);
-
-  console.log("✅ สร้างสูตรการผลิตทั้งหมด");
-
-  // =============================================
-  // สร้าง Toppings
-  // =============================================
   const toppings = await Promise.all([
     prisma.topping.upsert({
       where: { id: "top_whip_extra" },
@@ -443,37 +276,39 @@ async function main() {
       create: {
         id: "top_butterscotch",
         name: "Extra Butterscotch",
-        nameTh: "บัตเตอร์สก็อตเพิ่ม",
-        price: 15,
-      },
-    }),
-    prisma.topping.upsert({
-      where: { id: "top_boba" },
-      update: {},
-      create: {
-        id: "top_boba",
-        name: "Boba",
-        nameTh: "ไข่มุก",
-        price: 15,
-      },
-    }),
-    prisma.topping.upsert({
-      where: { id: "top_caramel" },
-      update: {},
-      create: {
-        id: "top_caramel",
-        name: "Caramel Drizzle",
-        nameTh: "ซอสคาราเมล",
+        nameTh: "ไซรัปเพิ่ม",
         price: 10,
+      },
+    }),
+    prisma.topping.upsert({
+      where: { id: "top_ice_extra" },
+      update: {},
+      create: {
+        id: "top_ice_extra",
+        name: "Extra Ice",
+        nameTh: "น้ำแข็งเพิ่ม",
+        price: 0, // ฟรี
+      },
+    }),
+    prisma.topping.upsert({
+      where: { id: "top_sticker" },
+      update: {},
+      create: {
+        id: "top_sticker",
+        name: "Brand Sticker",
+        nameTh: "สติ๊กเกอร์แบรนด์",
+        price: 5,
       },
     }),
   ]);
 
-  console.log(`✅ สร้าง Toppings ${toppings.length} รายการ`);
+  console.log(`   ✅ สร้าง Toppings ${toppings.length} รายการ`);
 
   // =============================================
-  // สร้าง Admin User (ถ้ายังไม่มี)
+  // สร้าง Admin/Staff Users
   // =============================================
+  console.log("\n👤 สร้าง Users...");
+
   const adminUser = await prisma.user.upsert({
     where: { email: "admin@germanoneday.com" },
     update: {},
@@ -504,38 +339,35 @@ async function main() {
     },
   });
 
-  console.log(`✅ สร้าง Admin User: ${adminUser.email}`);
-  console.log(`✅ สร้าง Admin User: ${adminUser2.email}`);
-  console.log(`✅ สร้าง Staff User: ${staffUser.email}`);
+  console.log(`   ✅ Admin: ${adminUser.email}`);
+  console.log(`   ✅ Admin: ${adminUser2.email}`);
+  console.log(`   ✅ Staff: ${staffUser.email}`);
 
   // =============================================
-  // คำนวณต้นทุนตัวอย่าง
+  // สรุปต้นทุนและกำไร
   // =============================================
-  console.log("\n📊 ต้นทุนสินค้า:");
+  console.log("\n📊 สรุปต้นทุนและกำไร:");
+  console.log("─".repeat(60));
 
   const products = await prisma.product.findMany({
-    include: {
-      recipe: {
-        include: {
-          ingredient: true,
-        },
-      },
-    },
+    include: { category: true },
+    orderBy: { categoryId: "asc" },
   });
 
   for (const product of products) {
-    const cost = product.recipe.reduce((sum, item) => {
-      return sum + item.amountUsed * item.ingredient.costPerUnit;
-    }, 0);
+    const cost = product.cost ?? 0;
     const profit = product.price - cost;
-    const margin = ((profit / product.price) * 100).toFixed(1);
+    const margin =
+      product.price > 0 ? ((profit / product.price) * 100).toFixed(0) : 0;
+    const cat = product.category?.name ?? "ไม่มีหมวด";
 
     console.log(
-      `   ${product.nameTh}: ราคา ${product.price}฿ | ต้นทุน ${cost.toFixed(2)}฿ | กำไร ${profit.toFixed(2)}฿ (${margin}%)`,
+      `   [${cat}] ${product.nameTh}: ราคา ${product.price}฿ | ต้นทุน ${cost}฿ | กำไร ${profit}฿ (${margin}%)`,
     );
   }
 
-  console.log("\n🎉 Seed สำเร็จ!");
+  console.log("─".repeat(60));
+  console.log("\n🎉 Seed สำเร็จ! Butter Beer Shop พร้อมใช้งาน 🍺\n");
 }
 
 main()

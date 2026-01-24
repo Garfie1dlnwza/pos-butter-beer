@@ -105,6 +105,7 @@ model Product {
   name       String
   nameTh     String? // ชื่อภาษาไทย
   price      Float // ราคาขาย
+  cost       Float?    @default(0) // ต้นทุนสินค้า
   image      String? // รูปภาพสินค้า
   categoryId String? // FK to Category
   isActive   Boolean   @default(true)
