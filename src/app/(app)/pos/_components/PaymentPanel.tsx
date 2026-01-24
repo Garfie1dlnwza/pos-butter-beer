@@ -76,74 +76,85 @@ export function PaymentPanel({
 
     createOrder.mutate({
       items: items.map((item) => ({
-        productId: item.productId,
+        id: item.productId,
         quantity: item.quantity,
-        unitPrice: item.price,
+        price: item.price,
         sweetness: item.sweetness,
-        toppings: item.toppings.map((t) => t.id),
-        toppingCost: item.toppingCost,
+        toppings: item.toppings,
+        note: "",
       })),
-      paymentMethod: paymentMethod as
-        | "cash"
-        | "qr"
-        | "card"
-        | "grab"
-        | "lineman",
       totalAmount: total,
+      discount: 0,
+      netAmount: total,
+      receivedAmount: paymentMethod === "cash" ? cashReceived : total,
+      change: paymentMethod === "cash" ? change : 0,
+      paymentMethod,
     });
   };
 
   const quickCashButtons = [20, 50, 100, 500, 1000];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-      <div className="w-full max-w-lg rounded-2xl bg-gray-800 shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
+      <div className="w-full max-w-lg rounded-2xl border border-[#D7CCC8]/30 bg-white shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-700 p-4">
-          <h3 className="text-xl font-bold text-white">💰 ชำระเงิน</h3>
+        <div className="flex items-center justify-between border-b border-[#D7CCC8]/30 p-5">
+          <h3 className="text-xl font-bold text-[#3E2723]">💰 ชำระเงิน</h3>
           <button
             onClick={onClose}
             disabled={isProcessing}
-            className="rounded-full p-2 text-gray-400 hover:bg-gray-700 hover:text-white disabled:opacity-50"
+            className="cursor-pointer rounded-lg p-2 text-[#8D6E63] transition hover:bg-[#F5F5F5] hover:text-[#3E2723] disabled:opacity-50"
           >
-            ✕
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
           </button>
         </div>
 
         <div className="p-4">
           {/* Total Display */}
-          <div className="mb-6 rounded-xl bg-gradient-to-r from-amber-500/20 to-orange-500/20 p-4 text-center">
-            <div className="text-sm text-gray-400">ยอดรวม</div>
-            <div className="text-4xl font-black text-amber-400">
+          <div className="mb-6 rounded-2xl border border-[#D7CCC8] bg-[#FFF8E1] p-6 text-center shadow-inner">
+            <div className="text-sm font-bold tracking-wider text-[#8D6E63] uppercase">
+              ยอดสุทธิ
+            </div>
+            <div className="text-4xl font-black text-[#3E2723]">
               ฿{total.toLocaleString()}
             </div>
           </div>
 
-          {/* Payment Methods */}
           <div className="mb-6">
-            <h4 className="mb-3 font-medium text-gray-300">วิธีชำระเงิน</h4>
+            <h4 className="mb-3 font-bold text-[#3E2723]">เลือกวิธีชำระเงิน</h4>
             <div className="grid grid-cols-3 gap-2">
               {PAYMENT_METHODS.map((method) => (
                 <button
                   key={method.id}
                   onClick={() => setPaymentMethod(method.id)}
-                  className={`rounded-xl p-3 text-center transition ${
+                  className={`rounded-xl border-2 p-3 text-center transition ${
                     paymentMethod === method.id
-                      ? `bg-gradient-to-r ${method.color} text-white`
-                      : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                      ? "scale-[1.02] transform border-[#3E2723] bg-[#3E2723] text-white shadow-md"
+                      : "border-[#EFEBE9] bg-[#FAFAFA] text-[#8D6E63] hover:border-[#D7CCC8] hover:bg-white"
                   }`}
                 >
                   <div className="text-2xl">{method.emoji}</div>
-                  <div className="mt-1 text-xs">{method.label}</div>
+                  <div className="mt-1 text-xs font-bold">{method.label}</div>
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Cash Calculator */}
           {paymentMethod === "cash" && (
-            <div className="mb-6">
-              <h4 className="mb-3 font-medium text-gray-300">💵 รับเงินสด</h4>
+            <div className="animate-in fade-in slide-in-from-top-2 duration-200">
+              <h4 className="mb-3 font-bold text-[#3E2723]">💵 รับเงินสด</h4>
 
               {/* Quick Amount Buttons */}
               <div className="mb-3 flex flex-wrap gap-2">
@@ -151,38 +162,41 @@ export function PaymentPanel({
                   <button
                     key={amount}
                     onClick={() => setCashReceived((prev) => prev + amount)}
-                    className="rounded-lg bg-gray-700 px-4 py-2 text-white hover:bg-gray-600"
+                    className="cursor-pointer rounded-lg border border-[#D7CCC8] bg-white px-3 py-2 font-bold text-[#5D4037] shadow-sm transition hover:bg-[#EFEBE9] hover:shadow"
                   >
-                    +฿{amount}
+                    +{amount}
                   </button>
                 ))}
                 <button
                   onClick={() => setCashReceived(total)}
-                  className="rounded-lg bg-amber-600 px-4 py-2 text-white hover:bg-amber-500"
+                  className="cursor-pointer rounded-lg bg-[#3E2723] px-3 py-2 font-bold text-white shadow-sm transition hover:bg-[#2D1B18] hover:shadow"
                 >
                   พอดี
                 </button>
                 <button
                   onClick={() => setCashReceived(0)}
-                  className="rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-500"
+                  className="cursor-pointer rounded-lg border border-red-200 bg-red-50 px-3 py-2 font-bold text-red-600 shadow-sm transition hover:bg-red-100 hover:shadow"
                 >
                   ล้าง
                 </button>
               </div>
 
-              {/* Cash Display */}
-              <div className="flex items-center justify-between rounded-xl bg-gray-700 p-4">
+              <div className="mt-4 flex items-center justify-between rounded-xl border border-[#D7CCC8] bg-[#FAFAFA] p-4">
                 <div>
-                  <div className="text-sm text-gray-400">รับเงิน</div>
-                  <div className="text-2xl font-bold text-white">
+                  <div className="text-xs font-bold text-[#8D6E63] uppercase">
+                    รับเงิน
+                  </div>
+                  <div className="text-2xl font-bold text-[#3E2723]">
                     ฿{cashReceived.toLocaleString()}
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-sm text-gray-400">เงินทอน</div>
+                  <div className="text-xs font-bold text-[#8D6E63] uppercase">
+                    เงินทอน
+                  </div>
                   <div
                     className={`text-2xl font-bold ${
-                      change >= 0 ? "text-green-400" : "text-red-400"
+                      change >= 0 ? "text-emerald-600" : "text-red-500"
                     }`}
                   >
                     ฿{change.toLocaleString()}
@@ -194,15 +208,15 @@ export function PaymentPanel({
         </div>
 
         {/* Confirm Button */}
-        <div className="border-t border-gray-700 p-4">
+        <div className="border-t border-[#D7CCC8]/30 p-5">
           <button
             onClick={handlePayment}
             disabled={
               isProcessing || (paymentMethod === "cash" && cashReceived < total)
             }
-            className="w-full rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 py-4 text-xl font-bold text-white shadow-lg transition hover:from-green-600 hover:to-emerald-700 disabled:opacity-50"
+            className="w-full cursor-pointer rounded-xl bg-[#3E2723] py-4 text-xl font-bold text-white shadow-lg transition hover:bg-[#2D1B18] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {isProcessing ? "กำลังบันทึก..." : <>✅ ยืนยันการชำระเงิน</>}
+            {isProcessing ? "กำลังบันทึก..." : <>ยืนยันการชำระเงิน</>}
           </button>
         </div>
       </div>

@@ -1,90 +1,41 @@
-import { auth } from "@/server/auth";
-import { db } from "@/server/db";
+"use client";
 
-export default async function DashboardPage() {
-  const session = await auth();
+import { SummaryCards } from "./_components/SummaryCards";
+import { SalesChart } from "./_components/SalesChart";
+import { TopProducts } from "./_components/TopProducts";
 
-  // Get today's summary
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const orders = await db.order.findMany({
-    where: {
-      createdAt: { gte: today },
-      status: "completed",
-    },
-    include: {
-      items: true,
-    },
-  });
-
-  const totalRevenue = orders.reduce((sum, o) => sum + o.totalAmount, 0);
-  const totalCups = orders.reduce(
-    (sum, o) => sum + o.items.reduce((s, i) => s + i.quantity, 0),
-    0,
-  );
-
-  // Get low stock items
-  const lowStock = await db.ingredient.findMany({
-    where: {
-      currentStock: {
-        lte: db.ingredient.fields.minStock,
-      },
-    },
-    take: 5,
-  });
-
+export default function DashboardPage() {
   return (
-    <div className="p-6">
-      <h1 className="mb-6 text-3xl font-bold text-white">📊 Dashboard</h1>
+    <div className="flex h-screen flex-col overflow-hidden bg-[#FAFAFA]">
+      {/* Header */}
+      <header className="flex shrink-0 items-end justify-between border-b border-[#D7CCC8]/30 px-6 py-6 lg:px-10">
+        <div>
+          <h1 className="text-3xl font-bold text-[#3E2723] lg:text-4xl">
+            ภาพรวมร้าน
+          </h1>
+          <p className="mt-2 text-sm font-medium tracking-wide text-[#8D6E63]">
+            ข้อมูลสรุปยอดขายวันนี้และสถิติที่สำคัญ
+          </p>
+        </div>
+      </header>
 
-      {/* Stats Cards */}
-      <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-3">
-        <div className="rounded-2xl bg-gradient-to-br from-green-500/20 to-emerald-600/20 p-6">
-          <div className="text-sm text-green-300">ยอดขายวันนี้</div>
-          <div className="mt-2 text-4xl font-black text-green-400">
-            ฿{totalRevenue.toLocaleString()}
+      {/* Main Content */}
+      <main className="flex-1 overflow-y-auto p-6 lg:p-10">
+        <div className="space-y-6 lg:space-y-8">
+          {/* Summary Cards */}
+          <SummaryCards />
+
+          {/* Charts & Tables */}
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
+            <div className="lg:col-span-2">
+              <TopProducts />
+            </div>
+            <div>
+              <SalesChart />
+            </div>
           </div>
         </div>
-
-        <div className="rounded-2xl bg-gradient-to-br from-amber-500/20 to-orange-600/20 p-6">
-          <div className="text-sm text-amber-300">แก้วที่ขายได้</div>
-          <div className="mt-2 text-4xl font-black text-amber-400">
-            {totalCups} แก้ว
-          </div>
-        </div>
-
-        <div className="rounded-2xl bg-gradient-to-br from-blue-500/20 to-indigo-600/20 p-6">
-          <div className="text-sm text-blue-300">จำนวนออเดอร์</div>
-          <div className="mt-2 text-4xl font-black text-blue-400">
-            {orders.length} รายการ
-          </div>
-        </div>
-      </div>
-
-      {/* Low Stock Alert */}
-      <div className="rounded-2xl bg-gray-800 p-6">
-        <h2 className="mb-4 text-xl font-bold text-white">
-          ⚠️ วัตถุดิบใกล้หมด
-        </h2>
-        {lowStock.length === 0 ? (
-          <p className="text-gray-400">ไม่มีรายการที่ต้องเติม</p>
-        ) : (
-          <div className="space-y-3">
-            {lowStock.map((item) => (
-              <div
-                key={item.id}
-                className="flex items-center justify-between rounded-xl bg-red-500/10 p-4"
-              >
-                <span className="text-white">{item.name}</span>
-                <span className="text-red-400">
-                  เหลือ {item.currentStock} {item.unit}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+      </main>
     </div>
   );
 }

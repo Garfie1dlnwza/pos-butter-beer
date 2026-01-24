@@ -167,14 +167,26 @@ exports.Prisma.VerificationTokenScalarFieldEnum = {
   expires: 'expires'
 };
 
+exports.Prisma.CategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  color: 'color',
+  sortOrder: 'sortOrder',
+  isActive: 'isActive',
+  deletedAt: 'deletedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.ProductScalarFieldEnum = {
   id: 'id',
   name: 'name',
   nameTh: 'nameTh',
   price: 'price',
   image: 'image',
-  category: 'category',
+  categoryId: 'categoryId',
   isActive: 'isActive',
+  deletedAt: 'deletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -202,9 +214,14 @@ exports.Prisma.OrderScalarFieldEnum = {
   id: 'id',
   orderNumber: 'orderNumber',
   totalAmount: 'totalAmount',
+  discount: 'discount',
+  netAmount: 'netAmount',
   paymentMethod: 'paymentMethod',
   status: 'status',
+  customerName: 'customerName',
+  note: 'note',
   createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
   createdById: 'createdById'
 };
 
@@ -214,10 +231,11 @@ exports.Prisma.OrderItemScalarFieldEnum = {
   productId: 'productId',
   quantity: 'quantity',
   unitPrice: 'unitPrice',
+  cost: 'cost',
   sweetness: 'sweetness',
   toppings: 'toppings',
   toppingCost: 'toppingCost',
-  modifiers: 'modifiers'
+  note: 'note'
 };
 
 exports.Prisma.ToppingScalarFieldEnum = {
@@ -272,6 +290,7 @@ exports.Prisma.ModelName = {
   Session: 'Session',
   User: 'User',
   VerificationToken: 'VerificationToken',
+  Category: 'Category',
   Product: 'Product',
   Ingredient: 'Ingredient',
   RecipeItem: 'RecipeItem',

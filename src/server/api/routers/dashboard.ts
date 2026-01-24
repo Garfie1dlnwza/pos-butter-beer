@@ -38,12 +38,7 @@ export const dashboardRouter = createTRPCRouter({
 
       for (const item of order.items) {
         totalCups += item.quantity;
-
-        // Calculate cost from recipe
-        for (const recipe of item.product.recipe) {
-          totalCost +=
-            recipe.amountUsed * recipe.ingredient.costPerUnit * item.quantity;
-        }
+        totalCost += item.cost;
       }
     }
 
@@ -148,11 +143,7 @@ export const dashboardRouter = createTRPCRouter({
         const stats = productStats[item.productId]!;
         stats.quantity += item.quantity;
         stats.revenue += item.unitPrice * item.quantity;
-
-        for (const recipe of item.product.recipe) {
-          stats.cost +=
-            recipe.amountUsed * recipe.ingredient.costPerUnit * item.quantity;
-        }
+        stats.cost += item.cost;
       }
 
       return Object.values(productStats)

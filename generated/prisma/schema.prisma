@@ -85,18 +85,34 @@ model VerificationToken {
 // POS System Models
 // ==========================================
 
+// Category - หมวดหมู่สินค้า
+model Category {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  color     String? // สีสำหรับแสดง UI
+  sortOrder Int       @default(0) // ลำดับการแสดง
+  isActive  Boolean   @default(true)
+  deletedAt DateTime? // soft delete
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  products Product[]
+}
+
 // Product - เมนูที่ขายหน้าร้าน
 model Product {
-  id        String   @id @default(cuid())
-  name      String
-  nameTh    String? // ชื่อภาษาไทย
-  price     Float // ราคาขาย
-  image     String? // รูปภาพสินค้า
-  category  String? // หมวดหมู่
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String    @id @default(cuid())
+  name       String
+  nameTh     String? // ชื่อภาษาไทย
+  price      Float // ราคาขาย
+  image      String? // รูปภาพสินค้า
+  categoryId String? // FK to Category
+  isActive   Boolean   @default(true)
+  deletedAt  DateTime? // soft delete
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
+  category   Category?    @relation(fields: [categoryId], references: [id])
   recipe     RecipeItem[] // สูตรการผลิต
   orderItems OrderItem[] // รายการสั่งซื้อ
 }
@@ -134,10 +150,15 @@ model RecipeItem {
 model Order {
   id            String   @id @default(cuid())
   orderNumber   String   @unique
-  totalAmount   Float // ยอดรวม
+  totalAmount   Float // ยอดรวมสินค้า
+  discount      Float    @default(0) // ส่วนลด
+  netAmount     Float // ยอดสุทธิ (totalAmount - discount)
   paymentMethod String // cash, qr, card, delivery
   status        String   @default("completed") // pending, completed, cancelled
+  customerName  String? // ชื่อลูกค้า (optional)
+  note          String? // หมายเหตุ
   createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
   createdById   String?
 
   createdBy User?       @relation(fields: [createdById], references: [id])
@@ -146,15 +167,16 @@ model Order {
 
 // OrderItem - รายการสินค้าในออเดอร์
 model OrderItem {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   orderId     String
   productId   String
   quantity    Int
   unitPrice   Float // ราคาต่อชิ้น ณ เวลาขาย
-  sweetness   Int      @default(100) // 0, 50, 100
-  toppings    String[] // array of topping IDs
-  toppingCost Float    @default(0) // ราคา topping รวม
-  modifiers   String? // JSON string for additional modifiers
+  cost        Float   @default(0) // ต้นทุนรวม ณ เวลาขาย
+  sweetness   Int     @default(100) // 0, 50, 100
+  toppings    String? // JSON string: Array<{ id, name, price }>
+  toppingCost Float   @default(0) // ราคา topping รวม
+  note        String? // หมายเหตุรายรายการ
 
   order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id])

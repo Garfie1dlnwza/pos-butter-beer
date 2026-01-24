@@ -2,13 +2,20 @@
 
 import Image from "next/image";
 
+interface Category {
+  id: string;
+  name: string;
+  color: string | null;
+}
+
 interface Product {
   id: string;
   name: string;
   nameTh: string | null;
   price: number;
   image: string | null;
-  category: string | null;
+  categoryId: string | null;
+  category: Category | null;
 }
 
 interface ProductGridProps {
@@ -23,7 +30,7 @@ export function ProductGrid({ products, onSelect }: ProductGridProps) {
         <button
           key={product.id}
           onClick={() => onSelect(product)}
-          className="group cursor-pointer relative flex flex-col overflow-hidden rounded-xl border border-[#D7CCC8]/30 bg-white transition-all duration-300 hover:border-[#3E2723] hover:shadow-lg hover:shadow-[#3E2723]/5"
+          className="group relative flex cursor-pointer flex-col overflow-hidden rounded-xl border border-[#D7CCC8]/30 bg-white transition-all duration-300 hover:border-[#3E2723] hover:shadow-lg hover:shadow-[#3E2723]/5"
         >
           {/* Image Container - Aspect Ratio 1:1 */}
           <div className="relative aspect-square w-full overflow-hidden bg-[#F9F9F9]">
@@ -50,10 +57,10 @@ export function ProductGrid({ products, onSelect }: ProductGridProps) {
 
           {/* Product Details */}
           <div className="flex w-full flex-1 flex-col justify-between p-4">
-            <div className="flex flex-col justify-center items-center gap-2">
+            <div className="flex flex-col items-center justify-center gap-2">
               {/* Category Tag */}
               <p className="mb-1 text-[10px] font-bold tracking-widest text-[#8D6E63] uppercase">
-                {product.category ?? "Item"}
+                {product.category?.name ?? "Item"}
               </p>
 
               {/* Product Name */}

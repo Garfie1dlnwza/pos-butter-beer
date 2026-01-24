@@ -102,6 +102,23 @@ async function main() {
   console.log(`✅ สร้างวัตถุดิบ ${ingredients.length} รายการ`);
 
   // =============================================
+  // สร้างหมวดหมู่ (Categories)
+  // =============================================
+  const catDrinks = await prisma.category.upsert({
+    where: { name: "เครื่องดื่ม" },
+    update: {},
+    create: { name: "เครื่องดื่ม", sortOrder: 1, color: "#795548" },
+  });
+
+  const catSnacks = await prisma.category.upsert({
+    where: { name: "ของหวาน" },
+    update: {},
+    create: { name: "ของหวาน", sortOrder: 2, color: "#FF9800" },
+  });
+
+  console.log("✅ สร้างหมวดหมู่");
+
+  // =============================================
   // สร้างสินค้า (Products)
   // =============================================
   const butterBeerClassic = await prisma.product.upsert({
@@ -112,7 +129,7 @@ async function main() {
       name: "Butter Beer Classic",
       nameTh: "บัตเตอร์เบียร์ คลาสสิค",
       price: 79,
-      category: "drinks",
+      categoryId: catDrinks.id,
       isActive: true,
     },
   });
@@ -125,7 +142,7 @@ async function main() {
       name: "Butter Beer Caramel",
       nameTh: "บัตเตอร์เบียร์ คาราเมล",
       price: 89,
-      category: "drinks",
+      categoryId: catDrinks.id,
       isActive: true,
     },
   });
@@ -138,7 +155,7 @@ async function main() {
       name: "Butter Beer Boba",
       nameTh: "บัตเตอร์เบียร์ ไข่มุก",
       price: 99,
-      category: "drinks",
+      categoryId: catDrinks.id,
       isActive: true,
     },
   });
