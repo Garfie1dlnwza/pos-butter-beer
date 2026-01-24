@@ -81,7 +81,6 @@ export default function POSPage() {
         },
       ]);
     }
-
     setSelectedProduct(null);
   };
 
@@ -107,55 +106,91 @@ export default function POSPage() {
     setShowPayment(false);
   };
 
+  // Minimal Loading State
   if (isLoading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-[#FFF8E1]">
-        <div className="flex flex-col items-center gap-4">
-          <div className="h-12 w-12 animate-spin rounded-full border-4 border-[#3E2723] border-t-transparent"></div>
-          <p className="font-medium text-[#3E2723] tracking-widest uppercase text-xs">Loading Menu</p>
-        </div>
+      <div className="flex h-screen w-full flex-col items-center justify-center bg-[#FAFAFA]">
+        <div className="h-8 w-8 animate-spin rounded-full border-[3px] border-[#D7CCC8] border-t-[#3E2723]"></div>
+        <span className="mt-4 text-xs font-bold tracking-widest text-[#3E2723] uppercase">
+          Loading Menu
+        </span>
       </div>
     );
   }
 
   return (
-    <div className="flex h-screen bg-[#FFF8E1]">
-      {/* Product Grid - Left Side */}
-      <div className="flex-1 overflow-auto px-8 py-8">
-        <header className="mb-10 flex items-end justify-between">
+    <div className="flex h-screen flex-col overflow-hidden bg-[#FAFAFA] lg:flex-row">
+      {/* LEFT SIDE: Product Grid */}
+      <div className="flex flex-1 flex-col overflow-hidden">
+        {/* Header */}
+        <header className="flex shrink-0 items-end justify-between border-b border-[#D7CCC8]/30 px-6 py-6 lg:px-10">
           <div>
-            <h1 className="font-[family-name:var(--font-playfair)] text-4xl font-bold text-[#3E2723]">
+            <h1 className="text-3xl font-bold text-[#3E2723] lg:text-4xl">
               Butter Beer
             </h1>
-            <p className="mt-1 text-[#8D6E63] font-medium tracking-wide">Select items to start a new order</p>
+            <p className="mt-2 text-sm font-medium tracking-wide text-[#8D6E63]">
+              Choose items to order
+            </p>
           </div>
-          <div className="text-right">
-            <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#8D6E63]">Station 01</span>
-            <span className="text-sm font-bold text-[#3E2723]">{new Date().toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+          <div className="hidden text-right sm:block">
+            <div className="text-[10px] font-bold tracking-[0.2em] text-[#8D6E63] uppercase">
+              Station 01
+            </div>
+            <div className="mt-0.5 text-sm font-bold text-[#3E2723]">
+              {new Date().toLocaleDateString("th-TH", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              })}
+            </div>
           </div>
         </header>
 
-        <ProductGrid products={products ?? []} onSelect={handleProductSelect} />
+        {/* Scrollable Grid Area */}
+        <main className="scrollbar-hide flex-1 overflow-y-auto p-6 lg:p-10">
+          <ProductGrid
+            products={products ?? []}
+            onSelect={handleProductSelect}
+          />
+        </main>
       </div>
 
-      {/* Cart - Right Side */}
-      <div className="flex w-[420px] flex-col border-l border-[#D7CCC8]/50 bg-white shadow-2xl">
-        <Cart
-          items={cart}
-          onUpdateQuantity={handleUpdateQuantity}
-          onClear={handleClearCart}
-          total={cartTotal}
-        />
+      {/* RIGHT SIDE: Cart & Checkout */}
+      <div className="flex w-full flex-col border-t border-[#D7CCC8]/50 bg-white lg:h-full lg:w-[400px] lg:border-t-0 lg:border-l">
+        <div className="flex-1 overflow-y-auto">
+          <Cart
+            items={cart}
+            onUpdateQuantity={handleUpdateQuantity}
+            onClear={handleClearCart}
+            total={cartTotal}
+          />
+        </div>
 
-        {/* Checkout Button Area */}
-        <div className="p-8 border-t border-[#F5F5F5]">
+        {/* Footer / Payment Section */}
+        <div className="bg-[#FFF8E1]/50 p-6">
+          <div className="mb-4 flex items-center justify-between text-[#5D4037]">
+            <span className="text-sm font-medium">Total Items</span>
+            <span className="text-sm font-bold">
+              {cart.reduce((a, b) => a + b.quantity, 0)}
+            </span>
+          </div>
+
           <button
             onClick={() => setShowPayment(true)}
             disabled={cart.length === 0}
-            className="flex w-full items-center justify-between rounded-2xl bg-[#3E2723] px-8 py-5 text-lg font-bold text-white shadow-xl shadow-[#3E2723]/20 transition-all hover:bg-[#5D4037] active:scale-[0.98] disabled:opacity-20 disabled:grayscale"
+            className="group relative w-full overflow-hidden rounded-lg bg-[#3E2723] py-4 text-white transition-all hover:bg-[#2D1B18] active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-[#D7CCC8]"
           >
-            <span>Proceed to Payment</span>
-            <span className="text-[#FFF8E1]">฿{cartTotal.toLocaleString()}</span>
+            <div className="flex items-center justify-between px-6">
+              <span className="text-sm font-bold tracking-widest uppercase">
+                Pay Now
+              </span>
+              <div className="flex items-baseline gap-1">
+                <span className="text-sm font-medium opacity-80">THB</span>
+                <span className="text-xl font-bold">
+                  {cartTotal.toLocaleString()}
+                </span>
+              </div>
+            </div>
           </button>
         </div>
       </div>

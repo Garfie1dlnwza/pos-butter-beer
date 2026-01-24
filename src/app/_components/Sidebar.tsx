@@ -24,7 +24,7 @@ const menuItems: MenuItem[] = [
 export function Sidebar() {
   const { data: session } = useSession();
   const pathname = usePathname();
-  
+
   const userRole = (session?.user?.role as "ADMIN" | "STAFF") ?? "STAFF";
   const filteredMenu = menuItems.filter((item) =>
     item.roles.includes(userRole),
@@ -34,7 +34,7 @@ export function Sidebar() {
     <aside className="hidden h-screen w-64 flex-col border-r border-[#D7CCC8]/60 bg-[#FFF8E1] md:flex">
       {/* 1. Logo Section - Minimal & Clean */}
       <div className="flex flex-col items-center justify-center pt-10 pb-8">
-        <div className="relative h-16 w-16 mb-3">
+        <div className="relative mb-3 h-16 w-16">
           <Image
             src="/logo-german.svg"
             alt="German-OneDay"
@@ -43,7 +43,7 @@ export function Sidebar() {
             priority
           />
         </div>
-        <span className="font-playfair text-xl font-bold tracking-tight text-[#3E2723]">
+        <span className="text-xl font-bold tracking-tight text-[#3E2723]">
           German-OneDay
         </span>
       </div>
@@ -54,15 +54,15 @@ export function Sidebar() {
           {filteredMenu.map((item) => {
             const isActive =
               pathname === item.href || pathname.startsWith(item.href + "/");
-            
+
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 className={`group flex items-center justify-between rounded-lg px-4 py-3 text-sm transition-all duration-300 ${
                   isActive
-                    ? "bg-[#3E2723] text-white shadow-md shadow-[#3E2723]/10 font-semibold"
-                    : "text-[#5D4037] hover:bg-[#D7CCC8]/40 hover:text-[#3E2723] font-medium"
+                    ? "bg-[#3E2723] font-semibold text-white shadow-md shadow-[#3E2723]/10"
+                    : "font-medium text-[#5D4037] hover:bg-[#D7CCC8]/40 hover:text-[#3E2723]"
                 }`}
               >
                 <span className="tracking-wide">{item.label}</span>
@@ -78,7 +78,7 @@ export function Sidebar() {
 
       {/* 3. Footer / Profile Section */}
       <div className="border-t border-[#D7CCC8]/60 bg-[#FFF8E1] p-6">
-        <div className="flex items-center gap-3 mb-4">
+        <div className="mb-4 flex items-center gap-3">
           {/* Avatar */}
           <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full border border-[#D7CCC8] shadow-sm">
             {session?.user?.image ? (
@@ -88,7 +88,7 @@ export function Sidebar() {
                 className="h-full w-full object-cover"
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center bg-[#D7CCC8] text-[#3E2723] font-bold">
+              <div className="flex h-full w-full items-center justify-center bg-[#D7CCC8] font-bold text-[#3E2723]">
                 {session?.user?.name?.charAt(0) ?? "U"}
               </div>
             )}
@@ -108,7 +108,7 @@ export function Sidebar() {
         {/* Minimal Logout Button */}
         <button
           onClick={() => signOut({ callbackUrl: "/" })}
-          className="w-full rounded-lg border border-[#D7CCC8] py-2 text-xs font-semibold text-[#5D4037] transition-colors hover:bg-[#3E2723] hover:border-[#3E2723] hover:text-white"
+          className="w-full rounded-lg border border-[#D7CCC8] py-2 text-xs font-semibold text-[#5D4037] transition-colors hover:border-[#3E2723] hover:bg-[#3E2723] hover:text-white"
         >
           ออกจากระบบ
         </button>

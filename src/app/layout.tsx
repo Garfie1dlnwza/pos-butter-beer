@@ -1,38 +1,36 @@
 import "@/styles/globals.css";
 
 import { type Metadata } from "next";
-import { Geist, Playfair_Display, IBM_Plex_Sans_Thai } from "next/font/google"; // นำเข้าฟอนต์ไทย
+import { Nunito, Prompt } from "next/font/google";
 
 import { TRPCReactProvider } from "@/trpc/react";
 
 export const metadata: Metadata = {
-  title: "Butter Beer POS",
-  description: "Point of Sale System - Butter Beer",
+  title: "German-OneDay POS",
+  description: "Point of Sale System - German-OneDay",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-const geist = Geist({
+// Nunito - หัวกลม minimal อ่านง่าย
+const nunito = Nunito({
   subsets: ["latin"],
-  variable: "--font-geist-sans",
+  weight: ["300", "400", "500", "600", "700", "800"],
+  variable: "--font-nunito",
 });
 
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  variable: "--font-playfair",
-});
-
-const ibmPlexThai = IBM_Plex_Sans_Thai({
+// Prompt - ฟอนต์ไทยหัวกลม minimal
+const prompt = Prompt({
   subsets: ["thai", "latin"],
   weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-ibm-plex-thai",
+  variable: "--font-prompt",
 });
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="th" className={`${geist.variable} ${playfair.variable} ${ibmPlexThai.variable}`}>
-      <body className="font-sans antialiased text-[#3E2723]">
+    <html lang="th" className={`${nunito.variable} ${prompt.variable}`}>
+      <body className={`${prompt.className} text-[#3E2723] antialiased`}>
         <TRPCReactProvider>{children}</TRPCReactProvider>
       </body>
     </html>

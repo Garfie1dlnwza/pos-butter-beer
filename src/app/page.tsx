@@ -1,6 +1,6 @@
 import { auth, signIn } from "@/server/auth";
 import { redirect } from "next/navigation";
-import Image from "next/image"; 
+import Image from "next/image";
 
 export default async function LoginPage() {
   const session = await auth();
@@ -27,7 +27,7 @@ export default async function LoginPage() {
               />
             </div>
 
-            <h1 className="font-[family-name:var(--font-playfair)] text-4xl font-bold tracking-tight text-white">
+            <h1 className="text-4xl font-bold tracking-tight text-white">
               Butter Beer
             </h1>
             <p className="mt-2 text-lg font-medium text-[#D7CCC8]">
