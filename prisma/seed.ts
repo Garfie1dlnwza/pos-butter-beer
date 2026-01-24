@@ -116,6 +116,12 @@ async function main() {
     create: { name: "ของหวาน", sortOrder: 2, color: "#FF9800" },
   });
 
+  const catPromotion = await prisma.category.upsert({
+    where: { name: "โปรโมชั่น" },
+    update: {},
+    create: { name: "โปรโมชั่น", sortOrder: 3, color: "#FFC107" },
+  });
+
   console.log("✅ สร้างหมวดหมู่");
 
   // =============================================

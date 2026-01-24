@@ -37,6 +37,9 @@ export default function ProductsPage() {
 
   const utils = api.useUtils();
   const { data: products, isLoading } = api.products.getAllAdmin.useQuery();
+  const { data: categories } = api.categories.getAll.useQuery();
+
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>("all");
 
   const createMutation = api.products.create.useMutation({
     onSuccess: () => {
@@ -106,11 +109,15 @@ export default function ProductsPage() {
   };
 
   const filteredProducts =
-    products?.filter(
-      (p) =>
+    products?.filter((p) => {
+      const matchesSearch =
         p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.nameTh?.toLowerCase().includes(searchQuery.toLowerCase()),
-    ) ?? [];
+        p.nameTh?.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory =
+        selectedCategoryId === "all" || p.categoryId === selectedCategoryId;
+
+      return matchesSearch && matchesCategory;
+    }) ?? [];
 
   // Loading State
   if (isLoading) {
@@ -160,8 +167,8 @@ export default function ProductsPage() {
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto p-6 lg:p-10">
         {/* Search Bar */}
-        <div className="mb-6">
-          <div className="relative max-w-md">
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="relative w-full max-w-md">
             <svg
               className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-[#BDBDBD]"
               fill="none"
@@ -182,6 +189,33 @@ export default function ProductsPage() {
               placeholder="ค้นหาสินค้า..."
               className="w-full rounded-xl border border-[#D7CCC8]/50 bg-white py-3 pr-4 pl-12 text-[#3E2723] placeholder-[#BDBDBD] transition outline-none focus:border-[#8D6E63] focus:shadow-sm"
             />
+          </div>
+
+          {/* Category Filter */}
+          <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0">
+            <button
+              onClick={() => setSelectedCategoryId("all")}
+              className={`rounded-xl px-4 py-2.5 text-sm font-bold whitespace-nowrap transition ${
+                selectedCategoryId === "all"
+                  ? "bg-[#3E2723] text-white shadow-md"
+                  : "bg-white text-[#8D6E63] hover:bg-[#F5F5F5]"
+              }`}
+            >
+              ทั้งหมด
+            </button>
+            {categories?.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => setSelectedCategoryId(cat.id)}
+                className={`rounded-xl px-4 py-2.5 text-sm font-bold whitespace-nowrap transition ${
+                  selectedCategoryId === cat.id
+                    ? "bg-[#3E2723] text-white shadow-md"
+                    : "bg-white text-[#8D6E63] hover:bg-[#F5F5F5]"
+                }`}
+              >
+                {cat.name}
+              </button>
+            ))}
           </div>
         </div>
 

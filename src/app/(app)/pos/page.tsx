@@ -30,6 +30,9 @@ export default function POSPage() {
 
   const { data: products, isLoading } = api.products.getAll.useQuery();
   const { data: toppings } = api.toppings.getAll.useQuery();
+  const { data: categories } = api.categories.getAll.useQuery();
+
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>("all");
 
   const handleProductSelect = (product: {
     id: string;
@@ -106,6 +109,12 @@ export default function POSPage() {
     setShowPayment(false);
   };
 
+  const filteredProducts =
+    products?.filter(
+      (p) =>
+        selectedCategoryId === "all" || p.categoryId === selectedCategoryId,
+    ) ?? [];
+
   // Minimal Loading State
   if (isLoading) {
     return (
@@ -146,10 +155,43 @@ export default function POSPage() {
           </div>
         </header>
 
+        {/* Category Filter */}
+        <div className="flex gap-3 overflow-x-auto border-b border-[#D7CCC8]/30 px-6 py-4 lg:px-10">
+          <button
+            onClick={() => setSelectedCategoryId("all")}
+            className={`rounded-xl px-4 py-2 text-sm font-bold whitespace-nowrap transition-all ${
+              selectedCategoryId === "all"
+                ? "scale-105 transform bg-[#3E2723] text-white shadow-md"
+                : "bg-white text-[#8D6E63] hover:bg-[#F5F5F5]"
+            }`}
+          >
+            ทั้งหมด
+          </button>
+          {categories?.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setSelectedCategoryId(cat.id)}
+              className={`rounded-xl px-4 py-2 text-sm font-bold whitespace-nowrap transition-all ${
+                selectedCategoryId === cat.id
+                  ? "scale-105 transform bg-[#3E2723] text-white shadow-md"
+                  : "bg-white text-[#8D6E63] hover:bg-[#F5F5F5]"
+              }`}
+            >
+              {cat.name}
+            </button>
+          ))}
+        </div>
+
         {/* Scrollable Grid Area */}
         <main className="scrollbar-hide flex-1 overflow-y-auto p-6 lg:p-10">
           <ProductGrid
-            products={products ?? []}
+            products={filteredProducts.sort((a, b) => {
+              // Sort by category sortOrder
+              const orderA = a.category?.sortOrder ?? 999;
+              const orderB = b.category?.sortOrder ?? 999;
+              if (orderA !== orderB) return orderA - orderB;
+              return 0;
+            })}
             onSelect={handleProductSelect}
           />
         </main>

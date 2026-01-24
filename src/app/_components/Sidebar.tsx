@@ -17,6 +17,7 @@ const menuItems: MenuItem[] = [
   { label: "สินค้า", href: "/admin/products", roles: ["ADMIN"] },
   { label: "วัตถุดิบ", href: "/admin/ingredients", roles: ["ADMIN"] },
   { label: "ท็อปปิ้ง", href: "/admin/toppings", roles: ["ADMIN"] },
+  {label:"จัดการหมวดหมู่", href: "/admin/categories", roles: ["ADMIN"]},
   { label: "รายงาน", href: "/admin/reports", roles: ["ADMIN"] },
   { label: "ประวัติการขาย", href: "/staff/orders", roles: ["ADMIN", "STAFF"] },
 ];
