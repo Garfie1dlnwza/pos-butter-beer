@@ -37,7 +37,10 @@ export default function ProductsPage() {
 
   const utils = api.useUtils();
   const { data: products, isLoading } = api.products.getAllAdmin.useQuery();
-  const { data: categories } = api.categories.getAll.useQuery();
+  const { data: categoriesData } = api.categories.getAll.useQuery();
+  const categories = categoriesData as
+    | { id: string; name: string }[]
+    | undefined;
 
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>("all");
 

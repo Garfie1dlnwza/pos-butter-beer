@@ -30,7 +30,10 @@ export default function POSPage() {
 
   const { data: products, isLoading } = api.products.getAll.useQuery();
   const { data: toppings } = api.toppings.getAll.useQuery();
-  const { data: categories } = api.categories.getAll.useQuery();
+  const { data: categoriesData } = api.categories.getAll.useQuery();
+  const categories = categoriesData as
+    | { id: string; name: string }[]
+    | undefined;
 
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>("all");
 

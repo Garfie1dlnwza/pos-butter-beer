@@ -56,7 +56,10 @@ export function ProductModal({
   });
 
   // Fetch categories
-  const { data: categories } = api.categories.getAll.useQuery();
+  const { data: categoriesData } = api.categories.getAll.useQuery();
+  const categories = categoriesData as
+    | { id: string; name: string }[]
+    | undefined;
 
   // Reset form when product changes or modal opens
   useEffect(() => {
