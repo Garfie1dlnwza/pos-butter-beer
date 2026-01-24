@@ -243,7 +243,6 @@ model Expense {
     id          String   @id @default(cuid())
     title       String // ชื่อรายจ่าย
     amount      Float // จำนวนเงิน
-    category    String // rent, utilities, labor, marketing, equipment, supplies, other
     description String? // รายละเอียดเพิ่มเติม
     date        DateTime @default(now()) // วันที่เกิดรายจ่าย
     createdById String?

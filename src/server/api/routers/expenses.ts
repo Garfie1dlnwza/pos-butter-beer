@@ -1,18 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 
-// หมวดหมู่รายจ่าย
-export const EXPENSE_CATEGORIES = [
-  { id: "rent", label: "ค่าเช่า", labelEn: "Rent" },
-  { id: "utilities", label: "ค่าน้ำ/ไฟ", labelEn: "Utilities" },
-  { id: "labor", label: "ค่าแรง", labelEn: "Labor" },
-  { id: "marketing", label: "การตลาด", labelEn: "Marketing" },
-  { id: "equipment", label: "อุปกรณ์", labelEn: "Equipment" },
-  { id: "supplies", label: "วัสดุสิ้นเปลือง", labelEn: "Supplies" },
-  { id: "experiment", label: "ทดลองสูตร", labelEn: "R&D" },
-  { id: "other", label: "อื่นๆ", labelEn: "Other" },
-] as const;
-
 export const expensesRouter = createTRPCRouter({
   // ดึงรายจ่ายทั้งหมด (กรองตามช่วงวันที่)
   getAll: protectedProcedure
@@ -20,11 +8,10 @@ export const expensesRouter = createTRPCRouter({
       z.object({
         startDate: z.date().optional(),
         endDate: z.date().optional(),
-        category: z.string().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
-      const { startDate, endDate, category } = input;
+      const { startDate, endDate } = input;
 
       return ctx.db.expense.findMany({
         where: {
@@ -36,7 +23,6 @@ export const expensesRouter = createTRPCRouter({
                 },
               }
             : {}),
-          ...(category && category !== "all" ? { category } : {}),
         },
         orderBy: { date: "desc" },
         include: {
@@ -47,7 +33,7 @@ export const expensesRouter = createTRPCRouter({
       });
     }),
 
-  // ดึงสรุปรายจ่ายตามหมวด (สำหรับ Dashboard)
+  // ดึงสรุปรายจ่ายรวม (สำหรับ Dashboard)
   getSummary: protectedProcedure
     .input(
       z.object({
@@ -65,17 +51,12 @@ export const expensesRouter = createTRPCRouter({
         },
       });
 
-      // Group by category
-      const byCategory: Record<string, number> = {};
       let total = 0;
-
       for (const expense of expenses) {
-        byCategory[expense.category] =
-          (byCategory[expense.category] ?? 0) + expense.amount;
         total += expense.amount;
       }
 
-      return { byCategory, total };
+      return { total };
     }),
 
   // สร้างรายจ่ายใหม่
@@ -84,7 +65,6 @@ export const expensesRouter = createTRPCRouter({
       z.object({
         title: z.string().min(1),
         amount: z.number().positive(),
-        category: z.string(),
         description: z.string().optional(),
         date: z.date().optional(),
       }),
@@ -98,7 +78,6 @@ export const expensesRouter = createTRPCRouter({
         data: {
           title: input.title,
           amount: input.amount,
-          category: input.category,
           description: input.description,
           date: input.date ?? new Date(),
           createdById: ctx.session.user.id,
@@ -113,7 +92,6 @@ export const expensesRouter = createTRPCRouter({
         id: z.string(),
         title: z.string().min(1).optional(),
         amount: z.number().positive().optional(),
-        category: z.string().optional(),
         description: z.string().optional(),
         date: z.date().optional(),
       }),

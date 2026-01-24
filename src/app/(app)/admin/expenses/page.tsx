@@ -5,42 +5,10 @@ import { api } from "@/trpc/react";
 import { useToast } from "@/components/Toast";
 import { ExpenseModal } from "./_components/ExpenseModal";
 
-// หมวดหมู่รายจ่าย
-const EXPENSE_CATEGORIES = [
-  { id: "all", label: "ทั้งหมด" },
-  { id: "rent", label: "ค่าเช่า" },
-  { id: "utilities", label: "ค่าน้ำ/ไฟ" },
-  { id: "labor", label: "ค่าแรง" },
-  { id: "marketing", label: "การตลาด" },
-  { id: "equipment", label: "อุปกรณ์" },
-  { id: "supplies", label: "วัสดุสิ้นเปลือง" },
-  { id: "experiment", label: "ทดลองสูตร" },
-  { id: "other", label: "อื่นๆ" },
-];
-
-const getCategoryLabel = (id: string) => {
-  return EXPENSE_CATEGORIES.find((c) => c.id === id)?.label ?? id;
-};
-
-const getCategoryColor = (id: string) => {
-  const colors: Record<string, string> = {
-    rent: "bg-red-100 text-red-700",
-    utilities: "bg-blue-100 text-blue-700",
-    labor: "bg-purple-100 text-purple-700",
-    marketing: "bg-pink-100 text-pink-700",
-    equipment: "bg-orange-100 text-orange-700",
-    supplies: "bg-yellow-100 text-yellow-700",
-    experiment: "bg-cyan-100 text-cyan-700",
-    other: "bg-gray-100 text-gray-700",
-  };
-  return colors[id] ?? "bg-gray-100 text-gray-700";
-};
-
 interface Expense {
   id: string;
   title: string;
   amount: number;
-  category: string;
   description: string | null;
   date: Date;
 }
@@ -51,7 +19,6 @@ export default function ExpensesPage() {
 
   const [showModal, setShowModal] = useState(false);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState("all");
 
   // Default to current month
   const [startDate] = useState(() => {
@@ -70,7 +37,6 @@ export default function ExpensesPage() {
   const { data: expenses, isLoading } = api.expenses.getAll.useQuery({
     startDate,
     endDate,
-    category: selectedCategory === "all" ? undefined : selectedCategory,
   });
 
   const deleteMutation = api.expenses.delete.useMutation({
@@ -100,19 +66,9 @@ export default function ExpensesPage() {
   };
 
   // Summary calculations
-  const summary = useMemo(() => {
-    if (!expenses)
-      return { total: 0, byCategory: {} as Record<string, number> };
-
-    let total = 0;
-    const byCategory: Record<string, number> = {};
-
-    for (const e of expenses) {
-      total += e.amount;
-      byCategory[e.category] = (byCategory[e.category] ?? 0) + e.amount;
-    }
-
-    return { total, byCategory };
+  const totalExpense = useMemo(() => {
+    if (!expenses) return 0;
+    return expenses.reduce((sum, e) => sum + e.amount, 0);
   }, [expenses]);
 
   if (isLoading) {
@@ -131,14 +87,16 @@ export default function ExpensesPage() {
       {/* Header */}
       <header className="flex shrink-0 items-end justify-between border-b border-[#D7CCC8]/30 px-6 py-6 lg:px-10">
         <div>
-          <h1 className="text-2xl font-bold text-[#3E2723]">💰 รายจ่าย</h1>
-          <p className="mt-1 text-sm text-[#8D6E63]">
-            บันทึกค่าใช้จ่ายทั่วไปที่ไม่ใช่วัตถุดิบ
+          <h1 className="text-3xl font-bold text-[#3E2723] lg:text-4xl">
+            รายจ่าย (Expenses)
+          </h1>
+          <p className="mt-2 text-sm font-medium tracking-wide text-[#8D6E63]">
+            บันทึกและติดตามค่าใช้จ่ายในร้าน
           </p>
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 px-5 py-3 font-semibold text-white shadow-lg transition hover:from-amber-700 hover:to-amber-800"
+          className="flex cursor-pointer items-center gap-2 rounded-xl bg-[#3E2723] px-5 py-2.5 font-bold text-white shadow-lg transition hover:bg-[#2D1B18] active:scale-[0.98]"
         >
           <svg
             className="h-5 w-5"
@@ -164,63 +122,27 @@ export default function ExpensesPage() {
           <div className="rounded-xl border border-[#D7CCC8]/30 bg-white p-5 shadow-sm">
             <p className="text-sm font-medium text-[#8D6E63]">รายจ่ายรวม</p>
             <p className="mt-2 text-3xl font-bold text-red-600">
-              ฿{summary.total.toLocaleString()}
+              ฿{totalExpense.toLocaleString()}
             </p>
           </div>
-          {Object.entries(summary.byCategory)
-            .sort(([, a], [, b]) => b - a)
-            .slice(0, 3)
-            .map(([cat, amount]) => (
-              <div
-                key={cat}
-                className="rounded-xl border border-[#D7CCC8]/30 bg-white p-5 shadow-sm"
-              >
-                <p className="text-sm font-medium text-[#8D6E63]">
-                  {getCategoryLabel(cat)}
-                </p>
-                <p className="mt-2 text-2xl font-bold text-[#3E2723]">
-                  ฿{amount.toLocaleString()}
-                </p>
-              </div>
-            ))}
-        </div>
-
-        {/* Category Filter */}
-        <div className="mb-6 flex flex-wrap gap-2">
-          {EXPENSE_CATEGORIES.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => setSelectedCategory(cat.id)}
-              className={`cursor-pointer rounded-full px-4 py-2 text-sm font-medium transition ${
-                selectedCategory === cat.id
-                  ? "bg-amber-600 text-white"
-                  : "border border-[#D7CCC8]/50 bg-white text-[#5D4037] hover:bg-amber-50"
-              }`}
-            >
-              {cat.label}
-            </button>
-          ))}
         </div>
 
         {/* Expenses Table */}
         <div className="overflow-hidden rounded-2xl border border-[#D7CCC8]/30 bg-white shadow-sm">
           {expenses && expenses.length > 0 ? (
             <table className="w-full">
-              <thead>
-                <tr className="border-b border-[#E0E0E0]">
-                  <th className="px-6 py-4 text-left text-xs font-bold tracking-wider text-[#8D6E63] uppercase">
+              <thead className="border-b border-[#E0E0E0] bg-[#FFF8E1]/50">
+                <tr>
+                  <th className="px-6 py-4 text-left text-xs font-bold tracking-wider text-[#5D4037] uppercase">
                     วันที่
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold tracking-wider text-[#8D6E63] uppercase">
+                  <th className="px-6 py-4 text-left text-xs font-bold tracking-wider text-[#5D4037] uppercase">
                     รายการ
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold tracking-wider text-[#8D6E63] uppercase">
-                    หมวดหมู่
-                  </th>
-                  <th className="px-6 py-4 text-right text-xs font-bold tracking-wider text-[#8D6E63] uppercase">
+                  <th className="px-6 py-4 text-right text-xs font-bold tracking-wider text-[#5D4037] uppercase">
                     จำนวนเงิน
                   </th>
-                  <th className="px-6 py-4 text-right text-xs font-bold tracking-wider text-[#8D6E63] uppercase">
+                  <th className="px-6 py-4 text-right text-xs font-bold tracking-wider text-[#5D4037] uppercase">
                     จัดการ
                   </th>
                 </tr>
@@ -229,9 +151,9 @@ export default function ExpensesPage() {
                 {expenses.map((expense) => (
                   <tr
                     key={expense.id}
-                    className="transition-colors hover:bg-[#FAFAFA]"
+                    className="transition-colors hover:bg-gray-50"
                   >
-                    <td className="px-6 py-4 text-sm text-[#5D4037]">
+                    <td className="px-6 py-4 text-sm font-medium text-[#3E2723]">
                       {new Date(expense.date).toLocaleDateString("th-TH", {
                         day: "numeric",
                         month: "short",
@@ -239,30 +161,23 @@ export default function ExpensesPage() {
                       })}
                     </td>
                     <td className="px-6 py-4">
-                      <p className="font-medium text-[#3E2723]">
+                      <p className="font-bold text-[#3E2723]">
                         {expense.title}
                       </p>
                       {expense.description && (
-                        <p className="mt-1 text-xs text-[#8D6E63]">
+                        <p className="mt-0.5 text-xs text-[#8D6E63]">
                           {expense.description}
                         </p>
                       )}
                     </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`rounded-full px-3 py-1 text-xs font-medium ${getCategoryColor(expense.category)}`}
-                      >
-                        {getCategoryLabel(expense.category)}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-right font-mono font-semibold text-red-600">
+                    <td className="px-6 py-4 text-right font-mono font-bold text-red-600">
                       -฿{expense.amount.toLocaleString()}
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-end gap-1">
                         <button
                           onClick={() => handleEdit(expense)}
-                          className="cursor-pointer rounded-lg p-2 text-[#8D6E63] transition hover:bg-[#FFF8E1] hover:text-[#5D4037]"
+                          className="flex h-8 w-8 items-center justify-center rounded-lg text-[#8D6E63] transition hover:bg-[#EFEBE9] hover:text-[#5D4037]"
                           title="แก้ไข"
                         >
                           <svg
@@ -281,7 +196,7 @@ export default function ExpensesPage() {
                         </button>
                         <button
                           onClick={() => handleDelete(expense)}
-                          className="cursor-pointer rounded-lg p-2 text-[#BDBDBD] transition hover:bg-red-50 hover:text-red-500"
+                          className="flex h-8 w-8 items-center justify-center rounded-lg text-[#BDBDBD] transition hover:bg-red-50 hover:text-red-500"
                           title="ลบ"
                         >
                           <svg
@@ -305,14 +220,16 @@ export default function ExpensesPage() {
               </tbody>
             </table>
           ) : (
-            <div className="flex flex-col items-center justify-center gap-4 py-20 text-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#FFF8E1]">
-                <span className="text-3xl">💰</span>
+            <div className="flex flex-col items-center justify-center gap-4 py-20 text-center opacity-60">
+              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#EFEBE9] text-4xl">
+                💰
               </div>
               <div>
-                <p className="font-semibold text-[#3E2723]">ยังไม่มีรายจ่าย</p>
+                <p className="text-lg font-bold text-[#3E2723]">
+                  ยังไม่มีรายจ่าย
+                </p>
                 <p className="mt-1 text-sm text-[#8D6E63]">
-                  กดปุ่ม &quot;เพิ่มรายจ่าย&quot; เพื่อเริ่มบันทึก
+                  เริ่มบันทึกค่าใช้จ่ายเพื่อติดตามต้นทุนของร้าน
                 </p>
               </div>
             </div>
