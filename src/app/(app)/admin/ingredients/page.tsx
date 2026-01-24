@@ -122,7 +122,7 @@ export default function IngredientsPage() {
       <header className="flex shrink-0 items-end justify-between border-b border-[#D7CCC8]/30 px-6 py-6 lg:px-10">
         <div>
           <h1 className="text-3xl font-bold text-[#3E2723] lg:text-4xl">
-            🧪 จัดการวัตถุดิบ
+           จัดการวัตถุดิบ
           </h1>
           <p className="mt-2 text-sm font-medium tracking-wide text-[#8D6E63]">
             จัดการสต็อกและต้นทุนวัตถุดิบทั้งหมด

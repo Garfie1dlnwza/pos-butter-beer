@@ -17,6 +17,15 @@ interface Ingredient {
   costPerUnit: number;
   currentStock: number;
   minStock: number;
+  deletedAt: Date | null;
+  stockLots: Array<{
+    id: string;
+    quantity: number;
+    costPerUnit: number;
+    remainingQty: number;
+    note: string | null;
+    createdAt: Date;
+  }>;
 }
 
 interface IngredientModalProps {
@@ -34,11 +43,12 @@ export function IngredientModal({
   onSave,
   isLoading,
 }: IngredientModalProps) {
-  const [formData, setFormData] = useState<IngredientFormData>({
+  // Use string state for number inputs to allow typing decimals like 0.08
+  const [formData, setFormData] = useState({
     name: "",
     unit: "",
-    costPerUnit: 0,
-    minStock: 0,
+    costPerUnit: "",
+    minStock: "",
   });
 
   // Reset form when ingredient changes or modal opens
@@ -47,15 +57,21 @@ export function IngredientModal({
       setFormData({
         name: ingredient?.name ?? "",
         unit: ingredient?.unit ?? "",
-        costPerUnit: ingredient?.costPerUnit ?? 0,
-        minStock: ingredient?.minStock ?? 0,
+        costPerUnit: ingredient?.costPerUnit?.toString() ?? "",
+        minStock: ingredient?.minStock?.toString() ?? "",
       });
     }
   }, [isOpen, ingredient]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
+    // Parse strings to numbers on submit
+    onSave({
+      name: formData.name,
+      unit: formData.unit,
+      costPerUnit: parseFloat(formData.costPerUnit) || 0,
+      minStock: parseFloat(formData.minStock) || 0,
+    });
   };
 
   return (
@@ -104,17 +120,17 @@ export function IngredientModal({
               ต้นทุน/หน่วย (฿)
             </label>
             <input
-              type="number"
-              step="0.01"
-              min="0"
-              value={formData.costPerUnit || ""}
+              type="text"
+              inputMode="decimal"
+              value={formData.costPerUnit}
               onChange={(e) =>
                 setFormData((prev) => ({
                   ...prev,
-                  costPerUnit: parseFloat(e.target.value) || 0,
+                  costPerUnit: e.target.value,
                 }))
               }
               className="w-full rounded-xl border border-[#D7CCC8] bg-[#FAFAFA] px-4 py-3 text-[#3E2723] placeholder-[#BDBDBD] transition outline-none focus:border-[#8D6E63] focus:bg-white"
+              placeholder="0.08"
               required
             />
           </div>
@@ -126,17 +142,14 @@ export function IngredientModal({
             จุดสั่งซื้อใหม่ (Min Stock)
           </label>
           <input
-            type="number"
-            step="0.01"
-            min="0"
-            value={formData.minStock || ""}
+            type="text"
+            inputMode="decimal"
+            value={formData.minStock}
             onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                minStock: parseFloat(e.target.value) || 0,
-              }))
+              setFormData((prev) => ({ ...prev, minStock: e.target.value }))
             }
             className="w-full rounded-xl border border-[#D7CCC8] bg-[#FAFAFA] px-4 py-3 text-[#3E2723] placeholder-[#BDBDBD] transition outline-none focus:border-[#8D6E63] focus:bg-white"
+            placeholder="1000"
           />
         </div>
 

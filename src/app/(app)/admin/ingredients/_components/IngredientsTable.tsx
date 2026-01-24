@@ -9,6 +9,15 @@ interface Ingredient {
   costPerUnit: number;
   currentStock: number;
   minStock: number;
+  deletedAt: Date | null;
+  stockLots: Array<{
+    id: string;
+    quantity: number;
+    costPerUnit: number;
+    remainingQty: number;
+    note: string | null;
+    createdAt: Date;
+  }>;
 }
 
 interface IngredientsTableProps {
