@@ -22,7 +22,11 @@ const menuGroups: MenuGroup[] = [
     title: "Operations",
     items: [
       { label: "POS", href: "/pos", roles: ["ADMIN", "STAFF"] },
-      { label: "ประวัติการขาย", href: "/staff/orders", roles: ["ADMIN", "STAFF"] },
+      {
+        label: "ประวัติการขาย",
+        href: "/staff/orders",
+        roles: ["ADMIN", "STAFF"],
+      },
       { label: "กะ/Shift", href: "/staff/shifts", roles: ["ADMIN", "STAFF"] },
     ],
   },
@@ -31,15 +35,23 @@ const menuGroups: MenuGroup[] = [
     items: [
       { label: "สินค้า", href: "/admin/products", roles: ["ADMIN"] },
       { label: "หมวดหมู่", href: "/admin/categories", roles: ["ADMIN"] },
-      { label: "วัตถุดิบ", href: "/admin/ingredients", roles: ["ADMIN"] },
+      {
+        label: "สต็อก & วัตถุดิบ",
+        href: "/admin/ingredients",
+        roles: ["ADMIN"],
+      },
       { label: "ท็อปปิ้ง", href: "/admin/toppings", roles: ["ADMIN"] },
-      { label: "สต็อกสินค้า", href: "/admin/inventory", roles: ["ADMIN"] },
     ],
   },
   {
     title: "Business",
     items: [
-      { label: "แดชบอร์ด", href: "/admin/dashboard", roles: ["ADMIN", "STAFF"] },
+      {
+        label: "แดชบอร์ด",
+        href: "/admin/dashboard",
+        roles: ["ADMIN", "STAFF"],
+      },
+      { label: "ประวัติการเปิดปิดกะ", href: "/admin/shifts", roles: ["ADMIN"] },
       { label: "รายงาน", href: "/admin/reports", roles: ["ADMIN"] },
       { label: "รายจ่าย", href: "/admin/expenses", roles: ["ADMIN"] },
     ],
@@ -55,7 +67,7 @@ export function Sidebar() {
   return (
     <aside className="hidden h-screen w-64 flex-col border-r border-[#D7CCC8]/60 bg-[#FFF8E1] md:flex">
       {/* 1. Logo Section */}
-      <div className="flex flex-col items-center justify-center pb-6 pt-10">
+      <div className="flex flex-col items-center justify-center pt-10 pb-6">
         <div className="relative mb-3 h-16 w-16">
           <Image
             src="/logo-german.svg"
@@ -71,11 +83,11 @@ export function Sidebar() {
       </div>
 
       {/* 2. Navigation Menu with Sections */}
-      <nav className="flex-1 overflow-y-auto px-4 py-2 scrollbar-hide">
+      <nav className="scrollbar-hide flex-1 overflow-y-auto px-4 py-2">
         {menuGroups.map((group, groupIndex) => {
           // Filter items based on Role inside the group
           const visibleItems = group.items.filter((item) =>
-            item.roles.includes(userRole)
+            item.roles.includes(userRole),
           );
 
           // If no items in this group are visible for this role, don't render the group
@@ -84,15 +96,16 @@ export function Sidebar() {
           return (
             <div key={group.title} className="mb-6">
               {/* Section Header */}
-              <h3 className="mb-2 px-4 text-[10px] font-bold uppercase tracking-widest text-[#A1887F]">
+              <h3 className="mb-2 px-4 text-[10px] font-bold tracking-widest text-[#A1887F] uppercase">
                 {group.title}
               </h3>
-              
+
               {/* Group Items */}
               <div className="space-y-1">
                 {visibleItems.map((item) => {
                   const isActive =
-                    pathname === item.href || pathname.startsWith(item.href + "/");
+                    pathname === item.href ||
+                    pathname.startsWith(item.href + "/");
 
                   return (
                     <Link
