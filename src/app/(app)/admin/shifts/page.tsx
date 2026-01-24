@@ -18,12 +18,12 @@ export default function AdminShiftsPage() {
 
   // Calculate Daily Totals
   const dailyTotalSales =
-    shifts?.reduce((sum, shift) => {
-      // Manually sum up partial orders if available, or rely on future aggregation
+    (shifts?.shifts?.reduce((sum, shift) => {
       const shiftTotal =
         shift.orders?.reduce((acc, o) => acc + o.netAmount, 0) ?? 0;
       return sum + shiftTotal;
-    }, 0) ?? 0;
+    }, 0) ?? 0) +
+    (shifts?.unassignedOrders?.reduce((sum, o) => sum + o.netAmount, 0) ?? 0);
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-[#FAFAFA]">
@@ -45,7 +45,7 @@ export default function AdminShiftsPage() {
           <div className="rounded-xl border border-[#D7CCC8]/30 bg-white p-6 shadow-sm">
             <p className="text-sm text-[#8D6E63]">จำนวนกะวันนี้</p>
             <p className="text-2xl font-bold text-[#3E2723]">
-              {shifts?.length ?? 0}
+              {shifts?.shifts.length ?? 0}
             </p>
           </div>
           <div className="rounded-xl border border-[#D7CCC8]/30 bg-white p-6 shadow-sm">
@@ -91,81 +91,134 @@ export default function AdminShiftsPage() {
                   </td>
                 </tr>
               ) : (
-                shifts?.map((shift) => {
-                  // Calculate breakdown
-                  let cashSales = 0;
-                  let qrSales = 0;
+                <>
+                  {/* Shifts Rows */}
+                  {shifts?.shifts.map((shift) => {
+                    // Calculate breakdown
+                    let cashSales = 0;
+                    let qrSales = 0;
 
-                  if (shift.orders && Array.isArray(shift.orders)) {
-                    shift.orders.forEach((o) => {
-                      if (o.paymentMethod === "CASH") cashSales += o.netAmount;
-                      else qrSales += o.netAmount;
-                    });
-                  }
+                    if (shift.orders && Array.isArray(shift.orders)) {
+                      shift.orders.forEach((o) => {
+                        if (o.paymentMethod.toLowerCase() === "cash")
+                          cashSales += o.netAmount;
+                        else qrSales += o.netAmount;
+                      });
+                    }
 
-                  const shiftTotal = cashSales + qrSales;
+                    const shiftTotal = cashSales + qrSales;
 
-                  return (
-                    <tr key={shift.id} className="transition hover:bg-gray-50">
-                      <td className="px-6 py-4 font-medium text-[#3E2723]">
-                        {shift.user.name ?? "Unknown"}
-                      </td>
-                      <td className="px-6 py-4 text-[#5D4037]">
-                        {new Date(shift.startedAt).toLocaleTimeString("th-TH", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                        <span className="block text-xs text-gray-400">
-                          {shift.endedAt
-                            ? new Date(shift.endedAt).toLocaleTimeString(
-                                "th-TH",
-                                {
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                },
-                              )
-                            : "กำลังเปิด"}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        ฿{shift.openingCash.toLocaleString()}
-                      </td>
-                      <td className="px-6 py-4 text-right font-medium text-green-600">
-                        +฿{cashSales.toLocaleString()}
-                      </td>
-                      <td className="px-6 py-4 text-right font-medium text-blue-600">
-                        +฿{qrSales.toLocaleString()}
-                      </td>
-                      <td className="px-6 py-4 text-right font-bold text-[#3E2723]">
-                        ฿{shiftTotal.toLocaleString()}
-                      </td>
-                      <td
-                        className={`px-6 py-4 text-right font-bold ${
-                          (shift.cashVariance ?? 0) < 0
-                            ? "text-red-500"
-                            : (shift.cashVariance ?? 0) > 0
-                              ? "text-green-500"
-                              : "text-gray-400"
-                        }`}
+                    return (
+                      <tr
+                        key={shift.id}
+                        className="transition hover:bg-gray-50"
                       >
-                        {shift.cashVariance
-                          ? `฿${shift.cashVariance.toLocaleString()}`
-                          : "-"}
-                      </td>
-                      <td className="px-6 py-4 text-center">
-                        <span
-                          className={`rounded-full px-2 py-1 text-xs font-semibold ${
-                            shift.status === "open"
-                              ? "bg-green-100 text-green-700"
-                              : "bg-gray-100 text-gray-600"
+                        <td className="px-6 py-4 font-medium text-[#3E2723]">
+                          {shift.user.name ?? "Unknown"}
+                        </td>
+                        <td className="px-6 py-4 text-[#5D4037]">
+                          {new Date(shift.startedAt).toLocaleTimeString(
+                            "th-TH",
+                            {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            },
+                          )}
+                          <span className="block text-xs text-gray-400">
+                            {shift.endedAt
+                              ? new Date(shift.endedAt).toLocaleTimeString(
+                                  "th-TH",
+                                  {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  },
+                                )
+                              : "กำลังเปิด"}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          ฿{shift.openingCash.toLocaleString()}
+                        </td>
+                        <td className="px-6 py-4 text-right font-medium text-green-600">
+                          +฿{cashSales.toLocaleString()}
+                        </td>
+                        <td className="px-6 py-4 text-right font-medium text-blue-600">
+                          +฿{qrSales.toLocaleString()}
+                        </td>
+                        <td className="px-6 py-4 text-right font-bold text-[#3E2723]">
+                          ฿{shiftTotal.toLocaleString()}
+                        </td>
+                        <td
+                          className={`px-6 py-4 text-right font-bold ${
+                            (shift.cashVariance ?? 0) < 0
+                              ? "text-red-500"
+                              : (shift.cashVariance ?? 0) > 0
+                                ? "text-green-500"
+                                : "text-gray-400"
                           }`}
                         >
-                          {shift.status === "open" ? "OPEN" : "CLOSED"}
+                          {shift.cashVariance
+                            ? `฿${shift.cashVariance.toLocaleString()}`
+                            : "-"}
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <span
+                            className={`rounded-full px-2 py-1 text-xs font-semibold ${
+                              shift.status === "open"
+                                ? "bg-green-100 text-green-700"
+                                : "bg-gray-100 text-gray-600"
+                            }`}
+                          >
+                            {shift.status === "open" ? "OPEN" : "CLOSED"}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+
+                  {/* Unassigned Orders Row */}
+                  {(shifts?.unassignedOrders?.length ?? 0) > 0 && (
+                    <tr className="bg-amber-50/50 hover:bg-amber-50">
+                      <td className="px-6 py-4 font-medium text-amber-700">
+                        System (No Shift)
+                      </td>
+                      <td className="px-6 py-4 text-xs text-gray-500 italic">
+                        รายการขายนอกกะ
+                      </td>
+                      <td className="px-6 py-4 text-right">-</td>
+                      <td className="px-6 py-4 text-right font-medium text-green-600">
+                        +฿
+                        {shifts?.unassignedOrders
+                          .filter(
+                            (o) => o.paymentMethod.toLowerCase() === "cash",
+                          )
+                          .reduce((sum, o) => sum + o.netAmount, 0)
+                          .toLocaleString()}
+                      </td>
+                      <td className="px-6 py-4 text-right font-medium text-blue-600">
+                        +฿
+                        {shifts?.unassignedOrders
+                          .filter(
+                            (o) => o.paymentMethod.toLowerCase() !== "cash",
+                          )
+                          .reduce((sum, o) => sum + o.netAmount, 0)
+                          .toLocaleString()}
+                      </td>
+                      <td className="px-6 py-4 text-right font-bold text-[#3E2723]">
+                        ฿
+                        {shifts?.unassignedOrders
+                          .reduce((sum, o) => sum + o.netAmount, 0)
+                          .toLocaleString()}
+                      </td>
+                      <td className="px-6 py-4 text-right text-gray-400">-</td>
+                      <td className="px-6 py-4 text-center">
+                        <span className="rounded-full bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-700">
+                          SYSTEM
                         </span>
                       </td>
                     </tr>
-                  );
-                })
+                  )}
+                </>
               )}
             </tbody>
           </table>

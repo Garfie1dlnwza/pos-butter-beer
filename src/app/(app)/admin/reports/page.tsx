@@ -10,23 +10,29 @@ import { useMemo } from "react";
 export default function ReportsPage() {
   const searchParams = useSearchParams();
 
-  // Default to today (Memoized to prevent infinite re-fetching)
-  const today = useMemo(() => {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    return d;
+  // Default to current month (Memoized to prevent infinite re-fetching)
+  const defaultRange = useMemo(() => {
+    const start = new Date();
+    start.setDate(1);
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date();
+    end.setMonth(end.getMonth() + 1, 0);
+    end.setHours(23, 59, 59, 999);
+
+    return { start, end };
   }, []);
 
   const startDateParam = searchParams.get("startDate");
   const endDateParam = searchParams.get("endDate");
 
   const startDate = useMemo(
-    () => (startDateParam ? new Date(startDateParam) : today),
-    [startDateParam, today],
+    () => (startDateParam ? new Date(startDateParam) : defaultRange.start),
+    [startDateParam, defaultRange],
   );
   const endDate = useMemo(
-    () => (endDateParam ? new Date(endDateParam) : today),
-    [endDateParam, today],
+    () => (endDateParam ? new Date(endDateParam) : defaultRange.end),
+    [endDateParam, defaultRange],
   );
 
   // Set end of day for endDate (for expenses query)

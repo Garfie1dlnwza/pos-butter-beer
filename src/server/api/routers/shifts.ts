@@ -35,7 +35,7 @@ export const shiftsRouter = createTRPCRouter({
       // If STAFF, allows seeing their own shifts or all?
       // For now, allowing access. Can enforce userId check later if needed.
 
-      return ctx.db.shift.findMany({
+      const shifts = await ctx.db.shift.findMany({
         where: {
           ...(input.userId ? { userId: input.userId } : {}),
           ...(input.startDate && input.endDate
@@ -64,6 +64,29 @@ export const shiftsRouter = createTRPCRouter({
         orderBy: { startedAt: "desc" },
         take: input.limit,
       });
+
+      // Also fetch unassigned orders for the day (orders with shiftId = null)
+      // This is to account for orders made by admins without an active shift.
+      let unassignedOrders: { netAmount: number; paymentMethod: string }[] = [];
+
+      if (input.startDate && input.endDate) {
+        unassignedOrders = await ctx.db.order.findMany({
+          where: {
+            shiftId: null,
+            status: "completed",
+            createdAt: {
+              gte: input.startDate,
+              lte: input.endDate,
+            },
+          },
+          select: {
+            netAmount: true,
+            paymentMethod: true,
+          },
+        });
+      }
+
+      return { shifts, unassignedOrders };
     }),
 
   // Open a new shift
@@ -139,7 +162,7 @@ export const shiftsRouter = createTRPCRouter({
 
       // Calculate expected cash (opening + cash sales)
       const cashSales = shift.orders
-        .filter((o) => o.paymentMethod === "cash")
+        .filter((o) => o.paymentMethod.toLowerCase() === "cash")
         .reduce((sum, o) => sum + o.netAmount, 0);
 
       const expectedCash = shift.openingCash + cashSales;
@@ -186,10 +209,10 @@ export const shiftsRouter = createTRPCRouter({
       // Calculate summaries
       const totalSales = shift.orders.reduce((sum, o) => sum + o.netAmount, 0);
       const cashSales = shift.orders
-        .filter((o) => o.paymentMethod === "cash")
+        .filter((o) => o.paymentMethod.toLowerCase() === "cash")
         .reduce((sum, o) => sum + o.netAmount, 0);
       const qrSales = shift.orders
-        .filter((o) => o.paymentMethod === "qr")
+        .filter((o) => o.paymentMethod.toLowerCase() === "qr")
         .reduce((sum, o) => sum + o.netAmount, 0);
       const otherSales = totalSales - cashSales - qrSales;
 
