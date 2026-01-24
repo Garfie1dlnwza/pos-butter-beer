@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/server/auth";
 import { SessionProvider } from "next-auth/react";
 import { Sidebar } from "@/app/_components/Sidebar";
+import { ToastProvider } from "@/components/Toast";
 
 export default async function AppLayout({
   children,
@@ -16,10 +17,12 @@ export default async function AppLayout({
 
   return (
     <SessionProvider session={session}>
-      <div className="flex h-screen bg-gray-950">
-        <Sidebar />
-        <main className="flex-1 overflow-auto">{children}</main>
-      </div>
+      <ToastProvider>
+        <div className="flex h-screen bg-gray-950">
+          <Sidebar />
+          <main className="flex-1 overflow-auto">{children}</main>
+        </div>
+      </ToastProvider>
     </SessionProvider>
   );
 }

@@ -13,13 +13,13 @@ interface MenuItem {
 
 const menuItems: MenuItem[] = [
   { label: "POS", href: "/pos", roles: ["ADMIN", "STAFF"] },
-  { label: "แดชบอร์ด", href: "/admin/dashboard", roles: ["ADMIN"] },
   { label: "สินค้า", href: "/admin/products", roles: ["ADMIN"] },
   { label: "วัตถุดิบ", href: "/admin/ingredients", roles: ["ADMIN"] },
   { label: "ท็อปปิ้ง", href: "/admin/toppings", roles: ["ADMIN"] },
-  {label:"จัดการหมวดหมู่", href: "/admin/categories", roles: ["ADMIN"]},
+  { label: "แดชบอร์ด", href: "/admin/dashboard", roles: ["ADMIN","STAFF"] },
   { label: "รายงาน", href: "/admin/reports", roles: ["ADMIN"] },
   { label: "ประวัติการขาย", href: "/staff/orders", roles: ["ADMIN", "STAFF"] },
+  { label: "จัดการหมวดหมู่", href: "/admin/categories", roles: ["ADMIN"] },
 ];
 
 export function Sidebar() {
