@@ -103,14 +103,15 @@ model Product {
 
 // Ingredient - วัตถุดิบหลังร้าน
 model Ingredient {
-    id           String   @id @default(cuid())
+    id           String    @id @default(cuid())
     name         String
     unit         String // หน่วย (ml, g, piece)
     costPerUnit  Float // ต้นทุนต่อหน่วย
-    currentStock Float    @default(0) // สต็อกคงเหลือ
-    minStock     Float    @default(0) // จุดสั่งซื้อใหม่
-    createdAt    DateTime @default(now())
-    updatedAt    DateTime @updatedAt
+    currentStock Float     @default(0) // สต็อกคงเหลือ
+    minStock     Float     @default(0) // จุดสั่งซื้อใหม่
+    deletedAt    DateTime? // soft delete
+    createdAt    DateTime  @default(now())
+    updatedAt    DateTime  @updatedAt
 
     usedIn    RecipeItem[] // ใช้ในสูตรไหนบ้าง
     stockLots StockLot[] // ล็อตสต็อก

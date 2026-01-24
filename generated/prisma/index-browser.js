@@ -186,6 +186,7 @@ exports.Prisma.IngredientScalarFieldEnum = {
   costPerUnit: 'costPerUnit',
   currentStock: 'currentStock',
   minStock: 'minStock',
+  deletedAt: 'deletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

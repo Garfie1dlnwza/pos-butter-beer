@@ -8863,6 +8863,7 @@ export namespace Prisma {
     costPerUnit: number | null
     currentStock: number | null
     minStock: number | null
+    deletedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -8874,6 +8875,7 @@ export namespace Prisma {
     costPerUnit: number | null
     currentStock: number | null
     minStock: number | null
+    deletedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -8885,6 +8887,7 @@ export namespace Prisma {
     costPerUnit: number
     currentStock: number
     minStock: number
+    deletedAt: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -8910,6 +8913,7 @@ export namespace Prisma {
     costPerUnit?: true
     currentStock?: true
     minStock?: true
+    deletedAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -8921,6 +8925,7 @@ export namespace Prisma {
     costPerUnit?: true
     currentStock?: true
     minStock?: true
+    deletedAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -8932,6 +8937,7 @@ export namespace Prisma {
     costPerUnit?: true
     currentStock?: true
     minStock?: true
+    deletedAt?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -9030,6 +9036,7 @@ export namespace Prisma {
     costPerUnit: number
     currentStock: number
     minStock: number
+    deletedAt: Date | null
     createdAt: Date
     updatedAt: Date
     _count: IngredientCountAggregateOutputType | null
@@ -9060,6 +9067,7 @@ export namespace Prisma {
     costPerUnit?: boolean
     currentStock?: boolean
     minStock?: boolean
+    deletedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     usedIn?: boolean | Ingredient$usedInArgs<ExtArgs>
@@ -9074,6 +9082,7 @@ export namespace Prisma {
     costPerUnit?: boolean
     currentStock?: boolean
     minStock?: boolean
+    deletedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["ingredient"]>
@@ -9085,6 +9094,7 @@ export namespace Prisma {
     costPerUnit?: boolean
     currentStock?: boolean
     minStock?: boolean
+    deletedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["ingredient"]>
@@ -9096,11 +9106,12 @@ export namespace Prisma {
     costPerUnit?: boolean
     currentStock?: boolean
     minStock?: boolean
+    deletedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type IngredientOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "unit" | "costPerUnit" | "currentStock" | "minStock" | "createdAt" | "updatedAt", ExtArgs["result"]["ingredient"]>
+  export type IngredientOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "unit" | "costPerUnit" | "currentStock" | "minStock" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["ingredient"]>
   export type IngredientInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     usedIn?: boolean | Ingredient$usedInArgs<ExtArgs>
     stockLots?: boolean | Ingredient$stockLotsArgs<ExtArgs>
@@ -9122,6 +9133,7 @@ export namespace Prisma {
       costPerUnit: number
       currentStock: number
       minStock: number
+      deletedAt: Date | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["ingredient"]>
@@ -9555,6 +9567,7 @@ export namespace Prisma {
     readonly costPerUnit: FieldRef<"Ingredient", 'Float'>
     readonly currentStock: FieldRef<"Ingredient", 'Float'>
     readonly minStock: FieldRef<"Ingredient", 'Float'>
+    readonly deletedAt: FieldRef<"Ingredient", 'DateTime'>
     readonly createdAt: FieldRef<"Ingredient", 'DateTime'>
     readonly updatedAt: FieldRef<"Ingredient", 'DateTime'>
   }
@@ -16748,6 +16761,7 @@ export namespace Prisma {
     costPerUnit: 'costPerUnit',
     currentStock: 'currentStock',
     minStock: 'minStock',
+    deletedAt: 'deletedAt',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -17348,6 +17362,7 @@ export namespace Prisma {
     costPerUnit?: FloatFilter<"Ingredient"> | number
     currentStock?: FloatFilter<"Ingredient"> | number
     minStock?: FloatFilter<"Ingredient"> | number
+    deletedAt?: DateTimeNullableFilter<"Ingredient"> | Date | string | null
     createdAt?: DateTimeFilter<"Ingredient"> | Date | string
     updatedAt?: DateTimeFilter<"Ingredient"> | Date | string
     usedIn?: RecipeItemListRelationFilter
@@ -17361,6 +17376,7 @@ export namespace Prisma {
     costPerUnit?: SortOrder
     currentStock?: SortOrder
     minStock?: SortOrder
+    deletedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     usedIn?: RecipeItemOrderByRelationAggregateInput
@@ -17377,6 +17393,7 @@ export namespace Prisma {
     costPerUnit?: FloatFilter<"Ingredient"> | number
     currentStock?: FloatFilter<"Ingredient"> | number
     minStock?: FloatFilter<"Ingredient"> | number
+    deletedAt?: DateTimeNullableFilter<"Ingredient"> | Date | string | null
     createdAt?: DateTimeFilter<"Ingredient"> | Date | string
     updatedAt?: DateTimeFilter<"Ingredient"> | Date | string
     usedIn?: RecipeItemListRelationFilter
@@ -17390,6 +17407,7 @@ export namespace Prisma {
     costPerUnit?: SortOrder
     currentStock?: SortOrder
     minStock?: SortOrder
+    deletedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: IngredientCountOrderByAggregateInput
@@ -17409,6 +17427,7 @@ export namespace Prisma {
     costPerUnit?: FloatWithAggregatesFilter<"Ingredient"> | number
     currentStock?: FloatWithAggregatesFilter<"Ingredient"> | number
     minStock?: FloatWithAggregatesFilter<"Ingredient"> | number
+    deletedAt?: DateTimeNullableWithAggregatesFilter<"Ingredient"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Ingredient"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Ingredient"> | Date | string
   }
@@ -18235,6 +18254,7 @@ export namespace Prisma {
     costPerUnit: number
     currentStock?: number
     minStock?: number
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     usedIn?: RecipeItemCreateNestedManyWithoutIngredientInput
@@ -18248,6 +18268,7 @@ export namespace Prisma {
     costPerUnit: number
     currentStock?: number
     minStock?: number
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     usedIn?: RecipeItemUncheckedCreateNestedManyWithoutIngredientInput
@@ -18261,6 +18282,7 @@ export namespace Prisma {
     costPerUnit?: FloatFieldUpdateOperationsInput | number
     currentStock?: FloatFieldUpdateOperationsInput | number
     minStock?: FloatFieldUpdateOperationsInput | number
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     usedIn?: RecipeItemUpdateManyWithoutIngredientNestedInput
@@ -18274,6 +18296,7 @@ export namespace Prisma {
     costPerUnit?: FloatFieldUpdateOperationsInput | number
     currentStock?: FloatFieldUpdateOperationsInput | number
     minStock?: FloatFieldUpdateOperationsInput | number
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     usedIn?: RecipeItemUncheckedUpdateManyWithoutIngredientNestedInput
@@ -18287,6 +18310,7 @@ export namespace Prisma {
     costPerUnit: number
     currentStock?: number
     minStock?: number
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -18298,6 +18322,7 @@ export namespace Prisma {
     costPerUnit?: FloatFieldUpdateOperationsInput | number
     currentStock?: FloatFieldUpdateOperationsInput | number
     minStock?: FloatFieldUpdateOperationsInput | number
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -18309,6 +18334,7 @@ export namespace Prisma {
     costPerUnit?: FloatFieldUpdateOperationsInput | number
     currentStock?: FloatFieldUpdateOperationsInput | number
     minStock?: FloatFieldUpdateOperationsInput | number
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -19236,6 +19262,7 @@ export namespace Prisma {
     costPerUnit?: SortOrder
     currentStock?: SortOrder
     minStock?: SortOrder
+    deletedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -19253,6 +19280,7 @@ export namespace Prisma {
     costPerUnit?: SortOrder
     currentStock?: SortOrder
     minStock?: SortOrder
+    deletedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -19264,6 +19292,7 @@ export namespace Prisma {
     costPerUnit?: SortOrder
     currentStock?: SortOrder
     minStock?: SortOrder
+    deletedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -21110,6 +21139,7 @@ export namespace Prisma {
     costPerUnit: number
     currentStock?: number
     minStock?: number
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     stockLots?: StockLotCreateNestedManyWithoutIngredientInput
@@ -21122,6 +21152,7 @@ export namespace Prisma {
     costPerUnit: number
     currentStock?: number
     minStock?: number
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     stockLots?: StockLotUncheckedCreateNestedManyWithoutIngredientInput
@@ -21187,6 +21218,7 @@ export namespace Prisma {
     costPerUnit?: FloatFieldUpdateOperationsInput | number
     currentStock?: FloatFieldUpdateOperationsInput | number
     minStock?: FloatFieldUpdateOperationsInput | number
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     stockLots?: StockLotUpdateManyWithoutIngredientNestedInput
@@ -21199,6 +21231,7 @@ export namespace Prisma {
     costPerUnit?: FloatFieldUpdateOperationsInput | number
     currentStock?: FloatFieldUpdateOperationsInput | number
     minStock?: FloatFieldUpdateOperationsInput | number
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     stockLots?: StockLotUncheckedUpdateManyWithoutIngredientNestedInput
@@ -21451,6 +21484,7 @@ export namespace Prisma {
     costPerUnit: number
     currentStock?: number
     minStock?: number
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     usedIn?: RecipeItemCreateNestedManyWithoutIngredientInput
@@ -21463,6 +21497,7 @@ export namespace Prisma {
     costPerUnit: number
     currentStock?: number
     minStock?: number
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     usedIn?: RecipeItemUncheckedCreateNestedManyWithoutIngredientInput
@@ -21491,6 +21526,7 @@ export namespace Prisma {
     costPerUnit?: FloatFieldUpdateOperationsInput | number
     currentStock?: FloatFieldUpdateOperationsInput | number
     minStock?: FloatFieldUpdateOperationsInput | number
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     usedIn?: RecipeItemUpdateManyWithoutIngredientNestedInput
@@ -21503,6 +21539,7 @@ export namespace Prisma {
     costPerUnit?: FloatFieldUpdateOperationsInput | number
     currentStock?: FloatFieldUpdateOperationsInput | number
     minStock?: FloatFieldUpdateOperationsInput | number
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     usedIn?: RecipeItemUncheckedUpdateManyWithoutIngredientNestedInput
