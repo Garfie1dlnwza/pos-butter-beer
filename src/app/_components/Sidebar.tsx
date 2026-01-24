@@ -13,8 +13,10 @@ interface MenuItem {
 
 const menuItems: MenuItem[] = [
   { label: "POS", href: "/pos", roles: ["ADMIN", "STAFF"] },
+  { label: "กะ/Shift", href: "/staff/shifts", roles: ["ADMIN", "STAFF"] },
   { label: "สินค้า", href: "/admin/products", roles: ["ADMIN"] },
   { label: "วัตถุดิบ", href: "/admin/ingredients", roles: ["ADMIN"] },
+  { label: "สต็อก", href: "/admin/inventory", roles: ["ADMIN"] },
   { label: "ท็อปปิ้ง", href: "/admin/toppings", roles: ["ADMIN"] },
   { label: "รายจ่าย", href: "/admin/expenses", roles: ["ADMIN"] },
   { label: "แดชบอร์ด", href: "/admin/dashboard", roles: ["ADMIN", "STAFF"] },

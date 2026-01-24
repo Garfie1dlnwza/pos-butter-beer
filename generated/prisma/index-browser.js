@@ -221,6 +221,7 @@ exports.Prisma.OrderScalarFieldEnum = {
   status: 'status',
   customerName: 'customerName',
   note: 'note',
+  shiftId: 'shiftId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   createdById: 'createdById'
@@ -245,6 +246,13 @@ exports.Prisma.ToppingScalarFieldEnum = {
   nameTh: 'nameTh',
   price: 'price',
   isActive: 'isActive'
+};
+
+exports.Prisma.ToppingRecipeScalarFieldEnum = {
+  id: 'id',
+  toppingId: 'toppingId',
+  ingredientId: 'ingredientId',
+  amountUsed: 'amountUsed'
 };
 
 exports.Prisma.StockLotScalarFieldEnum = {
@@ -278,6 +286,33 @@ exports.Prisma.ExpenseScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.InventoryTransactionScalarFieldEnum = {
+  id: 'id',
+  ingredientId: 'ingredientId',
+  type: 'type',
+  quantity: 'quantity',
+  costPerUnit: 'costPerUnit',
+  note: 'note',
+  referenceId: 'referenceId',
+  createdById: 'createdById',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.ShiftScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  startedAt: 'startedAt',
+  endedAt: 'endedAt',
+  openingCash: 'openingCash',
+  closingCash: 'closingCash',
+  expectedCash: 'expectedCash',
+  cashVariance: 'cashVariance',
+  status: 'status',
+  note: 'note',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -297,6 +332,14 @@ exports.Role = exports.$Enums.Role = {
   STAFF: 'STAFF'
 };
 
+exports.TransactionType = exports.$Enums.TransactionType = {
+  PURCHASE: 'PURCHASE',
+  SALE: 'SALE',
+  ADJUSTMENT: 'ADJUSTMENT',
+  WASTE: 'WASTE',
+  STOCK_TAKE: 'STOCK_TAKE'
+};
+
 exports.Prisma.ModelName = {
   Post: 'Post',
   Account: 'Account',
@@ -310,9 +353,12 @@ exports.Prisma.ModelName = {
   Order: 'Order',
   OrderItem: 'OrderItem',
   Topping: 'Topping',
+  ToppingRecipe: 'ToppingRecipe',
   StockLot: 'StockLot',
   AuditLog: 'AuditLog',
-  Expense: 'Expense'
+  Expense: 'Expense',
+  InventoryTransaction: 'InventoryTransaction',
+  Shift: 'Shift'
 };
 
 /**

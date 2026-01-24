@@ -23,6 +23,13 @@ export default function ReportsPage() {
   const startDate = startDateParam ? new Date(startDateParam) : today;
   const endDate = endDateParam ? new Date(endDateParam) : today;
 
+  // Set end of day for endDate (for expenses query)
+  const endDateEnd = useMemo(() => {
+    const d = new Date(endDate);
+    d.setHours(23, 59, 59, 999);
+    return d;
+  }, [endDate]);
+
   const { data: dailySales, isLoading } = api.reports.getDailySales.useQuery({
     startDate,
     endDate,
@@ -32,6 +39,26 @@ export default function ReportsPage() {
     startDate,
     endDate,
   });
+
+  // Fetch expenses for the same period
+  const { data: expensesSummary } = api.expenses.getSummary.useQuery({
+    startDate,
+    endDate: endDateEnd,
+  });
+
+  // Calculate totals
+  const totals = useMemo(() => {
+    if (!dailySales) return { revenue: 0, cost: 0, grossProfit: 0 };
+
+    const revenue = dailySales.reduce((sum, d) => sum + d.revenue, 0);
+    const cost = dailySales.reduce((sum, d) => sum + d.cost, 0);
+    const grossProfit = revenue - cost;
+
+    return { revenue, cost, grossProfit };
+  }, [dailySales]);
+
+  const opex = expensesSummary?.total ?? 0;
+  const netProfit = totals.grossProfit - opex;
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-[#FAFAFA]">
@@ -68,6 +95,74 @@ export default function ReportsPage() {
           </div>
         ) : (
           <div className="space-y-8">
+            {/* Profit Summary Cards */}
+            <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+              {/* Revenue */}
+              <div className="rounded-xl border border-[#D7CCC8]/30 bg-white p-5 shadow-sm">
+                <p className="text-sm font-medium text-[#8D6E63]">รายได้รวม</p>
+                <p className="mt-2 text-2xl font-bold text-[#3E2723]">
+                  ฿{totals.revenue.toLocaleString()}
+                </p>
+              </div>
+
+              {/* COGS */}
+              <div className="rounded-xl border border-[#D7CCC8]/30 bg-white p-5 shadow-sm">
+                <p className="text-sm font-medium text-[#8D6E63]">
+                  ต้นทุนวัตถุดิบ
+                </p>
+                <p className="mt-2 text-2xl font-bold text-orange-600">
+                  -฿{totals.cost.toLocaleString()}
+                </p>
+              </div>
+
+              {/* Gross Profit */}
+              <div className="rounded-xl border border-[#D7CCC8]/30 bg-white p-5 shadow-sm">
+                <p className="text-sm font-medium text-[#8D6E63]">
+                  กำไรขั้นต้น
+                </p>
+                <p className="mt-2 text-2xl font-bold text-blue-600">
+                  ฿{totals.grossProfit.toLocaleString()}
+                </p>
+                <p className="mt-1 text-xs text-gray-500">
+                  Margin:{" "}
+                  {totals.revenue > 0
+                    ? ((totals.grossProfit / totals.revenue) * 100).toFixed(1)
+                    : 0}
+                  %
+                </p>
+              </div>
+
+              {/* Operating Expenses */}
+              <div className="rounded-xl border border-[#D7CCC8]/30 bg-white p-5 shadow-sm">
+                <p className="text-sm font-medium text-[#8D6E63]">
+                  ค่าใช้จ่ายอื่น
+                </p>
+                <p className="mt-2 text-2xl font-bold text-red-600">
+                  -฿{opex.toLocaleString()}
+                </p>
+                <p className="mt-1 text-xs text-gray-500">OPEX</p>
+              </div>
+
+              {/* Net Profit */}
+              <div
+                className={`rounded-xl border-2 p-5 shadow-sm ${netProfit >= 0 ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"}`}
+              >
+                <p className="text-sm font-medium text-[#8D6E63]">กำไรสุทธิ</p>
+                <p
+                  className={`mt-2 text-2xl font-bold ${netProfit >= 0 ? "text-green-600" : "text-red-600"}`}
+                >
+                  ฿{netProfit.toLocaleString()}
+                </p>
+                <p className="mt-1 text-xs text-gray-500">
+                  Net Margin:{" "}
+                  {totals.revenue > 0
+                    ? ((netProfit / totals.revenue) * 100).toFixed(1)
+                    : 0}
+                  %
+                </p>
+              </div>
+            </section>
+
             {/* Chart Section */}
             <section>
               <SalesChart data={dailySales ?? []} />
@@ -96,27 +191,23 @@ export default function ReportsPage() {
                       {dailySales
                         ?.slice()
                         .reverse()
-                        .map(
-                          (
-                            day, // Show latest first table-wise
-                          ) => (
-                            <tr
-                              key={day.date}
-                              className="group hover:bg-[#FAFAFA]"
-                            >
-                              <td className="py-3 font-medium">
-                                {new Date(day.date).toLocaleDateString("th-TH")}
-                              </td>
-                              <td className="py-3 text-right">{day.orders}</td>
-                              <td className="py-3 text-right font-bold">
-                                ฿{day.revenue.toLocaleString()}
-                              </td>
-                              <td className="py-3 text-right text-green-600">
-                                ฿{day.profit.toLocaleString()}
-                              </td>
-                            </tr>
-                          ),
-                        )}
+                        .map((day) => (
+                          <tr
+                            key={day.date}
+                            className="group hover:bg-[#FAFAFA]"
+                          >
+                            <td className="py-3 font-medium">
+                              {new Date(day.date).toLocaleDateString("th-TH")}
+                            </td>
+                            <td className="py-3 text-right">{day.orders}</td>
+                            <td className="py-3 text-right font-bold">
+                              ฿{day.revenue.toLocaleString()}
+                            </td>
+                            <td className="py-3 text-right text-green-600">
+                              ฿{day.profit.toLocaleString()}
+                            </td>
+                          </tr>
+                        ))}
                     </tbody>
                   </table>
                 </div>

@@ -60,18 +60,20 @@ enum Role {
 }
 
 model User {
-  id            String     @id @default(cuid())
-  name          String?
-  email         String?    @unique
-  emailVerified DateTime?
-  image         String?
-  role          Role       @default(STAFF)
-  accounts      Account[]
-  sessions      Session[]
-  posts         Post[]
-  orders        Order[]
-  auditLogs     AuditLog[]
-  expenses      Expense[]  @relation("UserExpenses")
+  id                    String                 @id @default(cuid())
+  name                  String?
+  email                 String?                @unique
+  emailVerified         DateTime?
+  image                 String?
+  role                  Role                   @default(STAFF)
+  accounts              Account[]
+  sessions              Session[]
+  posts                 Post[]
+  orders                Order[]
+  auditLogs             AuditLog[]
+  expenses              Expense[]              @relation("UserExpenses")
+  inventoryTransactions InventoryTransaction[] @relation("UserInventoryTransactions")
+  shifts                Shift[]                @relation("UserShifts")
 }
 
 model VerificationToken {
@@ -131,8 +133,10 @@ model Ingredient {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
-  usedIn    RecipeItem[] // ใช้ในสูตรไหนบ้าง
-  stockLots StockLot[] // ล็อตสต็อก
+  usedIn                RecipeItem[] // ใช้ในสูตรไหนบ้าง
+  stockLots             StockLot[] // ล็อตสต็อก
+  toppingRecipes        ToppingRecipe[] // ใช้ใน Topping ไหนบ้าง
+  inventoryTransactions InventoryTransaction[]
 }
 
 // RecipeItem - สูตรการผลิต (เชื่อม Product กับ Ingredient)
@@ -159,12 +163,14 @@ model Order {
   status        String   @default("completed") // pending, completed, cancelled
   customerName  String? // ชื่อลูกค้า (optional)
   note          String? // หมายเหตุ
+  shiftId       String? // FK to Shift
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   createdById   String?
 
   createdBy User?       @relation(fields: [createdById], references: [id])
   items     OrderItem[]
+  shift     Shift?      @relation("ShiftOrders", fields: [shiftId], references: [id])
 }
 
 // OrderItem - รายการสินค้าในออเดอร์
@@ -186,11 +192,25 @@ model OrderItem {
 
 // Topping - ท็อปปิ้งที่เพิ่มราคา
 model Topping {
-  id       String  @id @default(cuid())
+  id       String          @id @default(cuid())
   name     String
   nameTh   String?
   price    Float // ราคาเพิ่ม
-  isActive Boolean @default(true)
+  isActive Boolean         @default(true)
+  recipe   ToppingRecipe[] // สูตรท็อปปิ้ง
+}
+
+// ToppingRecipe - สูตรท็อปปิ้ง (เชื่อม Topping กับ Ingredient)
+model ToppingRecipe {
+  id           String @id @default(cuid())
+  toppingId    String
+  ingredientId String
+  amountUsed   Float // จำนวนที่ใช้ต่อ 1 ครั้ง
+
+  topping    Topping    @relation(fields: [toppingId], references: [id], onDelete: Cascade)
+  ingredient Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+
+  @@unique([toppingId, ingredientId])
 }
 
 // StockLot - ล็อตสต็อกสำหรับติดตามต้นทุน
@@ -231,4 +251,51 @@ model Expense {
   updatedAt   DateTime @updatedAt
 
   createdBy User? @relation("UserExpenses", fields: [createdById], references: [id])
+}
+
+// ==========================================
+// Phase 4 & 5: Inventory & Shift Management
+// ==========================================
+
+enum TransactionType {
+  PURCHASE // รับเข้า (ซื้อสต็อก)
+  SALE // ขายออก (auto จาก Order)
+  ADJUSTMENT // ปรับปรุง (+/-)
+  WASTE // ของเสีย/หมดอายุ
+  STOCK_TAKE // นับสต็อกจริง
+}
+
+// InventoryTransaction - ประวัติการเคลื่อนไหวสต็อก
+model InventoryTransaction {
+  id           String          @id @default(cuid())
+  ingredientId String
+  type         TransactionType
+  quantity     Float // + รับเข้า, - จ่ายออก
+  costPerUnit  Float? // ต้นทุนต่อหน่วย (กรณี PURCHASE)
+  note         String?
+  referenceId  String? // Order ID กรณี SALE
+  createdById  String?
+  createdAt    DateTime        @default(now())
+
+  ingredient Ingredient @relation(fields: [ingredientId], references: [id])
+  createdBy  User?      @relation("UserInventoryTransactions", fields: [createdById], references: [id])
+}
+
+// Shift - กะการทำงาน (เปิด-ปิดกะ)
+model Shift {
+  id           String    @id @default(cuid())
+  userId       String
+  startedAt    DateTime  @default(now())
+  endedAt      DateTime?
+  openingCash  Float // เงินเปิดกะ
+  closingCash  Float? // เงินปิดกะ (นับจริง)
+  expectedCash Float? // เงินที่ควรจะมี (คำนวณจากยอดขาย)
+  cashVariance Float? // ส่วนต่าง (closingCash - expectedCash)
+  status       String    @default("open") // open, closed
+  note         String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  user   User    @relation("UserShifts", fields: [userId], references: [id])
+  orders Order[] @relation("ShiftOrders")
 }
