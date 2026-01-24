@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { Fragment } from "react";
 
 interface Category {
   id: string;
@@ -110,7 +111,7 @@ export function ProductsTable({
               product.category?.id !== sortedProducts[index - 1]?.category?.id;
 
             return (
-              <>
+              <Fragment key={product.id}>
                 {showHeader && product.category && (
                   <tr className="bg-[#EFEBE9]/50">
                     <td
@@ -133,10 +134,7 @@ export function ProductsTable({
                       </td>
                     </tr>
                   )}
-                <tr
-                  key={product.id}
-                  className="transition-colors hover:bg-[#FAFAFA]"
-                >
+                <tr className="transition-colors hover:bg-[#FAFAFA]">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-4">
                       {/* Image */}
@@ -237,7 +235,7 @@ export function ProductsTable({
                     </div>
                   </td>
                 </tr>
-              </>
+              </Fragment>
             );
           })}
         </tbody>

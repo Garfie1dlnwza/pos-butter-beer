@@ -8,8 +8,8 @@ export function DateRangePicker() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // Initialize with today's date if not present
-  const today = new Date().toISOString().split("T")[0];
+  // Initialize with today's date if not present (Local time)
+  const today = new Date().toLocaleDateString("en-CA");
   const defaultStart = searchParams.get("startDate") ?? today;
   const defaultEnd = searchParams.get("endDate") ?? today;
 

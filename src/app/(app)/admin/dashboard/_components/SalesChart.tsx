@@ -68,7 +68,9 @@ export function SalesChart() {
               ))}
             </Pie>
             <Tooltip
-              formatter={(value: number) => `฿${value.toLocaleString()}`}
+              formatter={(value: number | string | undefined) =>
+                `฿${Number(value ?? 0).toLocaleString()}`
+              }
             />
             <Legend />
           </PieChart>

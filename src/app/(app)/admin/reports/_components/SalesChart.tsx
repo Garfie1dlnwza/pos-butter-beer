@@ -68,8 +68,8 @@ export function SalesChart({ data }: SalesChartProps) {
                 borderRadius: "12px",
                 boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
               }}
-              formatter={(value: number) => [
-                `฿${value.toLocaleString()}`,
+              formatter={(value: number | string | undefined) => [
+                `฿${Number(value ?? 0).toLocaleString()}`,
                 "ยอดขาย",
               ]}
               labelFormatter={(label) => {

@@ -5,19 +5,22 @@ import { DateRangePicker } from "./_components/DateRangePicker";
 import { SalesChart } from "./_components/SalesChart";
 import { ExportButton } from "./_components/ExportButton";
 import { useSearchParams } from "next/navigation";
+import { useMemo } from "react";
 
 export default function ReportsPage() {
   const searchParams = useSearchParams();
 
-  // Default to last 30 days
-  const today = new Date();
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(today.getDate() - 30);
+  // Default to today (Memoized to prevent infinite re-fetching)
+  const today = useMemo(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }, []);
 
   const startDateParam = searchParams.get("startDate");
   const endDateParam = searchParams.get("endDate");
 
-  const startDate = startDateParam ? new Date(startDateParam) : thirtyDaysAgo;
+  const startDate = startDateParam ? new Date(startDateParam) : today;
   const endDate = endDateParam ? new Date(endDateParam) : today;
 
   const { data: dailySales, isLoading } = api.reports.getDailySales.useQuery({

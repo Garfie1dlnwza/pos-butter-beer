@@ -34,7 +34,7 @@ export const reportsRouter = createTRPCRouter({
       > = {};
 
       for (const order of orders) {
-        const dateKey = order.createdAt.toISOString().split("T")[0]!;
+        const dateKey = order.createdAt.toLocaleDateString("en-CA");
         salesByDate[dateKey] ??= {
           date: dateKey,
           revenue: 0,
@@ -42,7 +42,7 @@ export const reportsRouter = createTRPCRouter({
           cost: 0,
         };
 
-        const dayStats = salesByDate[dateKey]!;
+        const dayStats = salesByDate[dateKey];
         dayStats.revenue += order.totalAmount;
         dayStats.orders += 1;
 
@@ -74,7 +74,7 @@ export const reportsRouter = createTRPCRouter({
       > = {};
 
       for (const order of ordersWithItems) {
-        const dateKey = order.createdAt.toISOString().split("T")[0]!;
+        const dateKey = order.createdAt.toLocaleDateString("en-CA");
         refinedSalesByDate[dateKey] ??= {
           date: dateKey,
           revenue: 0,
@@ -82,7 +82,7 @@ export const reportsRouter = createTRPCRouter({
           cost: 0,
         };
 
-        const dayStats = refinedSalesByDate[dateKey]!;
+        const dayStats = refinedSalesByDate[dateKey];
         dayStats.revenue += order.totalAmount;
         dayStats.orders += 1;
 
@@ -93,21 +93,22 @@ export const reportsRouter = createTRPCRouter({
         dayStats.cost += orderCost;
       }
 
-      // Fill missing dates with 0?
-      // User might want to see 0 sales days.
       // Let's generate date range.
-      const result = [];
+      const result: {
+        date: string;
+        revenue: number;
+        orders: number;
+        cost: number;
+      }[] = [];
       const current = new Date(start);
       while (current <= end) {
-        const dateKey = current.toISOString().split("T")[0]!;
+        const dateKey = current.toLocaleDateString("en-CA");
         result.push(
           refinedSalesByDate[dateKey] ?? {
             date: dateKey,
             revenue: 0,
             orders: 0,
             cost: 0,
-            profit: 0,
-            margin: 0,
           },
         );
         current.setDate(current.getDate() + 1);
@@ -161,10 +162,15 @@ export const reportsRouter = createTRPCRouter({
       > = {};
 
       for (const item of orderItems) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        const name = item.product.nameTh ?? item.product.name;
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        const categoryName = item.product.category?.name ?? "Uncategorized";
+
         productStats[item.productId] ??= {
           id: item.productId,
-          name: item.product.nameTh || item.product.name,
-          category: item.product.category?.name ?? "Uncategorized",
+          name: name as string,
+          category: categoryName as string,
           quantity: 0,
           revenue: 0,
           cost: 0,
