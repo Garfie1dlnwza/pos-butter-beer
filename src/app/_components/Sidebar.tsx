@@ -11,18 +11,39 @@ interface MenuItem {
   roles: ("ADMIN" | "STAFF")[];
 }
 
-const menuItems: MenuItem[] = [
-  { label: "POS", href: "/pos", roles: ["ADMIN", "STAFF"] },
-  { label: "กะ/Shift", href: "/staff/shifts", roles: ["ADMIN", "STAFF"] },
-  { label: "สินค้า", href: "/admin/products", roles: ["ADMIN"] },
-  { label: "วัตถุดิบ", href: "/admin/ingredients", roles: ["ADMIN"] },
-  { label: "สต็อก", href: "/admin/inventory", roles: ["ADMIN"] },
-  { label: "ท็อปปิ้ง", href: "/admin/toppings", roles: ["ADMIN"] },
-  { label: "รายจ่าย", href: "/admin/expenses", roles: ["ADMIN"] },
-  { label: "แดชบอร์ด", href: "/admin/dashboard", roles: ["ADMIN", "STAFF"] },
-  { label: "รายงาน", href: "/admin/reports", roles: ["ADMIN"] },
-  { label: "ประวัติการขาย", href: "/staff/orders", roles: ["ADMIN", "STAFF"] },
-  { label: "จัดการหมวดหมู่", href: "/admin/categories", roles: ["ADMIN"] },
+interface MenuGroup {
+  title: string;
+  items: MenuItem[];
+}
+
+// จัดกลุ่มเมนู
+const menuGroups: MenuGroup[] = [
+  {
+    title: "Operations",
+    items: [
+      { label: "POS", href: "/pos", roles: ["ADMIN", "STAFF"] },
+      { label: "ประวัติการขาย", href: "/staff/orders", roles: ["ADMIN", "STAFF"] },
+      { label: "กะ/Shift", href: "/staff/shifts", roles: ["ADMIN", "STAFF"] },
+    ],
+  },
+  {
+    title: "Management",
+    items: [
+      { label: "สินค้า", href: "/admin/products", roles: ["ADMIN"] },
+      { label: "หมวดหมู่", href: "/admin/categories", roles: ["ADMIN"] },
+      { label: "วัตถุดิบ", href: "/admin/ingredients", roles: ["ADMIN"] },
+      { label: "ท็อปปิ้ง", href: "/admin/toppings", roles: ["ADMIN"] },
+      { label: "สต็อกสินค้า", href: "/admin/inventory", roles: ["ADMIN"] },
+    ],
+  },
+  {
+    title: "Business",
+    items: [
+      { label: "แดชบอร์ด", href: "/admin/dashboard", roles: ["ADMIN", "STAFF"] },
+      { label: "รายงาน", href: "/admin/reports", roles: ["ADMIN"] },
+      { label: "รายจ่าย", href: "/admin/expenses", roles: ["ADMIN"] },
+    ],
+  },
 ];
 
 export function Sidebar() {
@@ -30,14 +51,11 @@ export function Sidebar() {
   const pathname = usePathname();
 
   const userRole = (session?.user?.role as "ADMIN" | "STAFF") ?? "STAFF";
-  const filteredMenu = menuItems.filter((item) =>
-    item.roles.includes(userRole),
-  );
 
   return (
     <aside className="hidden h-screen w-64 flex-col border-r border-[#D7CCC8]/60 bg-[#FFF8E1] md:flex">
-      {/* 1. Logo Section - Minimal & Clean */}
-      <div className="flex flex-col items-center justify-center pt-10 pb-8">
+      {/* 1. Logo Section */}
+      <div className="flex flex-col items-center justify-center pb-6 pt-10">
         <div className="relative mb-3 h-16 w-16">
           <Image
             src="/logo-german.svg"
@@ -52,32 +70,51 @@ export function Sidebar() {
         </span>
       </div>
 
-      {/* 2. Navigation Menu - Typography Focused */}
-      <nav className="flex-1 overflow-y-auto px-6 py-4">
-        <div className="space-y-1">
-          {filteredMenu.map((item) => {
-            const isActive =
-              pathname === item.href || pathname.startsWith(item.href + "/");
+      {/* 2. Navigation Menu with Sections */}
+      <nav className="flex-1 overflow-y-auto px-4 py-2 scrollbar-hide">
+        {menuGroups.map((group, groupIndex) => {
+          // Filter items based on Role inside the group
+          const visibleItems = group.items.filter((item) =>
+            item.roles.includes(userRole)
+          );
 
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`group flex items-center justify-between rounded-lg px-4 py-3 text-sm transition-all duration-300 ${
-                  isActive
-                    ? "bg-[#3E2723] font-semibold text-white shadow-md shadow-[#3E2723]/10"
-                    : "font-medium text-[#5D4037] hover:bg-[#D7CCC8]/40 hover:text-[#3E2723]"
-                }`}
-              >
-                <span className="tracking-wide">{item.label}</span>
-                {/* Minimal Active Indicator Dot */}
-                {isActive && (
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#FFF8E1]" />
-                )}
-              </Link>
-            );
-          })}
-        </div>
+          // If no items in this group are visible for this role, don't render the group
+          if (visibleItems.length === 0) return null;
+
+          return (
+            <div key={group.title} className="mb-6">
+              {/* Section Header */}
+              <h3 className="mb-2 px-4 text-[10px] font-bold uppercase tracking-widest text-[#A1887F]">
+                {group.title}
+              </h3>
+              
+              {/* Group Items */}
+              <div className="space-y-1">
+                {visibleItems.map((item) => {
+                  const isActive =
+                    pathname === item.href || pathname.startsWith(item.href + "/");
+
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`group flex items-center justify-between rounded-lg px-4 py-2.5 text-sm transition-all duration-300 ${
+                        isActive
+                          ? "bg-[#3E2723] font-semibold text-white shadow-md shadow-[#3E2723]/10"
+                          : "font-medium text-[#5D4037] hover:bg-[#D7CCC8]/40 hover:text-[#3E2723]"
+                      }`}
+                    >
+                      <span className="tracking-wide">{item.label}</span>
+                      {isActive && (
+                        <span className="h-1.5 w-1.5 rounded-full bg-[#FFF8E1]" />
+                      )}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
       </nav>
 
       {/* 3. Footer / Profile Section */}

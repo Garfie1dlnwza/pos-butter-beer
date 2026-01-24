@@ -28,9 +28,14 @@ export default function POSPage() {
   } | null>(null);
   const [showPayment, setShowPayment] = useState(false);
 
-  const { data: products, isLoading } = api.products.getAll.useQuery();
+  const { data: products, isLoading: isProductsLoading } =
+    api.products.getAll.useQuery();
   const { data: toppings } = api.toppings.getAll.useQuery();
   const { data: categoriesData } = api.categories.getAll.useQuery();
+  const { data: currentShift, isLoading: isShiftLoading } =
+    api.shifts.getCurrentShift.useQuery();
+  const { data: session } = api.auth.getSession.useQuery();
+
   const categories = categoriesData as
     | { id: string; name: string }[]
     | undefined;
@@ -119,13 +124,38 @@ export default function POSPage() {
     ) ?? [];
 
   // Minimal Loading State
-  if (isLoading) {
+  if (isProductsLoading || isShiftLoading) {
     return (
       <div className="flex h-screen w-full flex-col items-center justify-center bg-[#FAFAFA]">
         <div className="h-8 w-8 animate-spin rounded-full border-[3px] border-[#D7CCC8] border-t-[#3E2723]"></div>
         <span className="mt-4 text-xs font-bold tracking-widest text-[#3E2723] uppercase">
-          Loading Menu
+          Loading System
         </span>
+      </div>
+    );
+  }
+
+  // --- SHIFT CHECK (Blocking for STAFF) ---
+  const isStaff = session?.user.role === "STAFF";
+  if (isStaff && !currentShift) {
+    return (
+      <div className="flex h-screen w-full flex-col items-center justify-center bg-[#FAFAFA] p-6 text-center">
+        <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-red-100">
+          <span className="text-5xl">🛑</span>
+        </div>
+        <h1 className="mb-2 text-2xl font-bold text-[#3E2723]">
+          กรุณาเปิดกะก่อนเริ่มขาย
+        </h1>
+        <p className="mb-8 max-w-md text-[#8D6E63]">
+          คุณต้องเปิดกะในระบบก่อน จึงจะสามารถทำรายการขายสินค้าได้
+          เพื่อการตรวจสอบยอดเงินที่ถูกต้อง
+        </p>
+        <a
+          href="/staff/shifts"
+          className="rounded-xl bg-green-600 px-8 py-3 font-bold text-white shadow-lg transition hover:bg-green-700"
+        >
+          ไปยังหน้าเปิดกะ 🚀
+        </a>
       </div>
     );
   }
@@ -141,7 +171,9 @@ export default function POSPage() {
               Butter Beer
             </h1>
             <p className="mt-2 text-sm font-medium tracking-wide text-[#8D6E63]">
-              Choose items to order
+              {currentShift
+                ? `Shift Open: ${new Date(currentShift.startedAt).toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" })}`
+                : "Manager Mode"}
             </p>
           </div>
           <div className="hidden text-right sm:block">

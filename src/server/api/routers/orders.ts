@@ -33,22 +33,49 @@ export const ordersRouter = createTRPCRouter({
   create: protectedProcedure
     .input(createOrderSchema)
     .mutation(async ({ ctx, input }) => {
+      // 1. Check for Active Shift (Required for STAFF)
+      const currentShift = await ctx.db.shift.findFirst({
+        where: {
+          userId: ctx.session.user.id,
+          status: "open",
+        },
+      });
+
+      if (!currentShift && ctx.session.user.role === "STAFF") {
+        throw new TRPCError({
+          code: "PRECONDITION_FAILED",
+          message: "กรุณาเปิดกะก่อนทำรายการ",
+        });
+      }
+
       return await ctx.db.$transaction(async (tx) => {
-        // 1. Fetch products and recipes for cost calculation & stock deduction
+        // 2. Fetch Data (Products, Recipes, Toppings)
         const productIds = input.items.map((i) => i.id);
         const products = await tx.product.findMany({
           where: { id: { in: productIds } },
           include: {
             recipe: {
-              include: {
-                ingredient: true,
-              },
+              include: { ingredient: true },
             },
           },
         });
         const productMap = new Map(products.map((p) => [p.id, p]));
 
-        // 2. Generate Order Number (e.g., ORD-20240124-0001)
+        // Fetch toppings to get their recipes
+        const allToppingIds = input.items.flatMap((i) =>
+          i.toppings.map((t) => t.id),
+        );
+        const toppings = await tx.topping.findMany({
+          where: { id: { in: allToppingIds } },
+          include: {
+            recipe: {
+              include: { ingredient: true },
+            },
+          },
+        });
+        const toppingMap = new Map(toppings.map((t) => [t.id, t]));
+
+        // 3. Generate Order Number
         const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
         const todayCount = await tx.order.count({
           where: {
@@ -60,7 +87,7 @@ export const ordersRouter = createTRPCRouter({
         });
         const orderNumber = `ORD-${dateStr}-${String(todayCount + 1).padStart(4, "0")}`;
 
-        // 3. Create Order with Calculated Cost
+        // 4. Create Order & Items
         const order = await tx.order.create({
           data: {
             orderNumber,
@@ -72,23 +99,39 @@ export const ordersRouter = createTRPCRouter({
             customerName: input.customerName,
             note: input.note,
             createdById: ctx.session.user.id,
+            shiftId: currentShift?.id, // Link to Shift!
             items: {
               create: input.items.map((item) => {
                 const product = productMap.get(item.id);
-                // Calculate unit cost from recipe
-                let unitCost = 0;
+
+                // Calculate Product Cost
+                let productCost = 0;
                 if (product?.recipe) {
-                  unitCost = product.recipe.reduce(
+                  productCost = product.recipe.reduce(
                     (sum, r) => sum + r.amountUsed * r.ingredient.costPerUnit,
                     0,
                   );
                 }
 
+                // Calculate Topping Cost (from Recipes) for this item
+                // Note: item.toppings has price, but we need cost from recipe
+                const toppingCost = item.toppings.reduce((acc, tItem) => {
+                  const topping = toppingMap.get(tItem.id);
+                  if (!topping?.recipe) return acc;
+                  const cost = topping.recipe.reduce(
+                    (rSum, r) => rSum + r.amountUsed * r.ingredient.costPerUnit,
+                    0,
+                  );
+                  return acc + cost;
+                }, 0);
+
+                const totalUnitCost = productCost + toppingCost;
+
                 return {
                   productId: item.id,
                   quantity: item.quantity,
                   unitPrice: item.price,
-                  cost: unitCost * item.quantity, // Total cost for this line (cost * qty)
+                  cost: totalUnitCost * item.quantity,
                   sweetness: item.sweetness,
                   toppings: JSON.stringify(item.toppings),
                   toppingCost: item.toppings.reduce(
@@ -103,42 +146,74 @@ export const ordersRouter = createTRPCRouter({
           include: { items: true },
         });
 
-        // 4. Deduct Stock (FIFO)
+        // 5. Deduct Stock & Create Transactions
+        const ingredientsToDeduct = new Map<string, number>();
+
+        // Aggregate total usage per ingredient first
         for (const item of input.items) {
+          // Product Ingredients
           const product = productMap.get(item.id);
-          if (!product || !product.recipe) continue;
-
-          for (const recipeItem of product.recipe) {
-            const amountNeeded = recipeItem.amountUsed * item.quantity;
-            let remainingNeeded = amountNeeded;
-
-            // Update main ingredient stock
-            await tx.ingredient.update({
-              where: { id: recipeItem.ingredientId },
-              data: { currentStock: { decrement: amountNeeded } },
-            });
-
-            // Find stock lots (FIFO)
-            const stockLots = await tx.stockLot.findMany({
-              where: {
-                ingredientId: recipeItem.ingredientId,
-                remainingQty: { gt: 0 },
-              },
-              orderBy: { createdAt: "asc" },
-            });
-
-            for (const lot of stockLots) {
-              if (remainingNeeded <= 0) break;
-
-              const deductAmount = Math.min(lot.remainingQty, remainingNeeded);
-
-              await tx.stockLot.update({
-                where: { id: lot.id },
-                data: { remainingQty: { decrement: deductAmount } },
-              });
-
-              remainingNeeded -= deductAmount;
+          if (product?.recipe) {
+            for (const r of product.recipe) {
+              const current = ingredientsToDeduct.get(r.ingredientId) ?? 0;
+              ingredientsToDeduct.set(
+                r.ingredientId,
+                current + r.amountUsed * item.quantity,
+              );
             }
+          }
+
+          // Topping Ingredients
+          for (const tItem of item.toppings) {
+            const topping = toppingMap.get(tItem.id);
+            if (topping?.recipe) {
+              for (const r of topping.recipe) {
+                // Topping usage is 1 per instance per item quantity
+                // item.quantity (cups) * 1 (portion)
+                const current = ingredientsToDeduct.get(r.ingredientId) ?? 0;
+                ingredientsToDeduct.set(
+                  r.ingredientId,
+                  current + r.amountUsed * item.quantity,
+                );
+              }
+            }
+          }
+        }
+
+        // Execute Deductions
+        for (const [ingredientId, amount] of ingredientsToDeduct.entries()) {
+          // A. Update Current Stock
+          await tx.ingredient.update({
+            where: { id: ingredientId },
+            data: { currentStock: { decrement: amount } },
+          });
+
+          // B. Create Inventory Transaction
+          await tx.inventoryTransaction.create({
+            data: {
+              type: "SALE",
+              quantity: -amount, // Negative for deduction
+              ingredientId: ingredientId,
+              note: `Order: ${orderNumber}`,
+              userId: ctx.session.user.id,
+            },
+          });
+
+          // C. FIFO Lot Deduction (Optional but good)
+          let remainingNeeded = amount;
+          const stockLots = await tx.stockLot.findMany({
+            where: { ingredientId: ingredientId, remainingQty: { gt: 0 } },
+            orderBy: { createdAt: "asc" },
+          });
+
+          for (const lot of stockLots) {
+            if (remainingNeeded <= 0) break;
+            const deduct = Math.min(lot.remainingQty, remainingNeeded);
+            await tx.stockLot.update({
+              where: { id: lot.id },
+              data: { remainingQty: { decrement: deduct } },
+            });
+            remainingNeeded -= deduct;
           }
         }
 

@@ -9,6 +9,7 @@ import { reportsRouter } from "@/server/api/routers/reports";
 import { expensesRouter } from "@/server/api/routers/expenses";
 import { inventoryRouter } from "@/server/api/routers/inventory";
 import { shiftsRouter } from "@/server/api/routers/shifts";
+import { authRouter } from "@/server/api/routers/auth";
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
 
 /**
@@ -17,6 +18,7 @@ import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
+  auth: authRouter, // Added auth router
   post: postRouter,
   products: productsRouter,
   toppings: toppingsRouter,
