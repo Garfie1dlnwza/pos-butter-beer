@@ -42,6 +42,7 @@ export default function ReportsPage() {
     return d;
   }, [endDate]);
 
+  // Fetch Daily Sales (now includes expenses & incomes)
   const { data: dailySales, isLoading } = api.reports.getDailySales.useQuery({
     startDate,
     endDate,
@@ -52,25 +53,27 @@ export default function ReportsPage() {
     endDate,
   });
 
-  // Fetch expenses for the same period
-  const { data: expensesSummary } = api.expenses.getSummary.useQuery({
-    startDate,
-    endDate: endDateEnd,
-  });
-
-  // Calculate totals
+  // Calculate totals from dailySales
   const totals = useMemo(() => {
-    if (!dailySales) return { revenue: 0, cost: 0, grossProfit: 0 };
+    if (!dailySales)
+      return {
+        revenue: 0,
+        cost: 0,
+        grossProfit: 0,
+        expenses: 0,
+        incomes: 0,
+        netProfit: 0,
+      };
 
     const revenue = dailySales.reduce((sum, d) => sum + d.revenue, 0);
-    const cost = dailySales.reduce((sum, d) => sum + d.cost, 0);
+    const cost = dailySales.reduce((sum, d) => sum + d.cogs, 0); // cogs
+    const expenses = dailySales.reduce((sum, d) => sum + d.expenses, 0);
+    const incomes = dailySales.reduce((sum, d) => sum + d.incomes, 0);
     const grossProfit = revenue - cost;
+    const netProfit = revenue + incomes - (cost + expenses);
 
-    return { revenue, cost, grossProfit };
+    return { revenue, cost, grossProfit, expenses, incomes, netProfit };
   }, [dailySales]);
-
-  const opex = expensesSummary?.total ?? 0;
-  const netProfit = totals.grossProfit - opex;
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-[#FAFAFA]">
@@ -111,7 +114,7 @@ export default function ReportsPage() {
             <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
               {/* Revenue */}
               <div className="rounded-xl border border-[#D7CCC8]/30 bg-white p-5 shadow-sm">
-                <p className="text-sm font-medium text-[#8D6E63]">รายได้รวม</p>
+                <p className="text-sm font-medium text-[#8D6E63]">ยอดขายทั้งหมด</p>
                 <p className="mt-2 text-2xl font-bold text-[#3E2723]">
                   ฿{totals.revenue.toLocaleString()}
                 </p>
@@ -127,20 +130,13 @@ export default function ReportsPage() {
                 </p>
               </div>
 
-              {/* Gross Profit */}
+              {/* Incomes */}
               <div className="rounded-xl border border-[#D7CCC8]/30 bg-white p-5 shadow-sm">
                 <p className="text-sm font-medium text-[#8D6E63]">
-                  กำไรขั้นต้น
+                  รายรับอื่นๆ
                 </p>
                 <p className="mt-2 text-2xl font-bold text-blue-600">
-                  ฿{totals.grossProfit.toLocaleString()}
-                </p>
-                <p className="mt-1 text-xs text-gray-500">
-                  Margin:{" "}
-                  {totals.revenue > 0
-                    ? ((totals.grossProfit / totals.revenue) * 100).toFixed(1)
-                    : 0}
-                  %
+                  +฿{totals.incomes.toLocaleString()}
                 </p>
               </div>
 
@@ -150,25 +146,25 @@ export default function ReportsPage() {
                   ค่าใช้จ่ายอื่น
                 </p>
                 <p className="mt-2 text-2xl font-bold text-red-600">
-                  -฿{opex.toLocaleString()}
+                  -฿{totals.expenses.toLocaleString()}
                 </p>
                 <p className="mt-1 text-xs text-gray-500">OPEX</p>
               </div>
 
               {/* Net Profit */}
               <div
-                className={`rounded-xl border-2 p-5 shadow-sm ${netProfit >= 0 ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"}`}
+                className={`rounded-xl border-2 p-5 shadow-sm ${totals.netProfit >= 0 ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"}`}
               >
                 <p className="text-sm font-medium text-[#8D6E63]">กำไรสุทธิ</p>
                 <p
-                  className={`mt-2 text-2xl font-bold ${netProfit >= 0 ? "text-green-600" : "text-red-600"}`}
+                  className={`mt-2 text-2xl font-bold ${totals.netProfit >= 0 ? "text-green-600" : "text-red-600"}`}
                 >
-                  ฿{netProfit.toLocaleString()}
+                  ฿{totals.netProfit.toLocaleString()}
                 </p>
                 <p className="mt-1 text-xs text-gray-500">
                   Net Margin:{" "}
                   {totals.revenue > 0
-                    ? ((netProfit / totals.revenue) * 100).toFixed(1)
+                    ? ((totals.netProfit / totals.revenue) * 100).toFixed(1)
                     : 0}
                   %
                 </p>

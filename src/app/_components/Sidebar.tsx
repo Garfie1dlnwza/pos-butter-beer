@@ -46,13 +46,9 @@ const menuGroups: MenuGroup[] = [
   {
     title: "Business",
     items: [
-      {
-        label: "แดชบอร์ด",
-        href: "/admin/dashboard",
-        roles: ["ADMIN", "STAFF"],
-      },
       { label: "รายงาน", href: "/admin/reports", roles: ["ADMIN"] },
       { label: "รายจ่าย", href: "/admin/expenses", roles: ["ADMIN"] },
+      { label: "รายรับอื่นๆ", href: "/admin/incomes", roles: ["ADMIN"] },
       {
         label: "ประวัติการเปิดปิดกะ",
         href: "/admin/shifts",

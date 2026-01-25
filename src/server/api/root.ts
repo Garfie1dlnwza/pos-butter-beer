@@ -10,6 +10,7 @@ import { expensesRouter } from "@/server/api/routers/expenses";
 import { inventoryRouter } from "@/server/api/routers/inventory";
 import { shiftsRouter } from "@/server/api/routers/shifts";
 import { authRouter } from "@/server/api/routers/auth";
+import { incomesRouter } from "@/server/api/routers/incomes";
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
 
 /**
@@ -30,6 +31,7 @@ export const appRouter = createTRPCRouter({
   expenses: expensesRouter,
   inventory: inventoryRouter,
   shifts: shiftsRouter,
+  incomes: incomesRouter,
 });
 
 // export type definition of API

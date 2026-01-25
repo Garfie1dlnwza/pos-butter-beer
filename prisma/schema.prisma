@@ -72,6 +72,7 @@ model User {
     orders                Order[]
     auditLogs             AuditLog[]
     expenses              Expense[]              @relation("UserExpenses")
+    incomes               Income[]               @relation("UserIncomes")
     inventoryTransactions InventoryTransaction[] @relation("UserInventoryTransactions")
     shifts                Shift[]                @relation("UserShifts")
 }
@@ -251,6 +252,20 @@ model Expense {
     updatedAt   DateTime @updatedAt
 
     createdBy User? @relation("UserExpenses", fields: [createdById], references: [id])
+}
+
+// Income - รายรับอื่นๆ (เงินทุน, ขายขยะ, ฯลฯ)
+model Income {
+    id          String   @id @default(cuid())
+    title       String // ชื่อรายรับ
+    amount      Float // จำนวนเงิน
+    description String? // รายละเอียดเพิ่มเติม
+    date        DateTime @default(now()) // วันที่รับเงิน
+    createdById String?
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    createdBy User? @relation("UserIncomes", fields: [createdById], references: [id])
 }
 
 // ==========================================

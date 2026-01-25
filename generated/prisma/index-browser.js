@@ -286,6 +286,17 @@ exports.Prisma.ExpenseScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.IncomeScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  amount: 'amount',
+  description: 'description',
+  date: 'date',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.InventoryTransactionScalarFieldEnum = {
   id: 'id',
   ingredientId: 'ingredientId',
@@ -357,6 +368,7 @@ exports.Prisma.ModelName = {
   StockLot: 'StockLot',
   AuditLog: 'AuditLog',
   Expense: 'Expense',
+  Income: 'Income',
   InventoryTransaction: 'InventoryTransaction',
   Shift: 'Shift'
 };

@@ -3,7 +3,19 @@
 import { api } from "@/trpc/react";
 
 export function SummaryCards() {
-  const { data: summary, isLoading } = api.dashboard.getTodaySummary.useQuery();
+  const {
+    data: summary,
+    isLoading,
+    error,
+  } = api.dashboard.getTodaySummary.useQuery();
+
+  if (error) {
+    return (
+      <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-red-600">
+        Error loading dashboard data: {error.message}
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -43,13 +55,16 @@ export function SummaryCards() {
       ),
     },
     {
-      label: "กำไรขั้นต้น",
-      value: `฿${summary.profit.toLocaleString()}`,
-      subValue: `Margin ${summary.margin.toFixed(1)}%`,
-      color: "bg-[#E8F5E9] text-[#1B5E20]",
+      label: "กำไรสุทธิ (Net)",
+      value: `฿${(summary.netProfit ?? 0).toLocaleString()}`,
+      subValue: `รวมรายรับ/จ่ายอื่นๆ`,
+      color:
+        (summary.netProfit ?? 0) >= 0
+          ? "bg-[#E8F5E9] text-[#1B5E20]"
+          : "bg-[#FFEBEE] text-[#B71C1C]",
       icon: (
         <svg
-          className="h-6 w-6 text-[#43A047]"
+          className={`h-6 w-6 ${(summary.netProfit ?? 0) >= 0 ? "text-[#43A047]" : "text-[#E53935]"}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -58,15 +73,36 @@ export function SummaryCards() {
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth={2}
-            d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
           />
         </svg>
       ),
     },
     {
-      label: "ต้นทุนสินค้า",
-      value: `฿${summary.cost.toLocaleString()}`,
-      subValue: "Cost of Goods Sold",
+      label: "รายรับอื่นๆ",
+      value: `฿${(summary.incomes ?? 0).toLocaleString()}`,
+      subValue: "Other Income",
+      color: "bg-[#E3F2FD] text-[#0D47A1]",
+      icon: (
+        <svg
+          className="h-6 w-6 text-[#1E88E5]"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 4v16m8-8H4"
+          />
+        </svg>
+      ),
+    },
+    {
+      label: "ค่าใช้จ่าย (OPEX)",
+      value: `฿${(summary.expenses ?? 0).toLocaleString()}`,
+      subValue: "Operating Expenses",
       color: "bg-[#FFEBEE] text-[#B71C1C]",
       icon: (
         <svg
@@ -79,28 +115,7 @@ export function SummaryCards() {
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth={2}
-            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-          />
-        </svg>
-      ),
-    },
-    {
-      label: "จำนวนแก้ว",
-      value: `${summary.cupsSold}`,
-      subValue: "Sold Items",
-      color: "bg-[#FFF3E0] text-[#E65100]",
-      icon: (
-        <svg
-          className="h-6 w-6 text-[#FB8C00]"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+            d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
           />
         </svg>
       ),
@@ -124,6 +139,12 @@ export function SummaryCards() {
           <p className="mt-4 text-xs font-medium opacity-70">{card.subValue}</p>
         </div>
       ))}
+      <div className="col-span-full mt-8 rounded-xl border border-yellow-200 bg-yellow-50 p-4 font-mono text-xs text-yellow-800">
+        <p className="font-bold">Debug Info (Please verify):</p>
+        <pre>{JSON.stringify(summary.debug, null, 2)}</pre>
+        <p className="mt-2">Net Profit Raw: {summary.netProfit}</p>
+        <p>Incomes Raw: {summary.incomes}</p>
+      </div>
     </div>
   );
 }

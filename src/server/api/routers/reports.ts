@@ -16,73 +16,49 @@ export const reportsRouter = createTRPCRouter({
       const end = new Date(input.endDate);
       end.setHours(23, 59, 59, 999);
 
-      const orders = await ctx.db.order.findMany({
-        where: {
-          createdAt: {
-            gte: start,
-            lte: end,
+      // Fetch Orders, Expenses, Incomes in parallel
+      const [ordersWithItems, expenses, incomes] = await Promise.all([
+        ctx.db.order.findMany({
+          where: {
+            createdAt: { gte: start, lte: end },
+            status: "completed",
           },
-          status: "completed",
-        },
-        orderBy: { createdAt: "asc" },
-      });
+          include: { items: true },
+          orderBy: { createdAt: "asc" },
+        }),
+        ctx.db.expense.findMany({
+          where: { date: { gte: start, lte: end } },
+        }),
+        ctx.db.income.findMany({
+          where: { date: { gte: start, lte: end } },
+        }),
+      ]);
 
-      // Group by date
       const salesByDate: Record<
         string,
-        { date: string; revenue: number; orders: number; cost: number }
+        {
+          date: string;
+          revenue: number;
+          orders: number;
+          cogs: number; // Cost of Goods Sold
+          expenses: number;
+          incomes: number;
+        }
       > = {};
 
-      for (const order of orders) {
+      // Process Orders
+      for (const order of ordersWithItems) {
         const dateKey = order.createdAt.toLocaleDateString("en-CA");
         salesByDate[dateKey] ??= {
           date: dateKey,
           revenue: 0,
           orders: 0,
-          cost: 0,
+          cogs: 0,
+          expenses: 0,
+          incomes: 0,
         };
 
         const dayStats = salesByDate[dateKey];
-        dayStats.revenue += order.totalAmount;
-        dayStats.orders += 1;
-
-        // Calculate cost from items
-        // Note: For now we iterate items. Ideally we should include items in query.
-        // But let's fetch items separately or include them?
-        // Including items in a large date range query might be heavy.
-        // Let's optimize: include items in the main query.
-      }
-
-      // Re-query with include items to get accurate cost
-      const ordersWithItems = await ctx.db.order.findMany({
-        where: {
-          createdAt: {
-            gte: start,
-            lte: end,
-          },
-          status: "completed",
-        },
-        include: {
-          items: true,
-        },
-        orderBy: { createdAt: "asc" },
-      });
-
-      const refinedSalesByDate: Record<
-        string,
-        { date: string; revenue: number; orders: number; cost: number }
-      > = {};
-
-      for (const order of ordersWithItems) {
-        const dateKey = order.createdAt.toLocaleDateString("en-CA");
-        refinedSalesByDate[dateKey] ??= {
-          date: dateKey,
-          revenue: 0,
-          orders: 0,
-          cost: 0,
-        };
-
-        const dayStats = refinedSalesByDate[dateKey];
         dayStats.revenue += order.totalAmount;
         dayStats.orders += 1;
 
@@ -90,35 +66,79 @@ export const reportsRouter = createTRPCRouter({
         for (const item of order.items) {
           orderCost += item.cost;
         }
-        dayStats.cost += orderCost;
+        dayStats.cogs += orderCost;
       }
 
-      // Let's generate date range.
+      // Process Expenses
+      for (const expense of expenses) {
+        const dateKey = expense.date.toLocaleDateString("en-CA");
+        salesByDate[dateKey] ??= {
+          date: dateKey,
+          revenue: 0,
+          orders: 0,
+          cogs: 0,
+          expenses: 0,
+          incomes: 0,
+        };
+        salesByDate[dateKey].expenses += expense.amount;
+      }
+
+      // Process Incomes
+      for (const income of incomes) {
+        const dateKey = income.date.toLocaleDateString("en-CA");
+        salesByDate[dateKey] ??= {
+          date: dateKey,
+          revenue: 0,
+          orders: 0,
+          cogs: 0,
+          expenses: 0,
+          incomes: 0,
+        };
+        salesByDate[dateKey].incomes += income.amount;
+      }
+
+      // Generate result array with zero-filling
       const result: {
         date: string;
         revenue: number;
         orders: number;
-        cost: number;
+        cogs: number; // Renamed from cost for clarity
+        expenses: number;
+        incomes: number;
+        grossProfit: number;
+        netProfit: number;
       }[] = [];
+
       const current = new Date(start);
       while (current <= end) {
         const dateKey = current.toLocaleDateString("en-CA");
-        result.push(
-          refinedSalesByDate[dateKey] ?? {
-            date: dateKey,
-            revenue: 0,
-            orders: 0,
-            cost: 0,
-          },
-        );
+        const stats = salesByDate[dateKey] ?? {
+          date: dateKey,
+          revenue: 0,
+          orders: 0,
+          cogs: 0,
+          expenses: 0,
+          incomes: 0,
+        };
+
+        const grossProfit = stats.revenue - stats.cogs;
+        const netProfit =
+          stats.revenue + stats.incomes - (stats.cogs + stats.expenses);
+
+        result.push({
+          ...stats,
+          grossProfit,
+          netProfit,
+        });
         current.setDate(current.getDate() + 1);
       }
 
-      // Add profit/margin calculation
+      // Compute formatting/margin (optional, can be done in UI)
       return result.map((d) => ({
         ...d,
-        profit: d.revenue - d.cost,
-        margin: d.revenue > 0 ? ((d.revenue - d.cost) / d.revenue) * 100 : 0,
+        cost: d.cogs, // Backward compatibility alias
+        profit: d.grossProfit, // Backward compatibility alias (Gross)
+        margin: d.revenue > 0 ? (d.grossProfit / d.revenue) * 100 : 0,
       }));
     }),
 
