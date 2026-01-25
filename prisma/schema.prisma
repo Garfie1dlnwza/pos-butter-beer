@@ -192,12 +192,13 @@ model OrderItem {
 
 // Topping - ท็อปปิ้งที่เพิ่มราคา
 model Topping {
-    id       String          @id @default(cuid())
-    name     String
-    nameTh   String?
-    price    Float // ราคาเพิ่ม
-    isActive Boolean         @default(true)
-    recipe   ToppingRecipe[] // สูตรท็อปปิ้ง
+    id        String          @id @default(cuid())
+    name      String
+    nameTh    String?
+    price     Float // ราคาเพิ่ม
+    isActive  Boolean         @default(true)
+    deletedAt DateTime? // soft delete
+    recipe    ToppingRecipe[] // สูตรท็อปปิ้ง
 }
 
 // ToppingRecipe - สูตรท็อปปิ้ง (เชื่อม Topping กับ Ingredient)

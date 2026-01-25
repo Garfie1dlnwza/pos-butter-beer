@@ -245,7 +245,8 @@ exports.Prisma.ToppingScalarFieldEnum = {
   name: 'name',
   nameTh: 'nameTh',
   price: 'price',
-  isActive: 'isActive'
+  isActive: 'isActive',
+  deletedAt: 'deletedAt'
 };
 
 exports.Prisma.ToppingRecipeScalarFieldEnum = {

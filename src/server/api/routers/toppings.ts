@@ -5,7 +5,7 @@ export const toppingsRouter = createTRPCRouter({
   // Get all active toppings with recipes
   getAll: protectedProcedure.query(async ({ ctx }) => {
     return ctx.db.topping.findMany({
-      where: { isActive: true },
+      where: { isActive: true, deletedAt: null },
       include: {
         recipe: {
           include: { ingredient: true },
@@ -15,12 +15,13 @@ export const toppingsRouter = createTRPCRouter({
     });
   }),
 
-  // Get all toppings for admin (including inactive)
+  // Get all toppings for admin (including inactive, but not deleted)
   getAllAdmin: protectedProcedure.query(async ({ ctx }) => {
     if (ctx.session.user.role !== "ADMIN") {
       throw new Error("Unauthorized");
     }
     return ctx.db.topping.findMany({
+      where: { deletedAt: null },
       include: {
         recipe: {
           include: { ingredient: true },
@@ -35,7 +36,7 @@ export const toppingsRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       return ctx.db.topping.findFirst({
-        where: { id: input.id },
+        where: { id: input.id, deletedAt: null },
         include: {
           recipe: {
             include: { ingredient: true },
@@ -81,6 +82,24 @@ export const toppingsRouter = createTRPCRouter({
       return ctx.db.topping.update({
         where: { id },
         data,
+      });
+    }),
+
+  // Soft Delete Topping (ADMIN only)
+  delete: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.session.user.role !== "ADMIN") {
+        throw new Error("Unauthorized");
+      }
+      // Soft delete: set deletedAt
+      // Also potentially deactivate? Optional but good practice.
+      return ctx.db.topping.update({
+        where: { id: input.id },
+        data: {
+          deletedAt: new Date(),
+          isActive: false,
+        },
       });
     }),
 

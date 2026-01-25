@@ -15556,6 +15556,7 @@ export namespace Prisma {
     nameTh: string | null
     price: number | null
     isActive: boolean | null
+    deletedAt: Date | null
   }
 
   export type ToppingMaxAggregateOutputType = {
@@ -15564,6 +15565,7 @@ export namespace Prisma {
     nameTh: string | null
     price: number | null
     isActive: boolean | null
+    deletedAt: Date | null
   }
 
   export type ToppingCountAggregateOutputType = {
@@ -15572,6 +15574,7 @@ export namespace Prisma {
     nameTh: number
     price: number
     isActive: number
+    deletedAt: number
     _all: number
   }
 
@@ -15590,6 +15593,7 @@ export namespace Prisma {
     nameTh?: true
     price?: true
     isActive?: true
+    deletedAt?: true
   }
 
   export type ToppingMaxAggregateInputType = {
@@ -15598,6 +15602,7 @@ export namespace Prisma {
     nameTh?: true
     price?: true
     isActive?: true
+    deletedAt?: true
   }
 
   export type ToppingCountAggregateInputType = {
@@ -15606,6 +15611,7 @@ export namespace Prisma {
     nameTh?: true
     price?: true
     isActive?: true
+    deletedAt?: true
     _all?: true
   }
 
@@ -15701,6 +15707,7 @@ export namespace Prisma {
     nameTh: string | null
     price: number
     isActive: boolean
+    deletedAt: Date | null
     _count: ToppingCountAggregateOutputType | null
     _avg: ToppingAvgAggregateOutputType | null
     _sum: ToppingSumAggregateOutputType | null
@@ -15728,6 +15735,7 @@ export namespace Prisma {
     nameTh?: boolean
     price?: boolean
     isActive?: boolean
+    deletedAt?: boolean
     recipe?: boolean | Topping$recipeArgs<ExtArgs>
     _count?: boolean | ToppingCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["topping"]>
@@ -15738,6 +15746,7 @@ export namespace Prisma {
     nameTh?: boolean
     price?: boolean
     isActive?: boolean
+    deletedAt?: boolean
   }, ExtArgs["result"]["topping"]>
 
   export type ToppingSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -15746,6 +15755,7 @@ export namespace Prisma {
     nameTh?: boolean
     price?: boolean
     isActive?: boolean
+    deletedAt?: boolean
   }, ExtArgs["result"]["topping"]>
 
   export type ToppingSelectScalar = {
@@ -15754,9 +15764,10 @@ export namespace Prisma {
     nameTh?: boolean
     price?: boolean
     isActive?: boolean
+    deletedAt?: boolean
   }
 
-  export type ToppingOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "nameTh" | "price" | "isActive", ExtArgs["result"]["topping"]>
+  export type ToppingOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "nameTh" | "price" | "isActive" | "deletedAt", ExtArgs["result"]["topping"]>
   export type ToppingInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     recipe?: boolean | Topping$recipeArgs<ExtArgs>
     _count?: boolean | ToppingCountOutputTypeDefaultArgs<ExtArgs>
@@ -15775,6 +15786,7 @@ export namespace Prisma {
       nameTh: string | null
       price: number
       isActive: boolean
+      deletedAt: Date | null
     }, ExtArgs["result"]["topping"]>
     composites: {}
   }
@@ -16204,6 +16216,7 @@ export namespace Prisma {
     readonly nameTh: FieldRef<"Topping", 'String'>
     readonly price: FieldRef<"Topping", 'Float'>
     readonly isActive: FieldRef<"Topping", 'Boolean'>
+    readonly deletedAt: FieldRef<"Topping", 'DateTime'>
   }
     
 
@@ -23639,7 +23652,8 @@ export namespace Prisma {
     name: 'name',
     nameTh: 'nameTh',
     price: 'price',
-    isActive: 'isActive'
+    isActive: 'isActive',
+    deletedAt: 'deletedAt'
   };
 
   export type ToppingScalarFieldEnum = (typeof ToppingScalarFieldEnum)[keyof typeof ToppingScalarFieldEnum]
@@ -24683,6 +24697,7 @@ export namespace Prisma {
     nameTh?: StringNullableFilter<"Topping"> | string | null
     price?: FloatFilter<"Topping"> | number
     isActive?: BoolFilter<"Topping"> | boolean
+    deletedAt?: DateTimeNullableFilter<"Topping"> | Date | string | null
     recipe?: ToppingRecipeListRelationFilter
   }
 
@@ -24692,6 +24707,7 @@ export namespace Prisma {
     nameTh?: SortOrderInput | SortOrder
     price?: SortOrder
     isActive?: SortOrder
+    deletedAt?: SortOrderInput | SortOrder
     recipe?: ToppingRecipeOrderByRelationAggregateInput
   }
 
@@ -24704,6 +24720,7 @@ export namespace Prisma {
     nameTh?: StringNullableFilter<"Topping"> | string | null
     price?: FloatFilter<"Topping"> | number
     isActive?: BoolFilter<"Topping"> | boolean
+    deletedAt?: DateTimeNullableFilter<"Topping"> | Date | string | null
     recipe?: ToppingRecipeListRelationFilter
   }, "id">
 
@@ -24713,6 +24730,7 @@ export namespace Prisma {
     nameTh?: SortOrderInput | SortOrder
     price?: SortOrder
     isActive?: SortOrder
+    deletedAt?: SortOrderInput | SortOrder
     _count?: ToppingCountOrderByAggregateInput
     _avg?: ToppingAvgOrderByAggregateInput
     _max?: ToppingMaxOrderByAggregateInput
@@ -24729,6 +24747,7 @@ export namespace Prisma {
     nameTh?: StringNullableWithAggregatesFilter<"Topping"> | string | null
     price?: FloatWithAggregatesFilter<"Topping"> | number
     isActive?: BoolWithAggregatesFilter<"Topping"> | boolean
+    deletedAt?: DateTimeNullableWithAggregatesFilter<"Topping"> | Date | string | null
   }
 
   export type ToppingRecipeWhereInput = {
@@ -26051,6 +26070,7 @@ export namespace Prisma {
     nameTh?: string | null
     price: number
     isActive?: boolean
+    deletedAt?: Date | string | null
     recipe?: ToppingRecipeCreateNestedManyWithoutToppingInput
   }
 
@@ -26060,6 +26080,7 @@ export namespace Prisma {
     nameTh?: string | null
     price: number
     isActive?: boolean
+    deletedAt?: Date | string | null
     recipe?: ToppingRecipeUncheckedCreateNestedManyWithoutToppingInput
   }
 
@@ -26069,6 +26090,7 @@ export namespace Prisma {
     nameTh?: NullableStringFieldUpdateOperationsInput | string | null
     price?: FloatFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     recipe?: ToppingRecipeUpdateManyWithoutToppingNestedInput
   }
 
@@ -26078,6 +26100,7 @@ export namespace Prisma {
     nameTh?: NullableStringFieldUpdateOperationsInput | string | null
     price?: FloatFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     recipe?: ToppingRecipeUncheckedUpdateManyWithoutToppingNestedInput
   }
 
@@ -26087,6 +26110,7 @@ export namespace Prisma {
     nameTh?: string | null
     price: number
     isActive?: boolean
+    deletedAt?: Date | string | null
   }
 
   export type ToppingUpdateManyMutationInput = {
@@ -26095,6 +26119,7 @@ export namespace Prisma {
     nameTh?: NullableStringFieldUpdateOperationsInput | string | null
     price?: FloatFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ToppingUncheckedUpdateManyInput = {
@@ -26103,6 +26128,7 @@ export namespace Prisma {
     nameTh?: NullableStringFieldUpdateOperationsInput | string | null
     price?: FloatFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ToppingRecipeCreateInput = {
@@ -27435,6 +27461,7 @@ export namespace Prisma {
     nameTh?: SortOrder
     price?: SortOrder
     isActive?: SortOrder
+    deletedAt?: SortOrder
   }
 
   export type ToppingAvgOrderByAggregateInput = {
@@ -27447,6 +27474,7 @@ export namespace Prisma {
     nameTh?: SortOrder
     price?: SortOrder
     isActive?: SortOrder
+    deletedAt?: SortOrder
   }
 
   export type ToppingMinOrderByAggregateInput = {
@@ -27455,6 +27483,7 @@ export namespace Prisma {
     nameTh?: SortOrder
     price?: SortOrder
     isActive?: SortOrder
+    deletedAt?: SortOrder
   }
 
   export type ToppingSumOrderByAggregateInput = {
@@ -30814,6 +30843,7 @@ export namespace Prisma {
     nameTh?: string | null
     price: number
     isActive?: boolean
+    deletedAt?: Date | string | null
   }
 
   export type ToppingUncheckedCreateWithoutRecipeInput = {
@@ -30822,6 +30852,7 @@ export namespace Prisma {
     nameTh?: string | null
     price: number
     isActive?: boolean
+    deletedAt?: Date | string | null
   }
 
   export type ToppingCreateOrConnectWithoutRecipeInput = {
@@ -30881,6 +30912,7 @@ export namespace Prisma {
     nameTh?: NullableStringFieldUpdateOperationsInput | string | null
     price?: FloatFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ToppingUncheckedUpdateWithoutRecipeInput = {
@@ -30889,6 +30921,7 @@ export namespace Prisma {
     nameTh?: NullableStringFieldUpdateOperationsInput | string | null
     price?: FloatFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type IngredientUpsertWithoutToppingRecipesInput = {

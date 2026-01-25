@@ -35,12 +35,12 @@ const menuGroups: MenuGroup[] = [
     items: [
       { label: "สินค้า", href: "/admin/products", roles: ["ADMIN"] },
       { label: "หมวดหมู่", href: "/admin/categories", roles: ["ADMIN"] },
+      { label: "ท็อปปิ้ง", href: "/admin/toppings", roles: ["ADMIN"] },
       {
         label: "สต็อก & วัตถุดิบ",
         href: "/admin/ingredients",
         roles: ["ADMIN"],
       },
-      { label: "ท็อปปิ้ง", href: "/admin/toppings", roles: ["ADMIN"] },
     ],
   },
   {
@@ -51,9 +51,13 @@ const menuGroups: MenuGroup[] = [
         href: "/admin/dashboard",
         roles: ["ADMIN", "STAFF"],
       },
-      { label: "ประวัติการเปิดปิดกะ", href: "/admin/shifts", roles: ["ADMIN"] },
       { label: "รายงาน", href: "/admin/reports", roles: ["ADMIN"] },
       { label: "รายจ่าย", href: "/admin/expenses", roles: ["ADMIN"] },
+      {
+        label: "ประวัติการเปิดปิดกะ",
+        href: "/admin/shifts",
+        roles: ["ADMIN", "STAFF"],
+      },
     ],
   },
 ];

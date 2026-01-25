@@ -4,7 +4,6 @@ import { api } from "@/trpc/react";
 import { useState } from "react";
 import { ProductsTable } from "./_components/ProductsTable";
 import { ProductModal } from "./_components/ProductModal";
-import { RecipeModal } from "./_components/RecipeModal";
 
 interface Category {
   id: string;
@@ -35,7 +34,7 @@ interface ProductFormData {
 export default function ProductsPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [recipeProduct, setRecipeProduct] = useState<Product | null>(null);
+
   const [searchQuery, setSearchQuery] = useState("");
 
   const utils = api.useUtils();
@@ -234,7 +233,6 @@ export default function ProductsPage() {
             onEdit={setEditingProduct}
             onDelete={handleDelete}
             onToggleActive={handleToggleActive}
-            onRecipe={setRecipeProduct}
           />
         </div>
 
@@ -283,13 +281,6 @@ export default function ProductsPage() {
       />
 
       {/* Recipe Modal */}
-      {recipeProduct && (
-        <RecipeModal
-          productId={recipeProduct.id}
-          productName={recipeProduct.nameTh ?? recipeProduct.name}
-          onClose={() => setRecipeProduct(null)}
-        />
-      )}
     </div>
   );
 }
