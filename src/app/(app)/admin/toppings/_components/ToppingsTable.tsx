@@ -5,6 +5,7 @@ interface Topping {
   price: number;
   isActive: boolean;
   recipe?: Array<{
+    ingredientId: string;
     ingredient: { name: string; unit: string };
     amountUsed: number;
   }>;

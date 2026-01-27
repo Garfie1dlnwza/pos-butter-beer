@@ -186,7 +186,7 @@ export default function IncomesPage() {
         {/* Table Card */}
         <div className="overflow-hidden rounded-2xl border border-[#D7CCC8]/30 bg-white shadow-sm">
           <IncomesTable
-            incomes={(incomes as any) ?? []} // Cast to any to avoid potential type issues with 'type' field being added
+            incomes={incomes ?? []}
             onEdit={setEditingIncome}
             onDelete={handleDelete}
           />

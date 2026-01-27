@@ -1,7 +1,5 @@
 "use client";
 
-import { Fragment } from "react";
-
 interface User {
   id: string;
   name: string | null;

@@ -84,8 +84,8 @@ export default function ProductsPage() {
       name: data.name,
       nameTh: data.nameTh || undefined,
       price: data.price,
-      categoryId: data.categoryId || undefined,
-      image: data.image || undefined,
+      categoryId: data.categoryId ?? undefined,
+      image: data.image ?? undefined,
       recipe: data.recipe,
     });
   };
@@ -98,7 +98,7 @@ export default function ProductsPage() {
       nameTh: data.nameTh || undefined,
       price: data.price,
       categoryId: data.categoryId,
-      image: data.image || undefined,
+      image: data.image ?? undefined,
       recipe: data.recipe,
     });
   };

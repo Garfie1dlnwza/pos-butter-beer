@@ -251,7 +251,7 @@ export function ToppingModal({
                         />
                       </div>
                       <div className="col-span-2 text-center text-xs text-[#8D6E63]">
-                        {currentIngredient?.unit || "-"}
+                        {currentIngredient?.unit ?? "-"}
                       </div>
                       <div className="col-span-1 flex justify-end">
                         <button

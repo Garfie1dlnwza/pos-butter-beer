@@ -13,11 +13,24 @@ interface ToppingFormData {
   recipe: Array<{ ingredientId: string; amountUsed: number }>;
 }
 
+interface Topping {
+  id: string;
+  name: string;
+  nameTh: string | null;
+  price: number;
+  isActive: boolean;
+  recipe?: Array<{
+    ingredientId: string;
+    amountUsed: number;
+    ingredient: { name: string; unit: string };
+  }>;
+}
+
 export default function ToppingsPage() {
   const { showToast } = useToast();
   const utils = api.useUtils();
   const [showModal, setShowModal] = useState(false);
-  const [editingTopping, setEditingTopping] = useState<any | null>(null);
+  const [editingTopping, setEditingTopping] = useState<Topping | null>(null);
 
   const { data: toppings, isLoading } = api.toppings.getAllAdmin.useQuery();
 
@@ -58,7 +71,7 @@ export default function ToppingsPage() {
 
   const updateRecipeMutation = api.toppings.updateRecipe.useMutation();
 
-  const handleDelete = (topping: any) => {
+  const handleDelete = (topping: Topping) => {
     if (confirm(`ต้องการลบ "${topping.name}" หรือไม่?`)) {
       deleteMutation.mutate({ id: topping.id });
     }
@@ -109,29 +122,30 @@ export default function ToppingsPage() {
         void utils.toppings.getAllAdmin.invalidate();
         setShowModal(false);
         setEditingTopping(null);
-      } catch (error) {
+      } catch {
         // Error handled in mutation default, but async might throw
       }
     }
   };
 
-  const handleToggleActive = (topping: any) => {
+  const handleToggleActive = (topping: Topping) => {
     updateMutation.mutate({
       id: topping.id,
       isActive: !topping.isActive,
     });
   };
 
-  const handleEdit = (topping: any) => {
+  const handleEdit = (topping: Topping) => {
     // Transform recipe data to match form expectations
     // The query returns recipe as { ingredientId, amountUsed, ingredient: {...} }
     // The form expects { ingredientId, amountUsed }
     const formattedTopping = {
       ...topping,
       recipe:
-        topping.recipe?.map((r: any) => ({
+        topping.recipe?.map((r) => ({
           ingredientId: r.ingredientId,
           amountUsed: r.amountUsed,
+          ingredient: r.ingredient,
         })) ?? [],
     };
     setEditingTopping(formattedTopping);

@@ -20,6 +20,7 @@ interface Product {
   image: string | null;
   isActive: boolean;
   recipe?: {
+    ingredientId: string;
     ingredient: {
       costPerUnit: number;
     };
