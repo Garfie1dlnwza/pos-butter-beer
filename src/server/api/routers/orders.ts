@@ -48,6 +48,15 @@ export const ordersRouter = createTRPCRouter({
         });
       }
 
+      if (
+        Math.abs(input.totalAmount - input.discount - input.netAmount) > 0.01
+      ) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "ยอดรวมสุทธิไม่ถูกต้อง (Total - Discount != Net)",
+        });
+      }
+
       try {
         return await ctx.db.$transaction(async (tx) => {
           // 2. Fetch Data (Products, Recipes, Toppings)
@@ -118,7 +127,7 @@ export const ordersRouter = createTRPCRouter({
           // 4. Create Order & Items
           const order = await tx.order.create({
             data: {
-              orderNumber,
+              orderNumber: orderNumber as string, // Assert string as it's generated above
               totalAmount: input.totalAmount,
               discount: input.discount,
               netAmount: input.netAmount,

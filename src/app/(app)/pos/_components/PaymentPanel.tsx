@@ -33,13 +33,27 @@ export function PaymentPanel({
   const [cashReceived, setCashReceived] = useState<number>(0);
   const [isProcessing, setIsProcessing] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
+  const [discountType, setDiscountType] = useState<
+    "none" | "fixed" | "percent"
+  >("none");
+  const [discountValue, setDiscountValue] = useState<number>(0);
   const { showToast } = useToast();
+
+  const calculateDiscount = () => {
+    if (discountType === "none") return 0;
+    if (discountType === "fixed") return discountValue;
+    if (discountType === "percent") return (total * discountValue) / 100;
+    return 0;
+  };
+
+  const discountAmount = calculateDiscount();
+  const netTotal = Math.max(0, total - discountAmount);
 
   useEffect(() => {
     if (paymentMethod === "qr" && total > 0) {
       try {
         const payload = generatePayload(MERCHANT_PROMPTPAY_ID, {
-          amount: total,
+          amount: netTotal,
         });
         QRCode.toDataURL(payload, { margin: 1 })
           .then((url) => setQrCodeUrl(url))
@@ -48,7 +62,7 @@ export function PaymentPanel({
         console.error("Payload Gen Error", e);
       }
     }
-  }, [paymentMethod, total]);
+  }, [paymentMethod, netTotal]);
 
   const createOrder = api.orders.create.useMutation({
     onSuccess: () => {
@@ -60,10 +74,10 @@ export function PaymentPanel({
     },
   });
 
-  const change = cashReceived - total;
+  const change = cashReceived - netTotal;
 
   const handlePayment = async () => {
-    if (paymentMethod === "cash" && cashReceived < total) {
+    if (paymentMethod === "cash" && cashReceived < netTotal) {
       showToast("จำนวนเงินไม่เพียงพอ (Insufficient Amount)", "error");
       return;
     }
@@ -80,9 +94,9 @@ export function PaymentPanel({
         note: "",
       })),
       totalAmount: total,
-      discount: 0,
-      netAmount: total,
-      receivedAmount: paymentMethod === "cash" ? cashReceived : total,
+      discount: discountAmount,
+      netAmount: netTotal,
+      receivedAmount: paymentMethod === "cash" ? cashReceived : netTotal,
       change: paymentMethod === "cash" ? change : 0,
       paymentMethod,
     });
@@ -132,6 +146,79 @@ export function PaymentPanel({
                 {total.toLocaleString()}
               </span>
             </div>
+            {discountAmount > 0 && (
+              <div className="mt-1 flex flex-col items-center">
+                <span className="text-sm font-medium text-red-500">
+                  - ฿{discountAmount.toLocaleString()} (Discount)
+                </span>
+                <span className="text-lg font-bold text-emerald-600">
+                  Net: ฿{netTotal.toLocaleString()}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Discount Section */}
+          <div className="mb-6 rounded-xl border border-[#F0F0F0] bg-[#FAFAFA] p-4">
+            <h4 className="mb-3 text-xs font-bold tracking-wide text-[#8D6E63] uppercase">
+              Discount
+            </h4>
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  setDiscountType("none");
+                  setDiscountValue(0);
+                }}
+                className={`flex-1 rounded-lg py-2 text-sm font-bold transition-all ${
+                  discountType === "none"
+                    ? "bg-[#8D6E63] text-white shadow-md"
+                    : "bg-white text-[#8D6E63] hover:bg-[#EFEBE9]"
+                }`}
+              >
+                None
+              </button>
+              <button
+                onClick={() => {
+                  setDiscountType("fixed");
+                  setDiscountValue(0);
+                }}
+                className={`flex-1 rounded-lg py-2 text-sm font-bold transition-all ${
+                  discountType === "fixed"
+                    ? "bg-[#8D6E63] text-white shadow-md"
+                    : "bg-white text-[#8D6E63] hover:bg-[#EFEBE9]"
+                }`}
+              >
+                Fixed (฿)
+              </button>
+              <button
+                onClick={() => {
+                  setDiscountType("percent");
+                  setDiscountValue(0);
+                }}
+                className={`flex-1 rounded-lg py-2 text-sm font-bold transition-all ${
+                  discountType === "percent"
+                    ? "bg-[#8D6E63] text-white shadow-md"
+                    : "bg-white text-[#8D6E63] hover:bg-[#EFEBE9]"
+                }`}
+              >
+                Percent (%)
+              </button>
+            </div>
+            {discountType !== "none" && (
+              <div className="mt-3 flex items-center gap-2">
+                <span className="font-bold text-[#3E2723]">
+                  {discountType === "fixed" ? "Amount (฿):" : "Percentage (%):"}
+                </span>
+                <input
+                  type="number"
+                  min="0"
+                  value={discountValue === 0 ? "" : discountValue}
+                  onChange={(e) => setDiscountValue(Number(e.target.value))}
+                  className="w-full rounded-lg border border-[#D7CCC8] px-3 py-2 font-bold text-[#3E2723] outline-none focus:border-[#8D6E63]"
+                  placeholder="0"
+                />
+              </div>
+            )}
           </div>
 
           {/* Method Selection (2 Columns) */}
@@ -224,7 +311,7 @@ export function PaymentPanel({
               </div>
 
               <button
-                onClick={() => setCashReceived(total)}
+                onClick={() => setCashReceived(netTotal)}
                 className="mt-2 w-full rounded-lg bg-[#EFEBE9] py-2 text-sm font-bold text-[#5D4037] transition-colors hover:bg-[#D7CCC8]"
               >
                 Pay Exact (พอดี)
@@ -254,7 +341,7 @@ export function PaymentPanel({
                 PromptPay (พร้อมเพย์)
               </p>
               <p className="mt-1 text-xs text-[#BDBDBD]">
-                ยอดชำระ: ฿{total.toLocaleString()}
+                ยอดชำระ: ฿{netTotal.toLocaleString()}
               </p>
             </div>
           )}
@@ -265,7 +352,8 @@ export function PaymentPanel({
           <button
             onClick={handlePayment}
             disabled={
-              isProcessing || (paymentMethod === "cash" && cashReceived < total)
+              isProcessing ||
+              (paymentMethod === "cash" && cashReceived < netTotal)
             }
             className="group w-full rounded-xl bg-[#3E2723] py-4 text-white shadow-lg shadow-[#3E2723]/20 transition-all hover:bg-[#2D1B18] active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-[#D7CCC8] disabled:shadow-none"
           >

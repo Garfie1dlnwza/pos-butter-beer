@@ -51,6 +51,7 @@ export const reportsRouter = createTRPCRouter({
           expenses: number;
           incomes: number;
           capital: number;
+          discount: number;
           purchases: number; // Inventory purchases (Cash flow)
         }
       > = {};
@@ -66,11 +67,13 @@ export const reportsRouter = createTRPCRouter({
           expenses: 0,
           incomes: 0,
           capital: 0,
+          discount: 0,
           purchases: 0,
         };
 
-        const dayStats = salesByDate[dateKey];
+        const dayStats = salesByDate[dateKey]!;
         dayStats.revenue += order.netAmount;
+        dayStats.discount += order.discount;
         dayStats.orders += 1;
 
         let orderCost = 0;
@@ -91,9 +94,10 @@ export const reportsRouter = createTRPCRouter({
           expenses: 0,
           incomes: 0,
           capital: 0,
+          discount: 0,
           purchases: 0,
         };
-        salesByDate[dateKey].expenses += expense.amount;
+        salesByDate[dateKey]!.expenses += expense.amount;
       }
 
       // Process Incomes
@@ -107,13 +111,14 @@ export const reportsRouter = createTRPCRouter({
           expenses: 0,
           incomes: 0,
           capital: 0,
+          discount: 0,
           purchases: 0,
         };
 
         if (income.type === "CAPITAL") {
-          salesByDate[dateKey].capital += income.amount;
+          salesByDate[dateKey]!.capital += income.amount;
         } else {
-          salesByDate[dateKey].incomes += income.amount;
+          salesByDate[dateKey]!.incomes += income.amount;
         }
       }
 
@@ -128,6 +133,7 @@ export const reportsRouter = createTRPCRouter({
           expenses: 0,
           incomes: 0,
           capital: 0,
+          discount: 0,
           purchases: 0,
         };
         // If costPerUnit is null, assume total cost is quantity * 0?? Need to be careful.
@@ -135,7 +141,7 @@ export const reportsRouter = createTRPCRouter({
         // Assuming quantity is the purchase amount (e.g. 10 bottles) and costPerUnit is price per bottle.
         // If system stores `quantity` as count and `costPerUnit` as price.
         const cost = (tx.quantity ?? 0) * (tx.costPerUnit ?? 0);
-        salesByDate[dateKey].purchases += cost;
+        salesByDate[dateKey]!.purchases += cost;
       }
 
       // Generate result array with zero-filling
@@ -147,6 +153,7 @@ export const reportsRouter = createTRPCRouter({
         expenses: number;
         incomes: number;
         capital: number;
+        discount: number;
         grossProfit: number;
         netProfit: number;
         purchases: number;
@@ -164,6 +171,7 @@ export const reportsRouter = createTRPCRouter({
           expenses: 0,
           incomes: 0,
           capital: 0,
+          discount: 0,
           purchases: 0,
         };
 
