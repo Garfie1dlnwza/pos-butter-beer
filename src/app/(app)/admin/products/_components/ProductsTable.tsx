@@ -19,6 +19,12 @@ interface Product {
   category: Category | null;
   image: string | null;
   isActive: boolean;
+  recipe?: {
+    ingredient: {
+      costPerUnit: number;
+    };
+    amountUsed: number;
+  }[];
 }
 
 interface ProductsTableProps {
@@ -96,6 +102,9 @@ export function ProductsTable({
             <th className="px-6 py-4 text-right text-xs font-bold tracking-wider text-[#8D6E63] uppercase">
               ราคา
             </th>
+            <th className="px-6 py-4 text-right text-xs font-bold tracking-wider text-[#8D6E63] uppercase">
+              ต้นทุน
+            </th>
             <th className="px-6 py-4 text-center text-xs font-bold tracking-wider text-[#8D6E63] uppercase">
               สถานะ
             </th>
@@ -110,12 +119,25 @@ export function ProductsTable({
               index === 0 ||
               product.category?.id !== sortedProducts[index - 1]?.category?.id;
 
+            // Calculate Cost
+            const cost =
+              product.recipe?.reduce(
+                (sum, item) =>
+                  sum + item.amountUsed * (item.ingredient.costPerUnit ?? 0),
+                0,
+              ) ?? 0;
+
+            const margin =
+              product.price > 0
+                ? ((product.price - cost) / product.price) * 100
+                : 0;
+
             return (
               <Fragment key={product.id}>
                 {showHeader && product.category && (
                   <tr className="bg-[#EFEBE9]/50">
                     <td
-                      colSpan={5}
+                      colSpan={6}
                       className="px-6 py-2 text-sm font-bold text-[#5D4037]"
                     >
                       {product.category.name}
@@ -127,7 +149,7 @@ export function ProductsTable({
                   products.some((p) => p.category) && (
                     <tr className="bg-[#EFEBE9]/50">
                       <td
-                        colSpan={5}
+                        colSpan={6}
                         className="px-6 py-2 text-sm font-bold text-[#5D4037]"
                       >
                         Other / Uncategorized
@@ -178,6 +200,22 @@ export function ProductsTable({
                   <td className="px-6 py-4 text-right font-mono font-semibold text-[#3E2723]">
                     ฿{product.price.toLocaleString()}
                   </td>
+                  <td className="px-6 py-4 text-right">
+                    <div className="flex flex-col items-end">
+                      <span className="font-mono font-medium text-[#5D4037]">
+                        ฿
+                        {cost.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </span>
+                      {cost > 0 && (
+                        <span className="text-[10px] text-[#8D6E63]">
+                          {margin.toFixed(0)}% margin
+                        </span>
+                      )}
+                    </div>
+                  </td>
                   <td className="px-6 py-4 text-center">
                     <button
                       onClick={() => onToggleActive(product)}
@@ -192,8 +230,6 @@ export function ProductsTable({
                   </td>
                   <td className="max-w-fit px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center justify-end gap-1">
-                      {/* Recipe */}
-
                       {/* Edit */}
                       <button
                         onClick={() => onEdit(product)}

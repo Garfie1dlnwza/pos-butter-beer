@@ -13,6 +13,7 @@ interface Ingredient {
   id: string;
   name: string;
   unit: string;
+  costPerUnit: number;
 }
 
 interface ProductFormData {
@@ -146,6 +147,12 @@ export function ProductModal({
     });
   };
 
+  // Calculate Total Cost
+  const totalCost = formData.recipe.reduce((sum, item) => {
+    const ingredient = ingredients?.find((i) => i.id === item.ingredientId);
+    return sum + (ingredient?.costPerUnit ?? 0) * item.amountUsed;
+  }, 0);
+
   return (
     <Modal
       isOpen={isOpen}
@@ -256,6 +263,20 @@ export function ProductModal({
               >
                 + เพิ่มวัตถุดิบ
               </button>
+            </div>
+
+            {/* Total Cost Display */}
+            <div className="flex items-center justify-between rounded-xl bg-[#FFF8E1] px-4 py-3">
+              <span className="text-sm font-medium text-[#8D6E63]">
+                ต้นทุนต่อแก้ว
+              </span>
+              <span className="text-lg font-bold text-[#3E2723]">
+                ฿
+                {totalCost.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </span>
             </div>
 
             <div className="space-y-2">

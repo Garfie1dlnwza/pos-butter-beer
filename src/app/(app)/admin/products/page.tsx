@@ -20,6 +20,13 @@ interface Product {
   category: Category | null;
   image: string | null;
   isActive: boolean;
+  recipe?: {
+    ingredientId: string;
+    amountUsed: number;
+    ingredient: {
+      costPerUnit: number;
+    };
+  }[];
 }
 
 interface ProductFormData {
