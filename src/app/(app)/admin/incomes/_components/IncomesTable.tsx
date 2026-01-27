@@ -11,6 +11,7 @@ interface Income {
   id: string;
   title: string;
   amount: number;
+  type: string;
   description: string | null;
   date: Date;
   createdBy: User | null;
@@ -62,6 +63,9 @@ export function IncomesTable({ incomes, onEdit, onDelete }: IncomesTableProps) {
             <th className="px-6 py-4 text-left text-xs font-bold tracking-wider text-[#8D6E63] uppercase">
               รายการ
             </th>
+            <th className="px-6 py-4 text-center text-xs font-bold tracking-wider text-[#8D6E63] uppercase">
+              ประเภท
+            </th>
             <th className="px-6 py-4 text-right text-xs font-bold tracking-wider text-[#8D6E63] uppercase">
               จำนวนเงิน
             </th>
@@ -93,6 +97,17 @@ export function IncomesTable({ incomes, onEdit, onDelete }: IncomesTableProps) {
                     {income.description}
                   </p>
                 )}
+              </td>
+              <td className="px-6 py-4 text-center">
+                <span
+                  className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${
+                    income.type === "CAPITAL"
+                      ? "border border-blue-100 bg-blue-50 text-blue-600"
+                      : "bg-[#FFF8E1] text-[#FBC02D]"
+                  }`}
+                >
+                  {income.type === "CAPITAL" ? "เงินทุน" : "รายรับทั่วไป"}
+                </span>
               </td>
               <td className="px-6 py-4 text-right">
                 <span className="font-mono font-bold text-emerald-600">

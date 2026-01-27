@@ -259,6 +259,7 @@ model Income {
   id          String   @id @default(cuid())
   title       String // ชื่อรายรับ
   amount      Float // จำนวนเงิน
+  type        String   @default("GENERAL") // GENERAL = รายรับทั่วไป, CAPITAL = เงินทุน
   description String? // รายละเอียดเพิ่มเติม
   date        DateTime @default(now()) // วันที่รับเงิน
   createdById String?

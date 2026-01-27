@@ -4,6 +4,7 @@ import { Modal } from "./Modal";
 interface IncomeFormData {
   title: string;
   amount: number;
+  type: string;
   description: string;
   date: string; // ISO date string YYYY-MM-DD
 }
@@ -15,6 +16,7 @@ interface IncomeModalProps {
     id: string;
     title: string;
     amount: number;
+    type: string;
     description: string | null;
     date: Date;
   } | null;
@@ -32,6 +34,7 @@ export function IncomeModal({
   const [formData, setFormData] = useState<IncomeFormData>({
     title: "",
     amount: 0,
+    type: "GENERAL",
     description: "",
     date: new Date().toISOString().split("T")[0],
   });
@@ -42,6 +45,7 @@ export function IncomeModal({
         setFormData({
           title: income.title,
           amount: income.amount,
+          type: income.type || "GENERAL",
           description: income.description ?? "",
           date: new Date(income.date).toISOString().split("T")[0],
         });
@@ -49,6 +53,7 @@ export function IncomeModal({
         setFormData({
           title: "",
           amount: 0,
+          type: "GENERAL",
           description: "",
           date: new Date().toISOString().split("T")[0],
         });
@@ -68,6 +73,36 @@ export function IncomeModal({
       title={income ? "แก้ไขรายรับ" : "บันทึกรายรับ"}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Type Selection */}
+        <div className="flex gap-2 rounded-xl bg-[#F5F5F5] p-1">
+          <button
+            type="button"
+            onClick={() =>
+              setFormData((prev) => ({ ...prev, type: "GENERAL" }))
+            }
+            className={`flex-1 rounded-lg py-2 text-sm font-bold transition ${
+              formData.type === "GENERAL"
+                ? "bg-white text-[#3E2723] shadow-sm"
+                : "text-[#8D6E63] hover:bg-white/50"
+            }`}
+          >
+            รายรับทั่วไป
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              setFormData((prev) => ({ ...prev, type: "CAPITAL" }))
+            }
+            className={`flex-1 rounded-lg py-2 text-sm font-bold transition ${
+              formData.type === "CAPITAL"
+                ? "bg-white text-[#3E2723] shadow-sm"
+                : "text-[#8D6E63] hover:bg-white/50"
+            }`}
+          >
+            เงินทุน
+          </button>
+        </div>
+
         {/* Title */}
         <div>
           <label className="mb-1 block text-sm font-medium text-[#5D4037]">
@@ -81,7 +116,11 @@ export function IncomeModal({
               setFormData((prev) => ({ ...prev, title: e.target.value }))
             }
             className="w-full rounded-xl border border-[#D7CCC8] bg-[#FAFAFA] px-4 py-3 text-[#3E2723] outline-none focus:border-[#8D6E63] focus:bg-white"
-            placeholder="ระบุรายการ เช่น เงินทุน, ขายขวดเก่า"
+            placeholder={
+              formData.type === "GENERAL"
+                ? "เช่น ขายขวดเก่า, ทิป"
+                : "เช่น เงินทุนเริ่มร้าน, เพิ่มทุน"
+            }
           />
         </div>
 

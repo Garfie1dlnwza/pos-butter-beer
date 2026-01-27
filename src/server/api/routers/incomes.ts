@@ -7,6 +7,7 @@ export const incomesRouter = createTRPCRouter({
       z.object({
         title: z.string().min(1),
         amount: z.number().min(0),
+        type: z.string().default("GENERAL"),
         description: z.string().optional(),
         date: z.date().optional(),
       }),
@@ -17,6 +18,7 @@ export const incomesRouter = createTRPCRouter({
         data: {
           title: input.title,
           amount: input.amount,
+          type: input.type,
           description: input.description,
           date: input.date ?? new Date(),
           createdById: ctx.session.user.id,
@@ -41,6 +43,7 @@ export const incomesRouter = createTRPCRouter({
         id: z.string(),
         title: z.string().min(1),
         amount: z.number().min(0),
+        type: z.string().default("GENERAL"),
         description: z.string().optional(),
         date: z.date().optional(),
       }),
@@ -51,6 +54,7 @@ export const incomesRouter = createTRPCRouter({
         data: {
           title: input.title,
           amount: input.amount,
+          type: input.type,
           description: input.description,
           date: input.date,
         },

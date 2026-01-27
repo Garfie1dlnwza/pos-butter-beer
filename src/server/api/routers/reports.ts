@@ -43,6 +43,7 @@ export const reportsRouter = createTRPCRouter({
           cogs: number; // Cost of Goods Sold
           expenses: number;
           incomes: number;
+          capital: number;
         }
       > = {};
 
@@ -56,6 +57,7 @@ export const reportsRouter = createTRPCRouter({
           cogs: 0,
           expenses: 0,
           incomes: 0,
+          capital: 0,
         };
 
         const dayStats = salesByDate[dateKey];
@@ -79,6 +81,7 @@ export const reportsRouter = createTRPCRouter({
           cogs: 0,
           expenses: 0,
           incomes: 0,
+          capital: 0,
         };
         salesByDate[dateKey].expenses += expense.amount;
       }
@@ -93,8 +96,14 @@ export const reportsRouter = createTRPCRouter({
           cogs: 0,
           expenses: 0,
           incomes: 0,
+          capital: 0,
         };
-        salesByDate[dateKey].incomes += income.amount;
+
+        if (income.type === "CAPITAL") {
+          salesByDate[dateKey].capital += income.amount;
+        } else {
+          salesByDate[dateKey].incomes += income.amount;
+        }
       }
 
       // Generate result array with zero-filling
@@ -105,6 +114,7 @@ export const reportsRouter = createTRPCRouter({
         cogs: number; // Renamed from cost for clarity
         expenses: number;
         incomes: number;
+        capital: number;
         grossProfit: number;
         netProfit: number;
       }[] = [];
@@ -119,6 +129,7 @@ export const reportsRouter = createTRPCRouter({
           cogs: 0,
           expenses: 0,
           incomes: 0,
+          capital: 0,
         };
 
         const grossProfit = stats.revenue - stats.cogs;

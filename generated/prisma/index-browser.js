@@ -290,6 +290,7 @@ exports.Prisma.IncomeScalarFieldEnum = {
   id: 'id',
   title: 'title',
   amount: 'amount',
+  type: 'type',
   description: 'description',
   date: 'date',
   createdById: 'createdById',

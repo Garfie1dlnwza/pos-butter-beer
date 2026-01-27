@@ -9,6 +9,7 @@ interface Income {
   id: string;
   title: string;
   amount: number;
+  type: string;
   description: string | null;
   date: Date;
   createdBy: { id: string; name: string | null } | null;
@@ -17,6 +18,7 @@ interface Income {
 interface IncomeFormData {
   title: string;
   amount: number;
+  type: string;
   description: string;
   date: string;
 }
@@ -54,6 +56,7 @@ export default function IncomesPage() {
         id: editingIncome.id,
         title: data.title,
         amount: data.amount,
+        type: data.type,
         description: data.description || undefined,
         date: new Date(data.date),
       });
@@ -61,6 +64,7 @@ export default function IncomesPage() {
       createMutation.mutate({
         title: data.title,
         amount: data.amount,
+        type: data.type,
         description: data.description || undefined,
         date: new Date(data.date),
       });
@@ -74,19 +78,27 @@ export default function IncomesPage() {
   };
 
   // Calculate stats
-  const totalIncome =
-    incomes?.reduce((sum, income) => sum + income.amount, 0) ?? 0;
-  const currentMonthIncome =
-    incomes
-      ?.filter((i) => {
-        const d = new Date(i.date);
-        const now = new Date();
-        return (
-          d.getMonth() === now.getMonth() &&
-          d.getFullYear() === now.getFullYear()
-        );
-      })
-      .reduce((sum, i) => sum + i.amount, 0) ?? 0;
+  // Filter only General for "Income" stats, or show all?
+  // User wants separation. Let's show separate cards.
+
+  const generalIncomes = incomes?.filter((i) => i.type !== "CAPITAL") ?? [];
+  const capitalIncomes = incomes?.filter((i) => i.type === "CAPITAL") ?? [];
+
+  const totalGeneralIncome = generalIncomes.reduce(
+    (sum, i) => sum + i.amount,
+    0,
+  );
+  const totalCapital = capitalIncomes.reduce((sum, i) => sum + i.amount, 0);
+
+  const currentMonthGeneral = generalIncomes
+    .filter((i) => {
+      const d = new Date(i.date);
+      const now = new Date();
+      return (
+        d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
+      );
+    })
+    .reduce((sum, i) => sum + i.amount, 0);
 
   if (isLoading) {
     return (
@@ -98,6 +110,10 @@ export default function IncomesPage() {
       </div>
     );
   }
+
+  // Workaround for type mismatch in IncomesTable props (expected string|undefined for type, getting string from query)
+  // Casting or ensuring the types match. The Income interface above has type: string. The query returns type string (from schema).
+  // The IncomesTable expects Income[], which matches.
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-[#FAFAFA]">
@@ -135,19 +151,34 @@ export default function IncomesPage() {
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto p-6 lg:p-10">
         {/* Stats */}
-        <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mb-6 grid gap-4 sm:grid-cols-3">
+          {/* General Income */}
           <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-5">
             <p className="text-sm font-medium text-emerald-700">
-              ยอดรับเดือนนี้
+              รายรับทั่วไป (เดือนนี้)
             </p>
             <p className="text-3xl font-bold text-emerald-600">
-              +{currentMonthIncome.toLocaleString()}
+              +{currentMonthGeneral.toLocaleString()}
             </p>
           </div>
+
+          {/* Capital */}
+          <div className="rounded-xl border border-blue-200 bg-blue-50 p-5">
+            <p className="text-sm font-medium text-blue-700">
+              เงินทุนสะสม (ทั้งหมด)
+            </p>
+            <p className="text-3xl font-bold text-blue-600">
+              +{totalCapital.toLocaleString()}
+            </p>
+          </div>
+
+          {/* Total Combined (Optional, maybe confusing? Let's show total general) */}
           <div className="rounded-xl border border-[#D7CCC8]/30 bg-white p-5 shadow-sm">
-            <p className="text-sm font-medium text-[#8D6E63]">ยอดรับทั้งหมด</p>
+            <p className="text-sm font-medium text-[#8D6E63]">
+              รายรับทั่วไป (ทั้งหมด)
+            </p>
             <p className="text-3xl font-bold text-[#3E2723]">
-              +{totalIncome.toLocaleString()}
+              +{totalGeneralIncome.toLocaleString()}
             </p>
           </div>
         </div>
@@ -155,7 +186,7 @@ export default function IncomesPage() {
         {/* Table Card */}
         <div className="overflow-hidden rounded-2xl border border-[#D7CCC8]/30 bg-white shadow-sm">
           <IncomesTable
-            incomes={incomes ?? []}
+            incomes={(incomes as any) ?? []} // Cast to any to avoid potential type issues with 'type' field being added
             onEdit={setEditingIncome}
             onDelete={handleDelete}
           />

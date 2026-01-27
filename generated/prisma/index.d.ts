@@ -21233,6 +21233,7 @@ export namespace Prisma {
     id: string | null
     title: string | null
     amount: number | null
+    type: string | null
     description: string | null
     date: Date | null
     createdById: string | null
@@ -21244,6 +21245,7 @@ export namespace Prisma {
     id: string | null
     title: string | null
     amount: number | null
+    type: string | null
     description: string | null
     date: Date | null
     createdById: string | null
@@ -21255,6 +21257,7 @@ export namespace Prisma {
     id: number
     title: number
     amount: number
+    type: number
     description: number
     date: number
     createdById: number
@@ -21276,6 +21279,7 @@ export namespace Prisma {
     id?: true
     title?: true
     amount?: true
+    type?: true
     description?: true
     date?: true
     createdById?: true
@@ -21287,6 +21291,7 @@ export namespace Prisma {
     id?: true
     title?: true
     amount?: true
+    type?: true
     description?: true
     date?: true
     createdById?: true
@@ -21298,6 +21303,7 @@ export namespace Prisma {
     id?: true
     title?: true
     amount?: true
+    type?: true
     description?: true
     date?: true
     createdById?: true
@@ -21396,6 +21402,7 @@ export namespace Prisma {
     id: string
     title: string
     amount: number
+    type: string
     description: string | null
     date: Date
     createdById: string | null
@@ -21426,6 +21433,7 @@ export namespace Prisma {
     id?: boolean
     title?: boolean
     amount?: boolean
+    type?: boolean
     description?: boolean
     date?: boolean
     createdById?: boolean
@@ -21438,6 +21446,7 @@ export namespace Prisma {
     id?: boolean
     title?: boolean
     amount?: boolean
+    type?: boolean
     description?: boolean
     date?: boolean
     createdById?: boolean
@@ -21450,6 +21459,7 @@ export namespace Prisma {
     id?: boolean
     title?: boolean
     amount?: boolean
+    type?: boolean
     description?: boolean
     date?: boolean
     createdById?: boolean
@@ -21462,6 +21472,7 @@ export namespace Prisma {
     id?: boolean
     title?: boolean
     amount?: boolean
+    type?: boolean
     description?: boolean
     date?: boolean
     createdById?: boolean
@@ -21469,7 +21480,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type IncomeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "amount" | "description" | "date" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["income"]>
+  export type IncomeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "amount" | "type" | "description" | "date" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["income"]>
   export type IncomeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     createdBy?: boolean | Income$createdByArgs<ExtArgs>
   }
@@ -21489,6 +21500,7 @@ export namespace Prisma {
       id: string
       title: string
       amount: number
+      type: string
       description: string | null
       date: Date
       createdById: string | null
@@ -21921,6 +21933,7 @@ export namespace Prisma {
     readonly id: FieldRef<"Income", 'String'>
     readonly title: FieldRef<"Income", 'String'>
     readonly amount: FieldRef<"Income", 'Float'>
+    readonly type: FieldRef<"Income", 'String'>
     readonly description: FieldRef<"Income", 'String'>
     readonly date: FieldRef<"Income", 'DateTime'>
     readonly createdById: FieldRef<"Income", 'String'>
@@ -24990,6 +25003,7 @@ export namespace Prisma {
     id: 'id',
     title: 'title',
     amount: 'amount',
+    type: 'type',
     description: 'description',
     date: 'date',
     createdById: 'createdById',
@@ -26307,6 +26321,7 @@ export namespace Prisma {
     id?: StringFilter<"Income"> | string
     title?: StringFilter<"Income"> | string
     amount?: FloatFilter<"Income"> | number
+    type?: StringFilter<"Income"> | string
     description?: StringNullableFilter<"Income"> | string | null
     date?: DateTimeFilter<"Income"> | Date | string
     createdById?: StringNullableFilter<"Income"> | string | null
@@ -26319,6 +26334,7 @@ export namespace Prisma {
     id?: SortOrder
     title?: SortOrder
     amount?: SortOrder
+    type?: SortOrder
     description?: SortOrderInput | SortOrder
     date?: SortOrder
     createdById?: SortOrderInput | SortOrder
@@ -26334,6 +26350,7 @@ export namespace Prisma {
     NOT?: IncomeWhereInput | IncomeWhereInput[]
     title?: StringFilter<"Income"> | string
     amount?: FloatFilter<"Income"> | number
+    type?: StringFilter<"Income"> | string
     description?: StringNullableFilter<"Income"> | string | null
     date?: DateTimeFilter<"Income"> | Date | string
     createdById?: StringNullableFilter<"Income"> | string | null
@@ -26346,6 +26363,7 @@ export namespace Prisma {
     id?: SortOrder
     title?: SortOrder
     amount?: SortOrder
+    type?: SortOrder
     description?: SortOrderInput | SortOrder
     date?: SortOrder
     createdById?: SortOrderInput | SortOrder
@@ -26365,6 +26383,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Income"> | string
     title?: StringWithAggregatesFilter<"Income"> | string
     amount?: FloatWithAggregatesFilter<"Income"> | number
+    type?: StringWithAggregatesFilter<"Income"> | string
     description?: StringNullableWithAggregatesFilter<"Income"> | string | null
     date?: DateTimeWithAggregatesFilter<"Income"> | Date | string
     createdById?: StringNullableWithAggregatesFilter<"Income"> | string | null
@@ -27760,6 +27779,7 @@ export namespace Prisma {
     id?: string
     title: string
     amount: number
+    type?: string
     description?: string | null
     date?: Date | string
     createdAt?: Date | string
@@ -27771,6 +27791,7 @@ export namespace Prisma {
     id?: string
     title: string
     amount: number
+    type?: string
     description?: string | null
     date?: Date | string
     createdById?: string | null
@@ -27782,6 +27803,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
+    type?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27793,6 +27815,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
+    type?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
@@ -27804,6 +27827,7 @@ export namespace Prisma {
     id?: string
     title: string
     amount: number
+    type?: string
     description?: string | null
     date?: Date | string
     createdById?: string | null
@@ -27815,6 +27839,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
+    type?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27825,6 +27850,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
+    type?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
@@ -29100,6 +29126,7 @@ export namespace Prisma {
     id?: SortOrder
     title?: SortOrder
     amount?: SortOrder
+    type?: SortOrder
     description?: SortOrder
     date?: SortOrder
     createdById?: SortOrder
@@ -29115,6 +29142,7 @@ export namespace Prisma {
     id?: SortOrder
     title?: SortOrder
     amount?: SortOrder
+    type?: SortOrder
     description?: SortOrder
     date?: SortOrder
     createdById?: SortOrder
@@ -29126,6 +29154,7 @@ export namespace Prisma {
     id?: SortOrder
     title?: SortOrder
     amount?: SortOrder
+    type?: SortOrder
     description?: SortOrder
     date?: SortOrder
     createdById?: SortOrder
@@ -31101,6 +31130,7 @@ export namespace Prisma {
     id?: string
     title: string
     amount: number
+    type?: string
     description?: string | null
     date?: Date | string
     createdAt?: Date | string
@@ -31111,6 +31141,7 @@ export namespace Prisma {
     id?: string
     title: string
     amount: number
+    type?: string
     description?: string | null
     date?: Date | string
     createdAt?: Date | string
@@ -31403,6 +31434,7 @@ export namespace Prisma {
     id?: StringFilter<"Income"> | string
     title?: StringFilter<"Income"> | string
     amount?: FloatFilter<"Income"> | number
+    type?: StringFilter<"Income"> | string
     description?: StringNullableFilter<"Income"> | string | null
     date?: DateTimeFilter<"Income"> | Date | string
     createdById?: StringNullableFilter<"Income"> | string | null
@@ -33292,6 +33324,7 @@ export namespace Prisma {
     id?: string
     title: string
     amount: number
+    type?: string
     description?: string | null
     date?: Date | string
     createdAt?: Date | string
@@ -33511,6 +33544,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
+    type?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -33521,6 +33555,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
+    type?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -33531,6 +33566,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
+    type?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
