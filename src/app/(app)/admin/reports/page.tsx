@@ -35,13 +35,6 @@ export default function ReportsPage() {
     [endDateParam, defaultRange],
   );
 
-  // Set end of day for endDate (for expenses query)
-  const endDateEnd = useMemo(() => {
-    const d = new Date(endDate);
-    d.setHours(23, 59, 59, 999);
-    return d;
-  }, [endDate]);
-
   // Fetch Daily Sales (now includes expenses & incomes)
   const { data: dailySales, isLoading } = api.reports.getDailySales.useQuery({
     startDate,
@@ -91,9 +84,20 @@ export default function ReportsPage() {
           <DateRangePicker />
           {dailySales && (
             <ExportButton
-              data={dailySales}
+              data={dailySales.map((d) => ({
+                วันที่: new Date(d.date).toLocaleDateString("th-TH"),
+                "ยอดขาย (Revenue)": d.revenue,
+                "ต้นทุนขาย (COGS)": d.cogs,
+                "กำไรขั้นต้น (Gross Profit)": d.grossProfit,
+                "รายรับอื่นๆ (Incomes)": d.incomes,
+                "เงินทุน (Capital)": d.capital,
+                "ค่าใช้จ่ายดำเนินงาน (Expenses)": d.expenses,
+                "กำไรสุทธิ (Net Profit)": d.netProfit,
+                "ยอดซื้อวัตถุดิบ (Purchases)": d.purchases,
+                "กระแสเงินสดสุทธิ (Cash Flow)": d.cashFlow,
+              }))}
               filename={`sales-${startDate.toISOString().split("T")[0]}-${endDate.toISOString().split("T")[0]}`}
-              label="CSV Export"
+              label="Export Excel"
             />
           )}
         </div>
@@ -114,7 +118,9 @@ export default function ReportsPage() {
             <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
               {/* Revenue */}
               <div className="rounded-xl border border-[#D7CCC8]/30 bg-white p-5 shadow-sm">
-                <p className="text-sm font-medium text-[#8D6E63]">ยอดขายทั้งหมด</p>
+                <p className="text-sm font-medium text-[#8D6E63]">
+                  ยอดขายทั้งหมด
+                </p>
                 <p className="mt-2 text-2xl font-bold text-[#3E2723]">
                   ฿{totals.revenue.toLocaleString()}
                 </p>
@@ -229,9 +235,17 @@ export default function ReportsPage() {
                   </h3>
                   {productSales && (
                     <ExportButton
-                      data={productSales}
+                      data={productSales.map((p) => ({
+                        ชื่อสินค้า: p.name,
+                        หมวดหมู่: p.category,
+                        จำนวนที่ขาย: p.quantity,
+                        ยอดขาย: p.revenue,
+                        ต้นทุนรวม: p.cost,
+                        กำไร: p.profit,
+                        "% Margin": `${p.margin.toFixed(2)}%`,
+                      }))}
                       filename={`products-${startDate.toISOString().split("T")[0]}`}
-                      label="CSV"
+                      label="Export Excel"
                     />
                   )}
                 </div>

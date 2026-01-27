@@ -1,5 +1,7 @@
 "use client";
 
+import XLSX from "xlsx-js-style";
+
 interface ExportButtonProps {
   data: unknown[];
   filename: string;
@@ -9,29 +11,110 @@ interface ExportButtonProps {
 export function ExportButton({
   data,
   filename,
-  label = "Export CSV",
+  label = "Export Excel",
 }: ExportButtonProps) {
   const handleExport = () => {
     if (!data || data.length === 0) return;
 
-    // Convert JSON to CSV
-    const headers = Object.keys(data[0] as object).join(",");
-    const rows = data.map((row) =>
-      Object.values(row as object)
-        .map((value) => `"${value}"`)
-        .join(","),
-    );
-    const csvContent =
-      "data:text/csv;charset=utf-8," + [headers, ...rows].join("\n");
+    // 1. Create Worksheet from JSON
+    const worksheet = XLSX.utils.json_to_sheet(data);
 
-    // Download file
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `${filename}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // --- Styling Logic ---
+    if (data.length > 0 && typeof data[0] === "object" && data[0] !== null) {
+      // A. Calculate column widths (Auto-fit columns)
+      const keys = Object.keys(data[0]);
+
+      const columnWidths = keys.map((key) => {
+        let maxLength = key.length;
+
+        // Loop through data to find max length
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data.forEach((row: any) => {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+          const val = row[key];
+          const cellValue = val ? String(val) : "";
+          if (cellValue.length > maxLength) {
+            maxLength = cellValue.length;
+          }
+        });
+
+        // Add buffer
+        return { wch: maxLength + 5 };
+      });
+
+      // Set column widths
+      worksheet["!cols"] = columnWidths;
+
+      // B. Add styles (Colors, Borders)
+      // Get the range of the sheet to iterate correctly
+      const range = XLSX.utils.decode_range(worksheet["!ref"] ?? "A1");
+
+      for (let R = range.s.r; R <= range.e.r; ++R) {
+        for (let C = range.s.c; C <= range.e.c; ++C) {
+          const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          const cell = worksheet[cellAddress];
+
+          // Skip if cell doesn't exist
+          if (!cell) continue;
+
+          // Check if it's a Header (Row 0)
+          const isHeader = R === 0;
+
+          if (isHeader) {
+            // Header Style
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            cell.s = {
+              font: {
+                name: "Calibri",
+                sz: 12,
+                bold: true,
+                color: { rgb: "FFFFFF" }, // White text
+              },
+              fill: {
+                fgColor: { rgb: "4F81BD" }, // Blue background
+              },
+              alignment: {
+                vertical: "center",
+                horizontal: "center",
+              },
+              border: {
+                top: { style: "thin", color: { rgb: "000000" } },
+                bottom: { style: "thin", color: { rgb: "000000" } },
+                left: { style: "thin", color: { rgb: "000000" } },
+                right: { style: "thin", color: { rgb: "000000" } },
+              },
+            };
+          } else {
+            // Body Style
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            cell.s = {
+              font: {
+                name: "Calibri",
+                sz: 11,
+              },
+              alignment: {
+                vertical: "center",
+                horizontal: "left",
+              },
+              border: {
+                top: { style: "thin", color: { rgb: "CCCCCC" } },
+                bottom: { style: "thin", color: { rgb: "CCCCCC" } },
+                left: { style: "thin", color: { rgb: "CCCCCC" } },
+                right: { style: "thin", color: { rgb: "CCCCCC" } },
+              },
+            };
+          }
+        }
+      }
+    }
+    // --- End Styling ---
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+
+    // Write file
+    XLSX.writeFile(workbook, `${filename}.xlsx`);
   };
 
   return (
