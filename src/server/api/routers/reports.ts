@@ -16,23 +16,30 @@ export const reportsRouter = createTRPCRouter({
       const end = new Date(input.endDate);
       end.setHours(23, 59, 59, 999);
 
-      // Fetch Orders, Expenses, Incomes in parallel
-      const [ordersWithItems, expenses, incomes] = await Promise.all([
-        ctx.db.order.findMany({
-          where: {
-            createdAt: { gte: start, lte: end },
-            status: "completed",
-          },
-          include: { items: true },
-          orderBy: { createdAt: "asc" },
-        }),
-        ctx.db.expense.findMany({
-          where: { date: { gte: start, lte: end } },
-        }),
-        ctx.db.income.findMany({
-          where: { date: { gte: start, lte: end } },
-        }),
-      ]);
+      // Fetch Orders, Expenses, Incomes, Inventory purchases in parallel
+      const [ordersWithItems, expenses, incomes, inventoryPurchases] =
+        await Promise.all([
+          ctx.db.order.findMany({
+            where: {
+              createdAt: { gte: start, lte: end },
+              status: "completed",
+            },
+            include: { items: true },
+            orderBy: { createdAt: "asc" },
+          }),
+          ctx.db.expense.findMany({
+            where: { date: { gte: start, lte: end } },
+          }),
+          ctx.db.income.findMany({
+            where: { date: { gte: start, lte: end } },
+          }),
+          ctx.db.inventoryTransaction.findMany({
+            where: {
+              createdAt: { gte: start, lte: end },
+              type: "PURCHASE",
+            },
+          }),
+        ]);
 
       const salesByDate: Record<
         string,
@@ -44,6 +51,7 @@ export const reportsRouter = createTRPCRouter({
           expenses: number;
           incomes: number;
           capital: number;
+          purchases: number; // Inventory purchases (Cash flow)
         }
       > = {};
 
@@ -58,6 +66,7 @@ export const reportsRouter = createTRPCRouter({
           expenses: 0,
           incomes: 0,
           capital: 0,
+          purchases: 0,
         };
 
         const dayStats = salesByDate[dateKey];
@@ -82,6 +91,7 @@ export const reportsRouter = createTRPCRouter({
           expenses: 0,
           incomes: 0,
           capital: 0,
+          purchases: 0,
         };
         salesByDate[dateKey].expenses += expense.amount;
       }
@@ -97,6 +107,7 @@ export const reportsRouter = createTRPCRouter({
           expenses: 0,
           incomes: 0,
           capital: 0,
+          purchases: 0,
         };
 
         if (income.type === "CAPITAL") {
@@ -104,6 +115,27 @@ export const reportsRouter = createTRPCRouter({
         } else {
           salesByDate[dateKey].incomes += income.amount;
         }
+      }
+
+      // Process Inventory Purchases
+      for (const tx of inventoryPurchases) {
+        const dateKey = tx.createdAt.toLocaleDateString("en-CA");
+        salesByDate[dateKey] ??= {
+          date: dateKey,
+          revenue: 0,
+          orders: 0,
+          cogs: 0,
+          expenses: 0,
+          incomes: 0,
+          capital: 0,
+          purchases: 0,
+        };
+        // If costPerUnit is null, assume total cost is quantity * 0?? Need to be careful.
+        // But usually purchase should have costPerUnit.
+        // Assuming quantity is the purchase amount (e.g. 10 bottles) and costPerUnit is price per bottle.
+        // If system stores `quantity` as count and `costPerUnit` as price.
+        const cost = (tx.quantity ?? 0) * (tx.costPerUnit ?? 0);
+        salesByDate[dateKey].purchases += cost;
       }
 
       // Generate result array with zero-filling
@@ -117,6 +149,8 @@ export const reportsRouter = createTRPCRouter({
         capital: number;
         grossProfit: number;
         netProfit: number;
+        purchases: number;
+        cashFlow: number;
       }[] = [];
 
       const current = new Date(start);
@@ -130,16 +164,23 @@ export const reportsRouter = createTRPCRouter({
           expenses: 0,
           incomes: 0,
           capital: 0,
+          purchases: 0,
         };
 
         const grossProfit = stats.revenue - stats.cogs;
         const netProfit =
           stats.revenue + stats.incomes - (stats.cogs + stats.expenses);
+        const cashFlow =
+          stats.revenue +
+          stats.incomes +
+          stats.capital -
+          (stats.purchases + stats.expenses);
 
         result.push({
           ...stats,
           grossProfit,
           netProfit,
+          cashFlow,
         });
         current.setDate(current.getDate() + 1);
       }
