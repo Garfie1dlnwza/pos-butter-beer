@@ -117,7 +117,7 @@ export function IngredientModal({
           </div>
           <div>
             <label className="mb-1.5 block text-sm font-medium text-[#5D4037]">
-              ต้นทุน/หน่วย (฿)
+              ราคามาตรฐาน (Standard Cost)
             </label>
             <input
               type="text"
@@ -133,6 +133,9 @@ export function IngredientModal({
               placeholder="0.08"
               required
             />
+            <p className="mt-1 text-xs text-[#8D6E63]">
+              ใช้สำหรับคำนวณกำไรเบื้องต้น
+            </p>
           </div>
         </div>
 

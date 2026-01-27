@@ -105,7 +105,7 @@ export function AddStockModal({
           </div>
           <div>
             <label className="mb-1.5 block text-sm font-medium text-[#5D4037]">
-              ต้นทุน/หน่วย (฿)
+              ราคาซื้อจริง/หน่วย (Actual Cost)
             </label>
             <input
               type="number"
@@ -121,6 +121,9 @@ export function AddStockModal({
               className="w-full rounded-xl border border-[#D7CCC8] bg-[#FAFAFA] px-4 py-3 text-[#3E2723] placeholder-[#BDBDBD] transition outline-none focus:border-[#8D6E63] focus:bg-white"
               required
             />
+            <p className="mt-1 text-xs text-[#8D6E63]">
+              ราคาต้นทุนจริงของล็อตนี้
+            </p>
           </div>
         </div>
 

@@ -59,7 +59,7 @@ export const reportsRouter = createTRPCRouter({
         };
 
         const dayStats = salesByDate[dateKey];
-        dayStats.revenue += order.totalAmount;
+        dayStats.revenue += order.netAmount;
         dayStats.orders += 1;
 
         let orderCost = 0;

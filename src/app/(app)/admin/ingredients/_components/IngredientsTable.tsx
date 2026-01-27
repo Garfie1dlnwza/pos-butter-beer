@@ -73,7 +73,7 @@ export function IngredientsTable({
               หน่วย
             </th>
             <th className="px-6 py-4 text-right text-xs font-bold tracking-wider text-[#8D6E63] uppercase">
-              ต้นทุน/หน่วย
+              ราคามาตรฐาน
             </th>
             <th className="px-6 py-4 text-right text-xs font-bold tracking-wider text-[#8D6E63] uppercase">
               สต็อก
