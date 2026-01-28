@@ -56,8 +56,9 @@ services:
     image: pos-butter-beer:latest
     container_name: pos-butter-beer
     restart: unless-stopped
-    volumes:
-      - .:/app
+    build: .
+    # volumes:
+    #   - .:/app
     ports:
       - "3000:3000"
     depends_on:

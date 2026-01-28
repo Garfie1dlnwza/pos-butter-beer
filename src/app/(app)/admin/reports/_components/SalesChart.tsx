@@ -73,7 +73,7 @@ export function SalesChart({ data }: SalesChartProps) {
                 "ยอดขาย",
                 "ยอดขาย",
               ]}
-              labelFormatter={(label: string | number | undefined) => {
+              labelFormatter={(label: any) => {
                 if (!label) return "";
                 const date = new Date(label);
                 return date.toLocaleDateString("th-TH", {

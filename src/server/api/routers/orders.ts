@@ -116,7 +116,7 @@ export const ordersRouter = createTRPCRouter({
           let nextSequence = 1;
           if (lastOrder) {
             const parts = lastOrder.orderNumber.split("-");
-            const lastSeq = parseInt(parts[parts.length - 1]);
+            const lastSeq = parseInt(parts[parts.length - 1] ?? "0");
             if (!isNaN(lastSeq)) {
               nextSequence = lastSeq + 1;
             }

@@ -49,3 +49,6 @@ docker-compose*
 # Prisma
 prisma/*.db
 prisma/*.db-journal
+
+# Custom Generated Prisma Client
+generated

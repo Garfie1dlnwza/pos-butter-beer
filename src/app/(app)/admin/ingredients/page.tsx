@@ -423,7 +423,6 @@ export default function IngredientsPage() {
         ingredient={addStockIngredient}
         onSave={handleAddStock}
         isLoading={addStockMutation.isPending}
-        title="รับสต็อกด่วน"
       />
 
       {/* General Stock Action Modal */}

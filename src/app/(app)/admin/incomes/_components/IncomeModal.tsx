@@ -36,7 +36,7 @@ export function IncomeModal({
     amount: 0,
     type: "GENERAL",
     description: "",
-    date: new Date().toISOString().split("T")[0],
+    date: new Date().toISOString().split("T")[0] ?? "",
   });
 
   useEffect(() => {
@@ -47,7 +47,7 @@ export function IncomeModal({
           amount: income.amount,
           type: income.type || "GENERAL",
           description: income.description ?? "",
-          date: new Date(income.date).toISOString().split("T")[0],
+          date: new Date(income.date).toISOString().split("T")[0] ?? "",
         });
       } else {
         setFormData({
@@ -55,7 +55,7 @@ export function IncomeModal({
           amount: 0,
           type: "GENERAL",
           description: "",
-          date: new Date().toISOString().split("T")[0],
+          date: new Date().toISOString().split("T")[0] ?? "",
         });
       }
     }
