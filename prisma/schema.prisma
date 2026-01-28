@@ -105,17 +105,18 @@ model Category {
 
 // Product - เมนูที่ขายหน้าร้าน
 model Product {
-    id         String    @id @default(cuid())
-    name       String
-    nameTh     String? // ชื่อภาษาไทย
-    price      Float // ราคาขาย
-    cost       Float?    @default(0) // ต้นทุนสินค้า
-    image      String? // รูปภาพสินค้า
-    categoryId String? // FK to Category
-    isActive   Boolean   @default(true)
-    deletedAt  DateTime? // soft delete
-    createdAt  DateTime  @default(now())
-    updatedAt  DateTime  @updatedAt
+    id          String    @id @default(cuid())
+    name        String
+    nameTh      String? // ชื่อภาษาไทย
+    description String? // คำอธิบายสินค้า
+    price       Float // ราคาขาย
+    cost        Float?    @default(0) // ต้นทุนสินค้า
+    image       String? // รูปภาพสินค้า
+    categoryId  String? // FK to Category
+    isActive    Boolean   @default(true)
+    deletedAt   DateTime? // soft delete
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
 
     category   Category?    @relation(fields: [categoryId], references: [id])
     recipe     RecipeItem[] // สูตรการผลิต

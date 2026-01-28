@@ -19,6 +19,7 @@ interface Ingredient {
 interface ProductFormData {
   name: string;
   nameTh: string;
+  description: string;
   price: number;
   categoryId: string | null;
   image: string | null;
@@ -29,6 +30,7 @@ interface Product {
   id: string;
   name: string;
   nameTh: string | null;
+  description: string | null;
   price: number;
   categoryId: string | null;
   category: Category | null;
@@ -57,6 +59,7 @@ export function ProductModal({
   const [formData, setFormData] = useState({
     name: "",
     nameTh: "",
+    description: "",
     price: "",
     categoryId: "" as string | null,
     image: null as string | null,
@@ -79,6 +82,7 @@ export function ProductModal({
       setFormData({
         name: product?.name ?? "",
         nameTh: product?.nameTh ?? "",
+        description: product?.description ?? "",
         price: product?.price?.toString() ?? "",
         categoryId: product?.categoryId ?? "",
         image: product?.image ?? null,
@@ -92,6 +96,7 @@ export function ProductModal({
     onSave({
       name: formData.name,
       nameTh: formData.nameTh,
+      description: formData.description,
       price: parseFloat(formData.price) || 0,
       categoryId: formData.categoryId === "" ? null : formData.categoryId,
       image: formData.image,
@@ -206,6 +211,25 @@ export function ProductModal({
                 }
                 className="w-full rounded-xl border border-[#D7CCC8] bg-[#FAFAFA] px-4 py-3 text-[#3E2723] placeholder-[#BDBDBD] transition outline-none focus:border-[#8D6E63] focus:bg-white"
                 placeholder="เนยเบียร์ลาเต้"
+              />
+            </div>
+
+            {/* Description */}
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-[#5D4037]">
+                รายละเอียดสินค้า
+              </label>
+              <textarea
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
+                rows={3}
+                className="w-full resize-none rounded-xl border border-[#D7CCC8] bg-[#FAFAFA] px-4 py-3 text-[#3E2723] placeholder-[#BDBDBD] transition outline-none focus:border-[#8D6E63] focus:bg-white"
+                placeholder="รายละเอียดสินค้า..."
               />
             </div>
 

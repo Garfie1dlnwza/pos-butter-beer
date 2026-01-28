@@ -9637,6 +9637,7 @@ export namespace Prisma {
     id: string | null
     name: string | null
     nameTh: string | null
+    description: string | null
     price: number | null
     cost: number | null
     image: string | null
@@ -9651,6 +9652,7 @@ export namespace Prisma {
     id: string | null
     name: string | null
     nameTh: string | null
+    description: string | null
     price: number | null
     cost: number | null
     image: string | null
@@ -9665,6 +9667,7 @@ export namespace Prisma {
     id: number
     name: number
     nameTh: number
+    description: number
     price: number
     cost: number
     image: number
@@ -9691,6 +9694,7 @@ export namespace Prisma {
     id?: true
     name?: true
     nameTh?: true
+    description?: true
     price?: true
     cost?: true
     image?: true
@@ -9705,6 +9709,7 @@ export namespace Prisma {
     id?: true
     name?: true
     nameTh?: true
+    description?: true
     price?: true
     cost?: true
     image?: true
@@ -9719,6 +9724,7 @@ export namespace Prisma {
     id?: true
     name?: true
     nameTh?: true
+    description?: true
     price?: true
     cost?: true
     image?: true
@@ -9820,6 +9826,7 @@ export namespace Prisma {
     id: string
     name: string
     nameTh: string | null
+    description: string | null
     price: number
     cost: number | null
     image: string | null
@@ -9853,6 +9860,7 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     nameTh?: boolean
+    description?: boolean
     price?: boolean
     cost?: boolean
     image?: boolean
@@ -9871,6 +9879,7 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     nameTh?: boolean
+    description?: boolean
     price?: boolean
     cost?: boolean
     image?: boolean
@@ -9886,6 +9895,7 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     nameTh?: boolean
+    description?: boolean
     price?: boolean
     cost?: boolean
     image?: boolean
@@ -9901,6 +9911,7 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     nameTh?: boolean
+    description?: boolean
     price?: boolean
     cost?: boolean
     image?: boolean
@@ -9911,7 +9922,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type ProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "nameTh" | "price" | "cost" | "image" | "categoryId" | "isActive" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["product"]>
+  export type ProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "nameTh" | "description" | "price" | "cost" | "image" | "categoryId" | "isActive" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["product"]>
   export type ProductInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     category?: boolean | Product$categoryArgs<ExtArgs>
     recipe?: boolean | Product$recipeArgs<ExtArgs>
@@ -9936,6 +9947,7 @@ export namespace Prisma {
       id: string
       name: string
       nameTh: string | null
+      description: string | null
       price: number
       cost: number | null
       image: string | null
@@ -10373,6 +10385,7 @@ export namespace Prisma {
     readonly id: FieldRef<"Product", 'String'>
     readonly name: FieldRef<"Product", 'String'>
     readonly nameTh: FieldRef<"Product", 'String'>
+    readonly description: FieldRef<"Product", 'String'>
     readonly price: FieldRef<"Product", 'Float'>
     readonly cost: FieldRef<"Product", 'Float'>
     readonly image: FieldRef<"Product", 'String'>
@@ -24865,6 +24878,7 @@ export namespace Prisma {
     id: 'id',
     name: 'name',
     nameTh: 'nameTh',
+    description: 'description',
     price: 'price',
     cost: 'cost',
     image: 'image',
@@ -25581,6 +25595,7 @@ export namespace Prisma {
     id?: StringFilter<"Product"> | string
     name?: StringFilter<"Product"> | string
     nameTh?: StringNullableFilter<"Product"> | string | null
+    description?: StringNullableFilter<"Product"> | string | null
     price?: FloatFilter<"Product"> | number
     cost?: FloatNullableFilter<"Product"> | number | null
     image?: StringNullableFilter<"Product"> | string | null
@@ -25598,6 +25613,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     nameTh?: SortOrderInput | SortOrder
+    description?: SortOrderInput | SortOrder
     price?: SortOrder
     cost?: SortOrderInput | SortOrder
     image?: SortOrderInput | SortOrder
@@ -25618,6 +25634,7 @@ export namespace Prisma {
     NOT?: ProductWhereInput | ProductWhereInput[]
     name?: StringFilter<"Product"> | string
     nameTh?: StringNullableFilter<"Product"> | string | null
+    description?: StringNullableFilter<"Product"> | string | null
     price?: FloatFilter<"Product"> | number
     cost?: FloatNullableFilter<"Product"> | number | null
     image?: StringNullableFilter<"Product"> | string | null
@@ -25635,6 +25652,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     nameTh?: SortOrderInput | SortOrder
+    description?: SortOrderInput | SortOrder
     price?: SortOrder
     cost?: SortOrderInput | SortOrder
     image?: SortOrderInput | SortOrder
@@ -25657,6 +25675,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Product"> | string
     name?: StringWithAggregatesFilter<"Product"> | string
     nameTh?: StringNullableWithAggregatesFilter<"Product"> | string | null
+    description?: StringNullableWithAggregatesFilter<"Product"> | string | null
     price?: FloatWithAggregatesFilter<"Product"> | number
     cost?: FloatNullableWithAggregatesFilter<"Product"> | number | null
     image?: StringNullableWithAggregatesFilter<"Product"> | string | null
@@ -27003,6 +27022,7 @@ export namespace Prisma {
     id?: string
     name: string
     nameTh?: string | null
+    description?: string | null
     price: number
     cost?: number | null
     image?: string | null
@@ -27019,6 +27039,7 @@ export namespace Prisma {
     id?: string
     name: string
     nameTh?: string | null
+    description?: string | null
     price: number
     cost?: number | null
     image?: string | null
@@ -27035,6 +27056,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     nameTh?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     price?: FloatFieldUpdateOperationsInput | number
     cost?: NullableFloatFieldUpdateOperationsInput | number | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
@@ -27051,6 +27073,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     nameTh?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     price?: FloatFieldUpdateOperationsInput | number
     cost?: NullableFloatFieldUpdateOperationsInput | number | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
@@ -27067,6 +27090,7 @@ export namespace Prisma {
     id?: string
     name: string
     nameTh?: string | null
+    description?: string | null
     price: number
     cost?: number | null
     image?: string | null
@@ -27081,6 +27105,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     nameTh?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     price?: FloatFieldUpdateOperationsInput | number
     cost?: NullableFloatFieldUpdateOperationsInput | number | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
@@ -27094,6 +27119,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     nameTh?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     price?: FloatFieldUpdateOperationsInput | number
     cost?: NullableFloatFieldUpdateOperationsInput | number | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
@@ -28616,6 +28642,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     nameTh?: SortOrder
+    description?: SortOrder
     price?: SortOrder
     cost?: SortOrder
     image?: SortOrder
@@ -28635,6 +28662,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     nameTh?: SortOrder
+    description?: SortOrder
     price?: SortOrder
     cost?: SortOrder
     image?: SortOrder
@@ -28649,6 +28677,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     nameTh?: SortOrder
+    description?: SortOrder
     price?: SortOrder
     cost?: SortOrder
     image?: SortOrder
@@ -31511,6 +31540,7 @@ export namespace Prisma {
     id?: string
     name: string
     nameTh?: string | null
+    description?: string | null
     price: number
     cost?: number | null
     image?: string | null
@@ -31526,6 +31556,7 @@ export namespace Prisma {
     id?: string
     name: string
     nameTh?: string | null
+    description?: string | null
     price: number
     cost?: number | null
     image?: string | null
@@ -31570,6 +31601,7 @@ export namespace Prisma {
     id?: StringFilter<"Product"> | string
     name?: StringFilter<"Product"> | string
     nameTh?: StringNullableFilter<"Product"> | string | null
+    description?: StringNullableFilter<"Product"> | string | null
     price?: FloatFilter<"Product"> | number
     cost?: FloatNullableFilter<"Product"> | number | null
     image?: StringNullableFilter<"Product"> | string | null
@@ -31949,6 +31981,7 @@ export namespace Prisma {
     id?: string
     name: string
     nameTh?: string | null
+    description?: string | null
     price: number
     cost?: number | null
     image?: string | null
@@ -31964,6 +31997,7 @@ export namespace Prisma {
     id?: string
     name: string
     nameTh?: string | null
+    description?: string | null
     price: number
     cost?: number | null
     image?: string | null
@@ -32030,6 +32064,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     nameTh?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     price?: FloatFieldUpdateOperationsInput | number
     cost?: NullableFloatFieldUpdateOperationsInput | number | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32045,6 +32080,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     nameTh?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     price?: FloatFieldUpdateOperationsInput | number
     cost?: NullableFloatFieldUpdateOperationsInput | number | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32348,6 +32384,7 @@ export namespace Prisma {
     id?: string
     name: string
     nameTh?: string | null
+    description?: string | null
     price: number
     cost?: number | null
     image?: string | null
@@ -32363,6 +32400,7 @@ export namespace Prisma {
     id?: string
     name: string
     nameTh?: string | null
+    description?: string | null
     price: number
     cost?: number | null
     image?: string | null
@@ -32437,6 +32475,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     nameTh?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     price?: FloatFieldUpdateOperationsInput | number
     cost?: NullableFloatFieldUpdateOperationsInput | number | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32452,6 +32491,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     nameTh?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     price?: FloatFieldUpdateOperationsInput | number
     cost?: NullableFloatFieldUpdateOperationsInput | number | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33654,6 +33694,7 @@ export namespace Prisma {
     id?: string
     name: string
     nameTh?: string | null
+    description?: string | null
     price: number
     cost?: number | null
     image?: string | null
@@ -33667,6 +33708,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     nameTh?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     price?: FloatFieldUpdateOperationsInput | number
     cost?: NullableFloatFieldUpdateOperationsInput | number | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33682,6 +33724,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     nameTh?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     price?: FloatFieldUpdateOperationsInput | number
     cost?: NullableFloatFieldUpdateOperationsInput | number | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33697,6 +33740,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     nameTh?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     price?: FloatFieldUpdateOperationsInput | number
     cost?: NullableFloatFieldUpdateOperationsInput | number | null
     image?: NullableStringFieldUpdateOperationsInput | string | null

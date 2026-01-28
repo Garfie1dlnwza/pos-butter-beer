@@ -12,6 +12,7 @@ interface Product {
   id: string;
   name: string;
   nameTh: string | null;
+  description: string | null;
   price: number;
   image: string | null;
   categoryId: string | null;
@@ -116,6 +117,11 @@ export function ProductGrid({ products, onSelect }: ProductGridProps) {
                 <h3 className="line-clamp-2 text-center text-base leading-tight font-bold text-[#3E2723] transition-colors group-hover:text-[#5D4037]">
                   {product.nameTh ?? product.name}
                 </h3>
+                {product.description && (
+                  <p className="mt-1 line-clamp-2 text-center text-xs text-[#8D6E63]">
+                    {product.description}
+                  </p>
+                )}
               </div>
 
               {/* Price - Bottom aligned */}
