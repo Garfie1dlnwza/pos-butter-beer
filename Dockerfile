@@ -52,6 +52,9 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 # Copy prisma generated client
 COPY --from=builder --chown=nextjs:nodejs /app/generated ./generated
 
+# ✅ ADD THIS BLOCK: Copy the prisma folder containing seed.ts
+COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
+
 USER nextjs
 
 EXPOSE 3000
