@@ -56,9 +56,6 @@ services:
     image: pos-butter-beer:latest
     container_name: pos-butter-beer
     restart: unless-stopped
-    build: .
-    # volumes:
-    #   - .:/app
     ports:
       - "3000:3000"
     depends_on:
@@ -74,6 +71,10 @@ services:
       S3_BUCKET: ${MINIO_BUCKET:-pos-butter-beer}
       S3_REGION: us-east-1
       AUTH_SECRET: ${AUTH_SECRET}
+      AUTH_URL: ${AUTH_URL}
+      AUTH_GOOGLE_ID: ${AUTH_GOOGLE_ID}
+      AUTH_GOOGLE_SECRET: ${AUTH_GOOGLE_SECRET}
+      AUTH_TRUST_HOST: "true"
       SKIP_ENV_VALIDATION: "1"
 volumes:
   postgres_data:

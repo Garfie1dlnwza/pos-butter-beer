@@ -856,6 +856,17 @@ async function main() {
     },
   });
 
+  const staffUser2 = await prisma.user.upsert({
+    where: { email: "myfrekt@gmail.com" },
+    update: {},
+    create: {
+      email: "myfrekt@gmail.com",
+      name: "Jack Staff",
+      role: "STAFF",
+    },
+  });
+
+
   console.log(`   ✅ Admin: ${adminUser.email}`);
   console.log(`   ✅ Admin: ${adminUser2.email}`);
   console.log(`   ✅ Staff: ${staffUser.email}`);
