@@ -62,7 +62,7 @@ export function PaymentPanel({
         console.error("Payload Gen Error", e);
       }
     }
-  }, [paymentMethod, netTotal]);
+  }, [paymentMethod, netTotal, total]);
 
   const createOrder = api.orders.create.useMutation({
     onSuccess: () => {

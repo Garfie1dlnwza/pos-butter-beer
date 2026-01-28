@@ -73,9 +73,10 @@ export function SalesChart({ data }: SalesChartProps) {
                 "ยอดขาย",
                 "ยอดขาย",
               ]}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               labelFormatter={(label: any) => {
                 if (!label) return "";
-                const date = new Date(label);
+                const date = new Date(label as string | number | Date);
                 return date.toLocaleDateString("th-TH", {
                   year: "numeric",
                   month: "long",

@@ -71,16 +71,18 @@ export const reportsRouter = createTRPCRouter({
           purchases: 0,
         };
 
-        const dayStats = salesByDate[dateKey]!;
-        dayStats.revenue += order.netAmount;
-        dayStats.discount += order.discount;
-        dayStats.orders += 1;
+        const dayStats = salesByDate[dateKey];
+        if (dayStats) {
+          dayStats.revenue += order.netAmount;
+          dayStats.discount += order.discount;
+          dayStats.orders += 1;
 
-        let orderCost = 0;
-        for (const item of order.items) {
-          orderCost += item.cost;
+          let orderCost = 0;
+          for (const item of order.items) {
+            orderCost += item.cost;
+          }
+          dayStats.cogs += orderCost;
         }
-        dayStats.cogs += orderCost;
       }
 
       // Process Expenses
@@ -97,7 +99,9 @@ export const reportsRouter = createTRPCRouter({
           discount: 0,
           purchases: 0,
         };
-        salesByDate[dateKey]!.expenses += expense.amount;
+        if (salesByDate[dateKey]) {
+          salesByDate[dateKey].expenses += expense.amount;
+        }
       }
 
       // Process Incomes
@@ -115,10 +119,12 @@ export const reportsRouter = createTRPCRouter({
           purchases: 0,
         };
 
-        if (income.type === "CAPITAL") {
-          salesByDate[dateKey]!.capital += income.amount;
-        } else {
-          salesByDate[dateKey]!.incomes += income.amount;
+        if (salesByDate[dateKey]) {
+          if (income.type === "CAPITAL") {
+            salesByDate[dateKey].capital += income.amount;
+          } else {
+            salesByDate[dateKey].incomes += income.amount;
+          }
         }
       }
 
@@ -140,8 +146,10 @@ export const reportsRouter = createTRPCRouter({
         // But usually purchase should have costPerUnit.
         // Assuming quantity is the purchase amount (e.g. 10 bottles) and costPerUnit is price per bottle.
         // If system stores `quantity` as count and `costPerUnit` as price.
-        const cost = (tx.quantity ?? 0) * (tx.costPerUnit ?? 0);
-        salesByDate[dateKey]!.purchases += cost;
+        if (salesByDate[dateKey]) {
+          const cost = (tx.quantity ?? 0) * (tx.costPerUnit ?? 0);
+          salesByDate[dateKey].purchases += cost;
+        }
       }
 
       // Generate result array with zero-filling
@@ -254,10 +262,12 @@ export const reportsRouter = createTRPCRouter({
           cost: 0,
         };
 
-        const stats = productStats[item.productId]!;
-        stats.quantity += item.quantity;
-        stats.revenue += item.unitPrice * item.quantity;
-        stats.cost += item.cost;
+        const stats = productStats[item.productId];
+        if (stats) {
+          stats.quantity += item.quantity;
+          stats.revenue += item.unitPrice * item.quantity;
+          stats.cost += item.cost;
+        }
       }
 
       return Object.values(productStats)

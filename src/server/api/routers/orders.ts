@@ -127,7 +127,7 @@ export const ordersRouter = createTRPCRouter({
           // 4. Create Order & Items
           const order = await tx.order.create({
             data: {
-              orderNumber: orderNumber as string, // Assert string as it's generated above
+              orderNumber: orderNumber,
               totalAmount: input.totalAmount,
               discount: input.discount,
               netAmount: input.netAmount,
