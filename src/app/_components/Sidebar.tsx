@@ -21,7 +21,7 @@ const menuGroups: MenuGroup[] = [
   {
     title: "Operations",
     items: [
-      { label: "POS", href: "/pos", roles: ["ADMIN", "STAFF"] },
+      { label: "เมนู", href: "/pos", roles: ["ADMIN", "STAFF"] },
       {
         label: "ประวัติการขาย",
         href: "/staff/orders",
