@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { Fragment } from "react";
+import { getFileUrl } from "@/lib/storage";
 
 interface Category {
   id: string;
@@ -165,7 +166,7 @@ export function ProductsTable({
                       <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-[#FFF8E1]">
                         {product.image ? (
                           <Image
-                            src={product.image}
+                            src={getFileUrl(product.image)}
                             alt={product.name}
                             fill
                             className="object-cover"

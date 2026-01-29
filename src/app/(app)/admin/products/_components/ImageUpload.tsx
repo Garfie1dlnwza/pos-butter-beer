@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image";
+import { getFileUrl } from "@/lib/storage";
 
 interface ImageUploadProps {
   value?: string | null;
@@ -54,8 +55,9 @@ export function ImageUpload({
         throw new Error(data.error ?? "Upload failed");
       }
 
-      const data = (await res.json()) as { url: string };
-      onChange(data.url);
+      const data = (await res.json()) as { url: string; key: string };
+      // Save key instead of full URL
+      onChange(data.key);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
     } finally {
@@ -87,7 +89,7 @@ export function ImageUpload({
         // Show preview
         <div className="relative aspect-square w-full max-w-[200px] overflow-hidden rounded-xl border border-[#D7CCC8]">
           <Image
-            src={value}
+            src={getFileUrl(value)}
             alt="Product"
             fill
             className="object-cover"

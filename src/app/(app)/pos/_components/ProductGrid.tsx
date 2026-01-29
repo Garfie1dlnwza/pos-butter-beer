@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { getFileUrl } from "@/lib/storage";
 
 interface Category {
   id: string;
@@ -84,7 +85,7 @@ export function ProductGrid({ products, onSelect }: ProductGridProps) {
             <div className="relative aspect-square w-full overflow-hidden bg-[#F9F9F9]">
               {product.image ? (
                 <Image
-                  src={product.image}
+                  src={getFileUrl(product.image)}
                   alt={product.name}
                   fill
                   sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 20vw"
@@ -100,7 +101,7 @@ export function ProductGrid({ products, onSelect }: ProductGridProps) {
               )}
 
               {/* Overlay Gradient on Hover (Subtle) */}
-              <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/[0.03]" />
+              <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/5" />
             </div>
 
             {/* Product Details */}

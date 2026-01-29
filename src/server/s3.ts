@@ -53,8 +53,14 @@ export async function deleteFile(key: string): Promise<void> {
 /**
  * Get public URL for a file
  */
+/**
+ * Get public URL for a file
+ */
 export function getPublicUrl(key: string): string {
-  const endpoint = process.env.S3_ENDPOINT ?? "http://localhost:9000";
+  const endpoint =
+    process.env.NEXT_PUBLIC_S3_DOMAIN ??
+    process.env.S3_ENDPOINT ??
+    "http://localhost:9000";
   return `${endpoint}/${BUCKET}/${key}`;
 }
 
@@ -63,14 +69,26 @@ export function getPublicUrl(key: string): string {
  */
 export function extractKeyFromUrl(url: string): string | null {
   try {
-    const endpoint = process.env.S3_ENDPOINT ?? "http://localhost:9000";
-    if (url.startsWith(endpoint)) {
-      // Format: http://localhost:9000/bucket/key
-      const path = url.slice(endpoint.length + 1); // Remove endpoint + /
+    const publicEndpoint =
+      process.env.NEXT_PUBLIC_S3_DOMAIN ??
+      process.env.S3_ENDPOINT ??
+      "http://localhost:9000";
+    const internalEndpoint = process.env.S3_ENDPOINT ?? "http://localhost:9000";
+
+    // Try finding key with public endpoint
+    if (url.startsWith(publicEndpoint)) {
+      const path = url.slice(publicEndpoint.length + 1);
       const parts = path.split("/");
-      // Remove bucket name, keep the rest as key
       return parts.slice(1).join("/");
     }
+
+    // Fallback: try finding key with internal endpoint
+    if (url.startsWith(internalEndpoint)) {
+      const path = url.slice(internalEndpoint.length + 1);
+      const parts = path.split("/");
+      return parts.slice(1).join("/");
+    }
+
     return null;
   } catch {
     return null;

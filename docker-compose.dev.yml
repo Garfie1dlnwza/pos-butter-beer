@@ -20,6 +20,8 @@ services:
       S3_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin}
       S3_BUCKET: ${MINIO_BUCKET:-pos-butter-beer}
       S3_REGION: us-east-1
+      NEXT_PUBLIC_S3_DOMAIN: http://localhost:9000
+      NEXT_PUBLIC_S3_BUCKET: ${MINIO_BUCKET:-pos-butter-beer}
       AUTH_SECRET: ${AUTH_SECRET:-supersecretdevkey} # ใส่ค่า default สำหรับ dev
       SKIP_ENV_VALIDATION: "1"
       # Watchpack Polling ช่วยให้ Hot Reload ทำงานได้ดีขึ้นบน Docker (โดยเฉพาะ Windows/Mac)
