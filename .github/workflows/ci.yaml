@@ -39,5 +39,7 @@ jobs:
             # สมมติใน compose ตั้งชื่อ service ว่า "backend" หรือ "pos-butter-beer"
             docker compose up -d pos-butter-beer
             
-            # 5. ลบ Image เก่าที่ไม่ได้ใช้แล้ว (Dangling images)
+            docker compose restart nginx
+            
+            # ลบ Image เก่าที่ไม่ได้ใช้แล้ว (Dangling images)
             docker image prune -f
