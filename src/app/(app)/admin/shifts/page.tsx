@@ -67,7 +67,7 @@ export default function AdminShiftsPage() {
                   เงินเปิดกะ
                 </th>
                 <th className="px-6 py-4 text-right whitespace-nowrap text-green-700">
-                  เงินสด (Cash)
+                  เงินสด
                 </th>
                 <th className="px-6 py-4 text-right whitespace-nowrap text-blue-700">
                   เงินโอน (QR)

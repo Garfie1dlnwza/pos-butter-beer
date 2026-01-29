@@ -161,7 +161,7 @@ export function PaymentPanel({
           {/* Discount Section */}
           <div className="mb-6 rounded-xl border border-[#F0F0F0] bg-[#FAFAFA] p-4">
             <h4 className="mb-3 text-xs font-bold tracking-wide text-[#8D6E63] uppercase">
-              Discount
+              ส่วนลด
             </h4>
             <div className="flex gap-2">
               <button
@@ -175,39 +175,41 @@ export function PaymentPanel({
                     : "bg-white text-[#8D6E63] hover:bg-[#EFEBE9]"
                 }`}
               >
-                None
+                ไม่ใช้ส่วนลด
               </button>
               <button
                 onClick={() => {
                   setDiscountType("fixed");
                   setDiscountValue(0);
                 }}
-                className={`flex-1 rounded-lg py-2 text-sm font-bold transition-all ${
+                className={`flex-1 rounded-lg px-2 py-2 text-sm font-bold transition-all ${
                   discountType === "fixed"
                     ? "bg-[#8D6E63] text-white shadow-md"
                     : "bg-white text-[#8D6E63] hover:bg-[#EFEBE9]"
                 }`}
               >
-                Fixed (฿)
+                ส่วนลดแบบจำนวนเงิน
               </button>
               <button
                 onClick={() => {
                   setDiscountType("percent");
                   setDiscountValue(0);
                 }}
-                className={`flex-1 rounded-lg py-2 text-sm font-bold transition-all ${
+                className={`flex-1 rounded-lg px-2 py-2 text-sm font-bold transition-all ${
                   discountType === "percent"
                     ? "bg-[#8D6E63] text-white shadow-md"
                     : "bg-white text-[#8D6E63] hover:bg-[#EFEBE9]"
                 }`}
               >
-                Percent (%)
+                ส่วนลดแบบเปอร์เซ็นต์
               </button>
             </div>
             {discountType !== "none" && (
               <div className="mt-3 flex items-center gap-2">
-                <span className="font-bold text-[#3E2723]">
-                  {discountType === "fixed" ? "Amount (฿):" : "Percentage (%):"}
+                <span className="text-md w-50 font-bold text-[#3E2723]">
+                  {discountType === "fixed"
+                    ? "จำนวนเงิน (฿):"
+                    : "เปอร์เซ็นต์ (%):"}
                 </span>
                 <input
                   type="number"
@@ -236,14 +238,14 @@ export function PaymentPanel({
                   }`}
                 >
                   <span
-                    className={`text-sm font-bold ${isActive ? "text-white" : "text-[#3E2723]"}`}
+                    className={`text-lg font-bold ${isActive ? "text-white" : "text-[#3E2723]"}`}
                   >
-                    {method.label}
+                    {method.labelTh}
                   </span>
                   <span
                     className={`text-xs ${isActive ? "text-[#D7CCC8]" : "text-[#A1887F]"}`}
                   >
-                    {method.labelTh}
+                    {method.label}
                   </span>
 
                   {/* Active Indicator Check */}
@@ -261,7 +263,7 @@ export function PaymentPanel({
               <div className="mb-4 flex items-center justify-between rounded-xl border border-[#F0F0F0] bg-[#FAFAFA] p-4">
                 <div className="flex flex-col">
                   <span className="text-xs font-bold tracking-wide text-[#8D6E63] uppercase">
-                    Received
+                    เงินสดที่ได้รับ
                   </span>
                   <div className="flex items-center gap-1">
                     <span className="text-2xl font-bold text-[#3E2723]">฿</span>
@@ -281,7 +283,7 @@ export function PaymentPanel({
 
                 <div className="flex flex-col text-right">
                   <span className="text-xs font-bold tracking-wide text-[#8D6E63] uppercase">
-                    Change
+                    เงินทอน
                   </span>
                   <span
                     className={`text-2xl font-bold ${change < 0 ? "text-red-400" : "text-emerald-600"}`}
@@ -306,15 +308,15 @@ export function PaymentPanel({
                   onClick={() => setCashReceived(0)}
                   className="col-span-1 rounded-lg border border-red-100 bg-red-50/50 py-2 text-sm font-bold text-red-500 transition-colors hover:bg-red-100"
                 >
-                  Clear
+                  ล้างยอด
                 </button>
               </div>
 
               <button
                 onClick={() => setCashReceived(netTotal)}
-                className="mt-2 w-full rounded-lg bg-[#EFEBE9] py-2 text-sm font-bold text-[#5D4037] transition-colors hover:bg-[#D7CCC8]"
+                className="mt-2 w-full rounded-lg bg-[#EFEBE9] py-2 text-lg font-bold text-[#5D4037] transition-colors hover:bg-[#D7CCC8]"
               >
-                Pay Exact (พอดี)
+                จ่ายพอดี
               </button>
             </div>
           )}
@@ -340,7 +342,7 @@ export function PaymentPanel({
               <p className="text-sm font-medium text-[#8D6E63]">
                 PromptPay (พร้อมเพย์)
               </p>
-              <p className="mt-1 text-xs text-[#BDBDBD]">
+              <p className="mt-1 text-2xl text-normal text-[#3E2723]">
                 ยอดชำระ: ฿{netTotal.toLocaleString()}
               </p>
             </div>
@@ -361,11 +363,11 @@ export function PaymentPanel({
               {isProcessing ? (
                 <>
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"></div>
-                  <span className="font-bold">Processing...</span>
+                  <span className="font-bold">กำลังชำระเงิน...</span>
                 </>
               ) : (
                 <span className="text-lg font-bold tracking-wide">
-                  Confirm Payment
+                  ยืนยันการชำระเงิน
                 </span>
               )}
             </div>
