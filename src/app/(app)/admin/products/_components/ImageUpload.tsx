@@ -91,7 +91,6 @@ export function ImageUpload({
             alt="Product"
             fill
             className="object-cover"
-            unoptimized // For external MinIO URLs
           />
           <button
             type="button"
