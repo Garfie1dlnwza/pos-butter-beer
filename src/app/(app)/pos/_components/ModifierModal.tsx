@@ -70,9 +70,9 @@ export function ModifierModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#3E2723]/60 p-4 backdrop-blur-md">
       <div className="animate-in fade-in zoom-in w-full max-w-4xl overflow-hidden rounded-[2.5rem] bg-white shadow-2xl duration-200">
-        <div className="flex h-full max-h-[85vh] flex-col lg:flex-row">
+        <div className="flex h-full max-h-[85vh] flex-col md:flex-row">
           {/* LEFT: Image & Info */}
-          <div className="relative flex-1 bg-[#F9F9F9] lg:max-w-md">
+          <div className="relative flex-1 bg-[#F9F9F9] md:max-w-md">
             <button
               onClick={onClose}
               className="absolute top-6 left-6 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/80 text-[#3E2723] shadow-sm backdrop-blur-sm transition-colors hover:bg-white"
@@ -91,7 +91,7 @@ export function ModifierModal({
                 />
               </svg>
             </button>
-            <div className="relative h-64 w-full lg:h-full">
+            <div className="relative h-64 w-full md:h-full">
               {product.image ? (
                 <Image
                   src={getFileUrl(product.image)}
@@ -107,7 +107,7 @@ export function ModifierModal({
                 </div>
               )}
               {/* Gradient overlay for text readability on mobile if needed, or visual flair */}
-              <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent lg:hidden" />
+              <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent md:hidden" />
             </div>
           </div>
 
@@ -236,7 +236,7 @@ export function ModifierModal({
             </div>
 
             {/* Action Footer */}
-            <div className="shrink-0 border-t border-[#F5F5F5] bg-white p-6 lg:p-8">
+            <div className="shrink-0 border-t border-[#F5F5F5] bg-white p-6 md:p-8">
               <button
                 onClick={handleConfirm}
                 className="flex w-full items-center justify-between rounded-[1.25rem] bg-[#3E2723] px-6 py-4 text-lg font-bold text-white shadow-xl shadow-[#3E2723]/20 transition-all hover:bg-[#5D4037] active:scale-[0.98]"
