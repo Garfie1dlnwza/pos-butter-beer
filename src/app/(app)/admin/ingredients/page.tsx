@@ -4,7 +4,7 @@ import { api } from "@/trpc/react";
 import { useState } from "react";
 import { IngredientsTable } from "./_components/IngredientsTable";
 import { IngredientModal } from "./_components/IngredientModal";
-import { AddStockModal } from "./_components/AddStockModal";
+import { StockManagementModal } from "./_components/StockManagementModal";
 import { useToast } from "@/components/Toast";
 import { StockModal } from "./_components/StockModal";
 
@@ -417,7 +417,7 @@ export default function IngredientsPage() {
       />
 
       {/* Quick Add Stock Modal (from Ingredients Table) */}
-      <AddStockModal
+      <StockManagementModal
         isOpen={!!addStockIngredient}
         onClose={() => setAddStockIngredient(null)}
         ingredient={addStockIngredient}

@@ -6,6 +6,7 @@ interface Ingredient {
   id: string;
   name: string;
   unit: string;
+  costPerUnit: number;
 }
 
 interface ToppingFormData {
@@ -109,6 +110,11 @@ export function ToppingModal({
     });
   };
 
+  const estimatedCost = formData.recipe.reduce((sum, item) => {
+    const ingredient = ingredients?.find((i) => i.id === item.ingredientId);
+    return sum + item.amountUsed * (ingredient?.costPerUnit ?? 0);
+  }, 0);
+
   return (
     <Modal
       isOpen={isOpen}
@@ -157,17 +163,42 @@ export function ToppingModal({
               <label className="mb-1.5 block text-sm font-medium text-[#5D4037]">
                 ราคาเพิ่ม (฿)
               </label>
-              <input
-                type="text"
-                inputMode="decimal"
-                value={formData.price}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, price: e.target.value }))
-                }
-                className="w-full rounded-xl border border-[#D7CCC8] bg-[#FAFAFA] px-4 py-3 text-[#3E2723] placeholder-[#BDBDBD] transition outline-none focus:border-[#8D6E63] focus:bg-white"
-                placeholder="10"
-                required
-              />
+              <div className="flex items-start gap-4">
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  value={formData.price}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, price: e.target.value }))
+                  }
+                  className="w-full rounded-xl border border-[#D7CCC8] bg-[#FAFAFA] px-4 py-3 text-[#3E2723] placeholder-[#BDBDBD] transition outline-none focus:border-[#8D6E63] focus:bg-white"
+                  placeholder="10"
+                  required
+                />
+                <div className="shrink-0 text-xs whitespace-nowrap">
+                  <span className="block text-[#8D6E63]">ต้นทุนโดยประมาณ</span>
+                  <span className="font-mono text-lg font-bold text-[#5D4037]">
+                    ฿{estimatedCost.toFixed(2)}
+                  </span>
+                  {parseFloat(formData.price) > 0 && (
+                    <span
+                      className={`block font-medium ${
+                        parseFloat(formData.price) > estimatedCost
+                          ? "text-green-600"
+                          : "text-red-500"
+                      }`}
+                    >
+                      Margin:{" "}
+                      {(
+                        ((parseFloat(formData.price) - estimatedCost) /
+                          parseFloat(formData.price)) *
+                        100
+                      ).toFixed(0)}
+                      %
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
@@ -249,6 +280,13 @@ export function ToppingModal({
                           className="w-full rounded-lg border border-[#E0E0E0] p-2 text-right text-sm text-[#3E2723] transition outline-none focus:border-[#8D6E63]"
                           placeholder="0"
                         />
+                        <div className="mt-0.5 text-right text-[10px] font-medium text-[#8D6E63]">
+                          ฿
+                          {(
+                            item.amountUsed *
+                            (currentIngredient?.costPerUnit ?? 0)
+                          ).toFixed(2)}
+                        </div>
                       </div>
                       <div className="col-span-2 text-center text-xs text-[#8D6E63]">
                         {currentIngredient?.unit ?? "-"}
