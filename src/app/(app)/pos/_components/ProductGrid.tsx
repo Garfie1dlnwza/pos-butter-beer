@@ -126,11 +126,11 @@ export function ProductGrid({ products, onSelect }: ProductGridProps) {
 
               {/* Price - Bottom aligned */}
               <div className="mt-4 flex items-baseline justify-between border-t border-[#D7CCC8]/30 pt-3">
-                <span className="text-xs font-medium text-[#8D6E63]">
-                  Price
+                <span className="text-md font-medium text-[#8D6E63]">
+                  ราคา
                 </span>
                 <div className="flex items-baseline gap-0.5">
-                  <span className="text-xs font-semibold text-[#3E2723]">
+                  <span className="text-md font-semibold text-[#3E2723]">
                     ฿
                   </span>
                   <span className="text-xl font-bold text-[#3E2723]">

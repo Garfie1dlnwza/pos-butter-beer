@@ -25,9 +25,9 @@ interface ModifierModalProps {
 }
 
 const SWEETNESS_OPTIONS = [
-  { value: 0, label: "0%", subLabel: "No Sugar" },
-  { value: 50, label: "50%", subLabel: "Less Sweet" },
-  { value: 100, label: "100%", subLabel: "Normal" },
+  { value: 25, label: "25%", subLabel: "หวานน้อยมาก" },
+  { value: 50, label: "50%", subLabel: "หวานน้อย" },
+  { value: 100, label: "100%", subLabel: "หวาน" },
 ];
 
 export function ModifierModal({
@@ -72,8 +72,8 @@ export function ModifierModal({
             <h3 className="text-2xl font-bold text-[#3E2723]">
               {product.nameTh}
             </h3>
-            <p className="text-sm font-medium tracking-wider text-[#8D6E63] uppercase">
-              Base Price: ฿{product.price}
+            <p className="text-md font-medium tracking-wider text-[#8D6E63] uppercase">
+              ราคา ฿{product.price}
             </p>
           </div>
           <button
@@ -100,8 +100,8 @@ export function ModifierModal({
         <div className="max-h-[60vh] overflow-y-auto px-8 py-2">
           {/* Sweetness Selection */}
           <div className="mb-8">
-            <label className="mb-4 block text-[10px] font-bold tracking-[0.2em] text-[#8D6E63] uppercase">
-              Sweetness Level
+            <label className="mb-4 text-center block text-lg font-bold tracking-[0.2em] text-[#8D6E63] uppercase">
+              ระดับความหวาน
             </label>
             <div className="grid grid-cols-3 gap-3">
               {SWEETNESS_OPTIONS.map((option) => {
