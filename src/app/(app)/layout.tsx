@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/server/auth";
 import { SessionProvider } from "next-auth/react";
 import { Sidebar } from "@/app/_components/Sidebar";
+import { MobileNav } from "@/app/_components/MobileNav";
 import { ToastProvider } from "@/components/Toast";
 
 export default async function AppLayout({
@@ -18,8 +19,9 @@ export default async function AppLayout({
   return (
     <SessionProvider session={session}>
       <ToastProvider>
-        <div className="flex h-dvh bg-[#FAFAFA]">
-          <Sidebar />
+        <div className="flex h-dvh flex-col bg-[#FAFAFA] lg:flex-row">
+          <MobileNav />
+          <Sidebar className="hidden lg:flex" />
           <main className="flex-1 overflow-auto">{children}</main>
         </div>
       </ToastProvider>

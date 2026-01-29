@@ -59,14 +59,21 @@ const menuGroups: MenuGroup[] = [
   },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  className?: string;
+  onClose?: () => void;
+}
+
+export function Sidebar({ className = "", onClose }: SidebarProps) {
   const { data: session } = useSession();
   const pathname = usePathname();
 
   const userRole = (session?.user?.role as "ADMIN" | "STAFF") ?? "STAFF";
 
   return (
-    <aside className="hidden h-full w-64 flex-col border-r border-[#D7CCC8]/60 bg-[#FFF8E1] shadow-xl shadow-[#3E2723]/5 md:flex">
+    <aside
+      className={`flex h-full w-64 flex-col border-r border-[#D7CCC8]/60 bg-[#FFF8E1] shadow-xl shadow-[#3E2723]/5 ${className}`}
+    >
       {/* 1. Logo Section */}
       <div className="flex flex-col items-center justify-center pt-10 pb-6">
         <div className="relative mb-3 h-16 w-16 drop-shadow-sm">
@@ -112,6 +119,7 @@ export function Sidebar() {
                     <Link
                       key={item.href}
                       href={item.href}
+                      onClick={onClose}
                       className={`group flex items-center justify-between rounded-xl px-4 py-3 text-sm transition-all duration-300 active:scale-95 ${
                         isActive
                           ? "bg-[#3E2723] font-bold text-white shadow-md shadow-[#3E2723]/20"
