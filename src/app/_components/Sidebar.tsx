@@ -66,10 +66,10 @@ export function Sidebar() {
   const userRole = (session?.user?.role as "ADMIN" | "STAFF") ?? "STAFF";
 
   return (
-    <aside className="hidden h-screen w-64 flex-col border-r border-[#D7CCC8]/60 bg-[#FFF8E1] md:flex">
+    <aside className="hidden h-full w-64 flex-col border-r border-[#D7CCC8]/60 bg-[#FFF8E1] shadow-xl shadow-[#3E2723]/5 md:flex">
       {/* 1. Logo Section */}
       <div className="flex flex-col items-center justify-center pt-10 pb-6">
-        <div className="relative mb-3 h-16 w-16">
+        <div className="relative mb-3 h-16 w-16 drop-shadow-sm">
           <Image
             src="/logo-german.svg"
             alt="German-OneDay"
@@ -112,15 +112,15 @@ export function Sidebar() {
                     <Link
                       key={item.href}
                       href={item.href}
-                      className={`group flex items-center justify-between rounded-lg px-4 py-2.5 text-sm transition-all duration-300 ${
+                      className={`group flex items-center justify-between rounded-xl px-4 py-3 text-sm transition-all duration-300 active:scale-95 ${
                         isActive
-                          ? "bg-[#3E2723] font-semibold text-white shadow-md shadow-[#3E2723]/10"
-                          : "font-medium text-[#5D4037] hover:bg-[#D7CCC8]/40 hover:text-[#3E2723]"
+                          ? "bg-[#3E2723] font-bold text-white shadow-md shadow-[#3E2723]/20"
+                          : "font-medium text-[#5D4037] hover:bg-[#D7CCC8]/30 hover:text-[#3E2723]"
                       }`}
                     >
                       <span className="tracking-wide">{item.label}</span>
                       {isActive && (
-                        <span className="h-1.5 w-1.5 rounded-full bg-[#FFF8E1]" />
+                        <span className="h-2 w-2 rounded-full bg-[#FFECB3]" />
                       )}
                     </Link>
                   );
@@ -135,7 +135,7 @@ export function Sidebar() {
       <div className="border-t border-[#D7CCC8]/60 bg-[#FFF8E1] p-6">
         <div className="mb-4 flex items-center gap-3">
           {/* Avatar */}
-          <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full border border-[#D7CCC8] shadow-sm">
+          <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full border-2 border-white shadow-sm">
             {session?.user?.image ? (
               <Image
                 src={session.user.image}
@@ -155,7 +155,7 @@ export function Sidebar() {
             <p className="truncate text-sm font-bold text-[#3E2723]">
               {session?.user?.name}
             </p>
-            <p className="text-[11px] font-semibold tracking-wider text-[#8D6E63] uppercase">
+            <p className="text-[11px] font-bold tracking-wider text-[#8D6E63] uppercase">
               {userRole === "ADMIN" ? "Administrator" : "Staff Member"}
             </p>
           </div>
@@ -164,7 +164,7 @@ export function Sidebar() {
         {/* Minimal Logout Button */}
         <button
           onClick={() => signOut({ callbackUrl: "/" })}
-          className="w-full rounded-lg border border-[#D7CCC8] py-2 text-xs font-semibold text-[#5D4037] transition-colors hover:border-[#3E2723] hover:bg-[#3E2723] hover:text-white"
+          className="w-full rounded-xl border border-[#D7CCC8] py-2.5 text-xs font-bold text-[#5D4037] transition-all duration-200 hover:border-[#3E2723] hover:bg-[#3E2723] hover:text-white hover:shadow-md active:scale-95"
         >
           ออกจากระบบ
         </button>

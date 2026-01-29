@@ -18,7 +18,7 @@ export default async function AppLayout({
   return (
     <SessionProvider session={session}>
       <ToastProvider>
-        <div className="flex h-screen bg-gray-950">
+        <div className="flex h-dvh bg-[#FAFAFA]">
           <Sidebar />
           <main className="flex-1 overflow-auto">{children}</main>
         </div>
