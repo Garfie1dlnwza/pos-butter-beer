@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { getFileUrl } from "@/lib/storage";
 
 interface Topping {
   id: string;
@@ -93,7 +94,7 @@ export function ModifierModal({
             <div className="relative h-64 w-full lg:h-full">
               {product.image ? (
                 <Image
-                  src={product.image}
+                  src={getFileUrl(product.image)}
                   alt={product.name}
                   fill
                   className="object-cover"
