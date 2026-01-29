@@ -33,6 +33,7 @@ interface Product {
 interface ProductFormData {
   name: string;
   nameTh: string;
+  description: string;
   price: number;
   categoryId: string | null;
   image: string | null;
@@ -84,6 +85,7 @@ export default function ProductsPage() {
     createMutation.mutate({
       name: data.name,
       nameTh: data.nameTh || undefined,
+      description: data.description || undefined,
       price: data.price,
       categoryId: data.categoryId ?? undefined,
       image: data.image ?? undefined,
@@ -96,7 +98,8 @@ export default function ProductsPage() {
     updateMutation.mutate({
       id: editingProduct.id,
       name: data.name,
-      nameTh: data.nameTh || undefined,
+      nameTh: data.nameTh, // Allow empty string to clear value
+      description: data.description, // Allow empty string to clear value
       price: data.price,
       categoryId: data.categoryId,
       image: data.image ?? undefined,

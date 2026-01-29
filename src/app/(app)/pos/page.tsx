@@ -25,6 +25,8 @@ export default function POSPage() {
     name: string;
     nameTh: string;
     price: number;
+    description: string | null;
+    image: string | null;
   } | null>(null);
   const [showPayment, setShowPayment] = useState(false);
 
@@ -47,12 +49,16 @@ export default function POSPage() {
     name: string;
     nameTh: string | null;
     price: number;
+    description: string | null;
+    image: string | null;
   }) => {
     setSelectedProduct({
       id: product.id,
       name: product.name,
       nameTh: product.nameTh ?? product.name,
       price: product.price,
+      description: product.description ?? null,
+      image: product.image ?? null,
     });
   };
 

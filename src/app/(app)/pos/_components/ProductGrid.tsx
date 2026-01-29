@@ -118,17 +118,20 @@ export function ProductGrid({ products, onSelect }: ProductGridProps) {
                   {product.nameTh ?? product.name}
                 </h3>
                 {product.description && (
-                  <p className="mt-1 line-clamp-2 text-center text-xs text-[#8D6E63]">
+                  <p className="mt-1 line-clamp-2 text-center text-xs font-light text-[#8D6E63]">
                     {product.description}
+                  </p>
+                )}
+                {!product.description && (
+                  <p className="mt-1 text-center text-[10px] tracking-widest text-[#D7CCC8] uppercase opacity-0 transition-opacity group-hover:opacity-100">
+                    View Details
                   </p>
                 )}
               </div>
 
               {/* Price - Bottom aligned */}
               <div className="mt-4 flex items-baseline justify-between border-t border-[#D7CCC8]/30 pt-3">
-                <span className="text-md font-medium text-[#8D6E63]">
-                  ราคา
-                </span>
+                <span className="text-md font-medium text-[#8D6E63]">ราคา</span>
                 <div className="flex items-baseline gap-0.5">
                   <span className="text-md font-semibold text-[#3E2723]">
                     ฿
