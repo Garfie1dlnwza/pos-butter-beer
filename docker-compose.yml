@@ -76,6 +76,14 @@ services:
       AUTH_GOOGLE_SECRET: ${AUTH_GOOGLE_SECRET}
       AUTH_TRUST_HOST: "true"
       SKIP_ENV_VALIDATION: "1"
+
+  nginx:
+    image: nginx:latest
+    container_name: pos-butter-beer-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+
 volumes:
   postgres_data:
     driver: local

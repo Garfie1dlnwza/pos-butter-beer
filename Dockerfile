@@ -24,6 +24,9 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 ENV SKIP_ENV_VALIDATION=1
 
+ARG NEXT_PUBLIC_S3_DOMAIN
+ENV NEXT_PUBLIC_S3_DOMAIN=${NEXT_PUBLIC_S3_DOMAIN}
+
 # Build the application
 RUN npm run build
 
@@ -52,7 +55,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 # Copy prisma generated client
 COPY --from=builder --chown=nextjs:nodejs /app/generated ./generated
 
-# ✅ ADD THIS BLOCK: Copy the prisma folder containing seed.ts
+# :white_check_mark: ADD THIS BLOCK: Copy the prisma folder containing seed.ts
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 
 USER nextjs
