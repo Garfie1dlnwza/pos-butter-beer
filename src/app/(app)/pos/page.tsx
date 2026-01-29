@@ -252,7 +252,7 @@ export default function POSPage() {
         {/* Footer / Payment Section */}
         <div className="bg-[#FFF8E1]/50 p-6">
           <div className="mb-4 flex items-center justify-between text-[#5D4037]">
-            <span className="text-sm font-medium">Total Items</span>
+            <span className="text-sm font-medium">จำนวนสินค้า</span>
             <span className="text-sm font-bold">
               {cart.reduce((a, b) => a + b.quantity, 0)}
             </span>
@@ -265,7 +265,7 @@ export default function POSPage() {
           >
             <div className="flex items-center justify-between px-6">
               <span className="text-sm font-bold tracking-widest uppercase">
-                Pay Now
+                ชำระเงิน
               </span>
               <div className="flex items-baseline gap-1">
                 <span className="text-sm font-medium opacity-80">THB</span>

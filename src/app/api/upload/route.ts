@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
 
     // Generate unique filename
     const ext = file.name.split(".").pop() ?? "jpg";
-    const key = `products/${randomUUID()}.${ext}`;
+    const key = `public/products/${randomUUID()}.${ext}`;
 
     // Convert to buffer
     const buffer = Buffer.from(await file.arrayBuffer());
