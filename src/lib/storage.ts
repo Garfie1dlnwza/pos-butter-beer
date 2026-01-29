@@ -1,10 +1,10 @@
 import { env } from "@/env";
 
 /**
- * Construct full URL for file storage
- * @param path - Key or path of the file (e.g., "products/image.png")
- * @returns Full URL (e.g., "https://domain.com/bucket/products/image.png")
- */
+ 
+Construct full URL for file storage
+@param path - Key or path of the file (e.g., "products/image.png")
+@returns Full URL (e.g., "https://domain.com/bucket/products/image.png")*/
 export function getFileUrl(path: string | null | undefined): string {
   if (!path) return "/images/placeholder.png";
 
@@ -12,9 +12,8 @@ export function getFileUrl(path: string | null | undefined): string {
   if (path.startsWith("http")) return path;
 
   // Use configured public domain or fallback
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-  const domain = env.NEXT_PUBLIC_S3_DOMAIN ?? "http://localhost:9000";
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+  // Use configured public domain or fallback
+  const domain = env.NEXT_PUBLIC_S3_DOMAIN ?? "http://localhost:9000/";
   const bucket = env.NEXT_PUBLIC_S3_BUCKET ?? "pos-butter-beer";
 
   // Ensure no double slashes between domain and bucket
@@ -23,5 +22,16 @@ export function getFileUrl(path: string | null | undefined): string {
   // Clean path (remove leading slash)
   const cleanPath = path.replace(/^\/+/, "");
 
-  return `${cleanDomain}/${bucket}/${cleanPath}`;
+  // In production (Docker), localhost:9000 is not reachable by Next.js server.
+  // We must use the internal service name 'minio'.
+  // We only replace if the domain is literally localhost, avoiding accidental replacements of real domains.
+  let finalDomain = cleanDomain;
+  if (
+    process.env.NODE_ENV === "production" &&
+    finalDomain.includes("localhost")
+  ) {
+    finalDomain = finalDomain.replace("localhost", "minio");
+  }
+
+  return `${finalDomain}/${bucket}/${cleanPath}`;
 }
