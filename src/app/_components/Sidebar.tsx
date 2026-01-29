@@ -52,7 +52,7 @@ const menuGroups: MenuGroup[] = [
       { label: "รายรับอื่นๆ", href: "/admin/incomes", roles: ["ADMIN"] },
       {
         label: "ประวัติการเปิดปิดกะ",
-        href: "/admin/shifts",
+        href: "/staff/shifts",
         roles: ["ADMIN", "STAFF"],
       },
     ],
