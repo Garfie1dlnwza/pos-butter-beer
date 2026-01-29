@@ -26,6 +26,16 @@ const config = {
         hostname: "lh3.googleusercontent.com",
         pathname: "/a/**",
       },
+      {
+        protocol: "https",
+        hostname: "files.phairaicomsci.dev",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "minio.phairaicomsci.dev",
+        pathname: "/**",
+      },
     ],
   },
 };
