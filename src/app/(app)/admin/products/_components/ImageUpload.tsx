@@ -93,7 +93,6 @@ export function ImageUpload({
             alt="Product"
             fill
             className="object-cover"
-            unoptimized
           />
           <button
             type="button"

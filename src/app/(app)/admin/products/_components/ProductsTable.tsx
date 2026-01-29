@@ -170,7 +170,6 @@ export function ProductsTable({
                             alt={product.name}
                             fill
                             className="object-cover"
-                            unoptimized
                           />
                         ) : (
                           <div className="flex h-full w-full items-center justify-center text-lg font-bold text-[#D7CCC8]">
