@@ -41,6 +41,7 @@ const menuGroups: MenuGroup[] = [
         href: "/admin/ingredients",
         roles: ["ADMIN"],
       },
+      { label: "ผู้ใช้งาน", href: "/admin/users", roles: ["ADMIN"] },
     ],
   },
   {
