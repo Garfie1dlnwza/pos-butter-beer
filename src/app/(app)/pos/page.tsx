@@ -168,13 +168,13 @@ export default function POSPage() {
         <header className="flex shrink-0 items-end justify-between border-b border-[#D7CCC8]/30 px-6 py-6 lg:px-10">
           <div>
             <h1 className="text-3xl font-bold text-[#3E2723] lg:text-4xl">
-              Butter Beer
+              รายการเมนู
             </h1>
-            <p className="mt-2 text-sm font-medium tracking-wide text-[#8D6E63]">
+            {/* <p className="mt-2 text-sm font-medium tracking-wide text-[#8D6E63]">
               {currentShift
                 ? `Shift Open: ${new Date(currentShift.startedAt).toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" })}`
                 : "Manager Mode"}
-            </p>
+            </p> */}
           </div>
           <div className="hidden text-right sm:block">
             <div className="text-[10px] font-bold tracking-[0.2em] text-[#8D6E63] uppercase">

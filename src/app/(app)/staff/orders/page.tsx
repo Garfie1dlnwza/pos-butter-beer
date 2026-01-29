@@ -53,7 +53,7 @@ export default async function OrdersPage() {
           </Link>
           <div>
             <h1 className="text-xl font-bold text-[#3E2723]">
-              ประวัติการขาย (Order History)
+              ประวัติการขาย
             </h1>
             <p className="text-xs text-[#8D6E63]">
               {today.toLocaleDateString("th-TH", {

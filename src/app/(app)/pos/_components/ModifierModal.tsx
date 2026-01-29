@@ -118,7 +118,7 @@ export function ModifierModal({
                   >
                     <span className="text-lg font-bold">{option.label}</span>
                     <span
-                      className={`mt-0.5 text-[10px] ${isActive ? "text-[#D7CCC8]" : "text-[#8D6E63]"}`}
+                      className={`mt-0.5 text-sm ${isActive ? "text-[#D7CCC8]" : "text-[#8D6E63]"}`}
                     >
                       {option.subLabel}
                     </span>
@@ -194,7 +194,7 @@ export function ModifierModal({
             onClick={handleConfirm}
             className="flex w-full items-center justify-between rounded-[1.5rem] bg-[#3E2723] px-8 py-5 text-lg font-bold text-white transition-all hover:bg-[#5D4037] active:scale-[0.98]"
           >
-            <span>Add to Order</span>
+            <span>เพิ่มรายการ</span>
             <span className="text-[#FFF8E1]">
               ฿{itemTotal.toLocaleString()}
             </span>
