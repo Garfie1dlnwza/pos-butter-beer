@@ -1,7 +1,7 @@
 name: CI/CD Pipeline
 on:
   push:
-    branches: [ "main", "develop", "cicd" ]
+    branches: [ "main", "develop" ]
 
 jobs:
   deploy:
@@ -36,7 +36,7 @@ jobs:
             cd pos-butter-beer
             
             # สั่ง up เฉพาะ service ที่ต้องการ (มันจะ recreate ให้เองเพราะ image เปลี่ยน)
-            # สมมติใน compose ตั้งชื่อ service ว่า "backend" หรือ "pos-butter-beer"
+            # สมมติใน compose ตั้งชื่อ service ว่า "pos-butter-beer"
             docker compose up -d pos-butter-beer
             
             docker compose restart nginx
