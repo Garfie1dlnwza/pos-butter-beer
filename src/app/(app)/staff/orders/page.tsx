@@ -3,11 +3,10 @@ import Link from "next/link";
 import OrdersClient from "./_components/OrdersClient";
 import { DateRangePicker } from "../../admin/reports/_components/DateRangePicker";
 
-export default async function OrdersPage({
-  searchParams,
-}: {
-  searchParams: Record<string, string | string[] | undefined>;
+export default async function OrdersPage(props: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  const searchParams = await props.searchParams;
   const startDateParam = searchParams.startDate as string | undefined;
   const endDateParam = searchParams.endDate as string | undefined;
 

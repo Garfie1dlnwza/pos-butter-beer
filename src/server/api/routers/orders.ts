@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
+import { type Prisma } from "@prisma/client";
 
 const createOrderSchema = z.object({
   items: z.array(
@@ -278,7 +279,7 @@ export const ordersRouter = createTRPCRouter({
         .optional(),
     )
     .query(async ({ ctx, input }) => {
-      const where: any = {};
+      const where: { createdAt?: { gte: Date; lte: Date } } = {};
 
       if (input?.startDate && input?.endDate) {
         const start = new Date(input.startDate);
