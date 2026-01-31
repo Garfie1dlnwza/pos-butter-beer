@@ -268,18 +268,38 @@ export const ordersRouter = createTRPCRouter({
       }
     }),
 
-  getAll: protectedProcedure.query(async ({ ctx }) => {
-    return ctx.db.order.findMany({
-      orderBy: { createdAt: "desc" },
-      include: {
-        createdBy: true,
-        items: {
-          include: { product: true },
+  getAll: protectedProcedure
+    .input(
+      z
+        .object({
+          startDate: z.date().optional(),
+          endDate: z.date().optional(),
+        })
+        .optional(),
+    )
+    .query(async ({ ctx, input }) => {
+      const where: any = {};
+
+      if (input?.startDate && input?.endDate) {
+        const start = new Date(input.startDate);
+        start.setHours(0, 0, 0, 0);
+        const end = new Date(input.endDate);
+        end.setHours(23, 59, 59, 999);
+        where.createdAt = { gte: start, lte: end };
+      }
+
+      return ctx.db.order.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        include: {
+          createdBy: true,
+          items: {
+            include: { product: true },
+          },
         },
-      },
-      take: 100,
-    });
-  }),
+        take: 100, // Keep limit, but maybe apply it only when no filter? or always? 100 is safe.
+      });
+    }),
 
   // Cancel Order & Restore Stock
   cancel: protectedProcedure

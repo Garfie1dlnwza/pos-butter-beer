@@ -1,15 +1,26 @@
 import { db } from "@/server/db";
 import Link from "next/link";
 import OrdersClient from "./_components/OrdersClient";
+import { DateRangePicker } from "../../admin/reports/_components/DateRangePicker";
 
-export default async function OrdersPage() {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+export default async function OrdersPage({
+  searchParams,
+}: {
+  searchParams: Record<string, string | string[] | undefined>;
+}) {
+  const startDateParam = searchParams.startDate as string | undefined;
+  const endDateParam = searchParams.endDate as string | undefined;
+
+  const start = startDateParam ? new Date(startDateParam) : new Date();
+  start.setHours(0, 0, 0, 0);
+
+  const end = endDateParam ? new Date(endDateParam) : new Date();
+  end.setHours(23, 59, 59, 999);
 
   // Fetch Orders
   const orders = await db.order.findMany({
     where: {
-      createdAt: { gte: today },
+      createdAt: { gte: start, lte: end },
     },
     include: {
       items: {
@@ -32,7 +43,7 @@ export default async function OrdersPage() {
   return (
     <div className="min-h-screen bg-[#FAFAFA] pb-20">
       {/* Header with Navigation */}
-      <header className="sticky top-0 z-10 flex items-center justify-between border-b border-[#D7CCC8]/30 bg-[#FAFAFA]/95 px-6 py-4 backdrop-blur-sm lg:px-10">
+      <header className="sticky top-0 z-10 flex flex-col gap-4 border-b border-[#D7CCC8]/30 bg-[#FAFAFA]/95 px-6 py-4 backdrop-blur-sm lg:flex-row lg:items-center lg:justify-between lg:px-10">
         <div className="flex items-center gap-4">
           <Link
             href="/pos"
@@ -55,14 +66,22 @@ export default async function OrdersPage() {
           <div>
             <h1 className="text-xl font-bold text-[#3E2723]">ประวัติการขาย</h1>
             <p className="text-xs text-[#8D6E63]">
-              {today.toLocaleDateString("th-TH", {
-                weekday: "long",
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
+              {start.toLocaleDateString("th-TH") ===
+              end.toLocaleDateString("th-TH")
+                ? start.toLocaleDateString("th-TH", {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })
+                : `${start.toLocaleDateString("th-TH")} - ${end.toLocaleDateString("th-TH")}`}
             </p>
           </div>
+        </div>
+
+        <div className="flex items-center gap-4">
+          {/* Date Picker */}
+          <DateRangePicker />
         </div>
 
         {/* Stats Indicators */}
