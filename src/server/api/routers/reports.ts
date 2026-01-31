@@ -46,6 +46,8 @@ export const reportsRouter = createTRPCRouter({
         {
           date: string;
           revenue: number;
+          cashRevenue: number;
+          transferRevenue: number;
           orders: number;
           cogs: number; // Cost of Goods Sold
           expenses: number;
@@ -62,6 +64,8 @@ export const reportsRouter = createTRPCRouter({
         salesByDate[dateKey] ??= {
           date: dateKey,
           revenue: 0,
+          cashRevenue: 0,
+          transferRevenue: 0,
           orders: 0,
           cogs: 0,
           expenses: 0,
@@ -74,6 +78,13 @@ export const reportsRouter = createTRPCRouter({
         const dayStats = salesByDate[dateKey];
         if (dayStats) {
           dayStats.revenue += order.netAmount;
+
+          if (order.paymentMethod === "cash") {
+            dayStats.cashRevenue += order.netAmount;
+          } else {
+            dayStats.transferRevenue += order.netAmount;
+          }
+
           dayStats.discount += order.discount;
           dayStats.orders += 1;
 
@@ -91,6 +102,8 @@ export const reportsRouter = createTRPCRouter({
         salesByDate[dateKey] ??= {
           date: dateKey,
           revenue: 0,
+          cashRevenue: 0,
+          transferRevenue: 0,
           orders: 0,
           cogs: 0,
           expenses: 0,
@@ -110,6 +123,8 @@ export const reportsRouter = createTRPCRouter({
         salesByDate[dateKey] ??= {
           date: dateKey,
           revenue: 0,
+          cashRevenue: 0,
+          transferRevenue: 0,
           orders: 0,
           cogs: 0,
           expenses: 0,
@@ -134,6 +149,8 @@ export const reportsRouter = createTRPCRouter({
         salesByDate[dateKey] ??= {
           date: dateKey,
           revenue: 0,
+          cashRevenue: 0,
+          transferRevenue: 0,
           orders: 0,
           cogs: 0,
           expenses: 0,
@@ -156,6 +173,8 @@ export const reportsRouter = createTRPCRouter({
       const result: {
         date: string;
         revenue: number;
+        cashRevenue: number;
+        transferRevenue: number;
         orders: number;
         cogs: number; // Renamed from cost for clarity
         expenses: number;
@@ -174,6 +193,8 @@ export const reportsRouter = createTRPCRouter({
         const stats = salesByDate[dateKey] ?? {
           date: dateKey,
           revenue: 0,
+          cashRevenue: 0,
+          transferRevenue: 0,
           orders: 0,
           cogs: 0,
           expenses: 0,

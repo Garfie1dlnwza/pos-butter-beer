@@ -86,6 +86,8 @@ export default function ReportsPage() {
             <ExportButton
               data={dailySales.map((d) => ({
                 วันที่: new Date(d.date).toLocaleDateString("th-TH"),
+                "เงินสด (Cash)": d.cashRevenue,
+                "เงินโอน (Transfer)": d.transferRevenue,
                 "ยอดขาย (Revenue)": d.revenue,
                 "ต้นทุนขาย (COGS)": d.cogs,
                 "กำไรขั้นต้น (Gross Profit)": d.grossProfit,
@@ -195,6 +197,12 @@ export default function ReportsPage() {
                       <tr className="border-b border-[#F5F5F5]">
                         <th className="pb-3 font-bold">วันที่</th>
                         <th className="pb-3 text-right font-bold">จำนวน</th>
+                        <th className="pb-3 text-right font-bold text-green-700">
+                          เงินสด
+                        </th>
+                        <th className="pb-3 text-right font-bold text-blue-700">
+                          เงินโอน
+                        </th>
                         <th className="pb-3 text-right font-bold">ยอดขาย</th>
                         <th className="pb-3 text-right font-bold text-green-600">
                           กำไร
@@ -214,6 +222,12 @@ export default function ReportsPage() {
                               {new Date(day.date).toLocaleDateString("th-TH")}
                             </td>
                             <td className="py-3 text-right">{day.orders}</td>
+                            <td className="py-3 text-right text-green-700">
+                              ฿{day.cashRevenue.toLocaleString()}
+                            </td>
+                            <td className="py-3 text-right text-blue-700">
+                              ฿{day.transferRevenue.toLocaleString()}
+                            </td>
                             <td className="py-3 text-right font-bold">
                               ฿{day.revenue.toLocaleString()}
                             </td>
