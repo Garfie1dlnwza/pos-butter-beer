@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { api } from "@/trpc/react";
 import { useToast } from "@/components/Toast";
 import { ExpenseModal } from "./_components/ExpenseModal";
+import { DateFilter } from "./_components/DateFilter";
 
 interface Expense {
   id: string;
@@ -20,23 +21,39 @@ export default function ExpensesPage() {
   const [showModal, setShowModal] = useState(false);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
 
-  // Default to current month
-  const [startDate] = useState(() => {
-    const d = new Date();
-    d.setDate(1);
-    d.setHours(0, 0, 0, 0);
-    return d;
-  });
-  const [endDate] = useState(() => {
-    const d = new Date();
-    d.setMonth(d.getMonth() + 1, 0);
-    d.setHours(23, 59, 59, 999);
-    return d;
+  // Filter state - default to current month
+  const [dateRange, setDateRange] = useState<{
+    startDate?: Date;
+    endDate?: Date;
+  }>(() => {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
+    const end = new Date(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      0,
+      23,
+      59,
+      59,
+      999,
+    );
+    return { startDate: start, endDate: end };
   });
 
+  const handleFilterChange = useCallback(
+    (filter: { mode: string; startDate?: Date; endDate?: Date }) => {
+      if (filter.mode === "all") {
+        setDateRange({});
+      } else {
+        setDateRange({ startDate: filter.startDate, endDate: filter.endDate });
+      }
+    },
+    [],
+  );
+
   const { data: expenses, isLoading } = api.expenses.getAll.useQuery({
-    startDate,
-    endDate,
+    startDate: dateRange.startDate,
+    endDate: dateRange.endDate,
   });
 
   const deleteMutation = api.expenses.delete.useMutation({
@@ -117,6 +134,9 @@ export default function ExpensesPage() {
 
       {/* Main Content */}
       <main className="flex-1 overflow-auto p-6 lg:p-10">
+        {/* Date Filter */}
+        <DateFilter onFilterChange={handleFilterChange} />
+
         {/* Summary Cards */}
         <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="rounded-xl border border-[#D7CCC8]/30 bg-white p-5 shadow-sm">
