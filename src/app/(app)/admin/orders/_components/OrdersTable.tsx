@@ -15,6 +15,8 @@ interface Order {
   id: string;
   orderNumber: string;
   totalAmount: number;
+  discount: number;
+  netAmount: number;
   paymentMethod: string;
   status: string;
   createdAt: Date;
@@ -63,7 +65,12 @@ export function OrdersTable({ orders, onViewDetail }: OrdersTableProps) {
                   })}
                 </td>
                 <td className="px-6 py-4 font-bold">
-                  ฿{order.totalAmount.toLocaleString()}
+                  <span>฿{order.netAmount.toLocaleString()}</span>
+                  {order.discount > 0 && (
+                    <span className="ml-2 text-xs font-medium text-red-500">
+                      (-฿{order.discount.toLocaleString()})
+                    </span>
+                  )}
                 </td>
                 <td className="px-6 py-4">
                   <span

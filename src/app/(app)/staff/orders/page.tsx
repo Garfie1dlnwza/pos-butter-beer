@@ -35,7 +35,7 @@ export default async function OrdersPage(props: {
   // Calculate Daily Totals
   const totalSales = orders
     .filter((o) => o.status === "completed")
-    .reduce((sum, o) => sum + o.totalAmount, 0);
+    .reduce((sum, o) => sum + o.netAmount, 0);
 
   const totalCount = orders.length;
 

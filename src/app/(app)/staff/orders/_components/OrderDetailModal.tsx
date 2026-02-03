@@ -34,6 +34,8 @@ export interface OrderDetail {
   status: string;
   paymentMethod: string;
   totalAmount: number;
+  discount: number;
+  netAmount: number;
   cashReceived?: number;
   change?: number;
   items: OrderItem[];
@@ -172,9 +174,21 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
 
           {/* Summary */}
           <div className="mt-8 space-y-2 border-t border-[#D7CCC8] pt-4">
+            {order.discount > 0 && (
+              <>
+                <div className="flex items-center justify-between text-sm text-[#8D6E63]">
+                  <span>ยอดรวม</span>
+                  <span>฿{order.totalAmount.toLocaleString()}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm text-red-500">
+                  <span>ส่วนลด</span>
+                  <span>-฿{order.discount.toLocaleString()}</span>
+                </div>
+              </>
+            )}
             <div className="flex items-center justify-between text-lg font-bold text-[#3E2723]">
               <span>ยอดรวมสุทธิ</span>
-              <span>฿{order.totalAmount.toLocaleString()}</span>
+              <span>฿{order.netAmount.toLocaleString()}</span>
             </div>
             {(order.cashReceived ?? 0) > 0 && (
               <div className="flex items-center justify-between pt-2 text-sm text-[#8D6E63]">

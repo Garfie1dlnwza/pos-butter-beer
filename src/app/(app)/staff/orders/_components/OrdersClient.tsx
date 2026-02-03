@@ -103,8 +103,13 @@ export default function OrdersClient({
                   </div>
                   <div className="text-right">
                     <p className="text-lg font-bold text-[#3E2723]">
-                      ฿{order.totalAmount.toLocaleString()}
+                      ฿{order.netAmount.toLocaleString()}
                     </p>
+                    {order.discount > 0 && (
+                      <p className="text-xs font-medium text-red-500">
+                        (-฿{order.discount.toLocaleString()})
+                      </p>
+                    )}
                     <p className="text-[10px] font-bold text-[#A1887F] uppercase">
                       {order.paymentMethod === "qr" ? "QR Code" : " เงินสด"}
                     </p>

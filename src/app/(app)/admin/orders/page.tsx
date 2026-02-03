@@ -24,6 +24,8 @@ interface Order {
   id: string;
   orderNumber: string;
   totalAmount: number;
+  discount: number;
+  netAmount: number;
   paymentMethod: string;
   status: string;
   createdAt: Date;

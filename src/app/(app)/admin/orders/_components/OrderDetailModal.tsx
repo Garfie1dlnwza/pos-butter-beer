@@ -17,6 +17,8 @@ interface Order {
   id: string;
   orderNumber: string;
   totalAmount: number;
+  discount: number;
+  netAmount: number;
   paymentMethod: string;
   status: string;
   createdAt: Date;
@@ -60,9 +62,23 @@ export function OrderDetailModal({
             </div>
           ))}
         </div>
-        <div className="flex justify-between border-t pt-2 font-bold">
-          <span>Total</span>
-          <span>฿{order.totalAmount}</span>
+        {order.discount > 0 && (
+          <>
+            <div className="flex justify-between border-t pt-2 text-sm text-[#8D6E63]">
+              <span>ยอดรวม</span>
+              <span>฿{order.totalAmount.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between text-sm text-red-500">
+              <span>ส่วนลด</span>
+              <span>-฿{order.discount.toLocaleString()}</span>
+            </div>
+          </>
+        )}
+        <div
+          className={`flex justify-between font-bold ${order.discount > 0 ? "" : "border-t pt-2"}`}
+        >
+          <span>ยอดสุทธิ</span>
+          <span>฿{order.netAmount.toLocaleString()}</span>
         </div>
       </div>
     </Modal>
