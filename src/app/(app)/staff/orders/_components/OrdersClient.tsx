@@ -79,10 +79,18 @@ export default function OrdersClient({
                 {/* Header */}
                 <div className="flex items-start justify-between border-b border-[#F5F5F5] bg-[#FAFAFA]/50 p-4 pl-5">
                   <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono text-lg font-bold text-[#3E2723]">
-                        #{order.orderNumber.toString().slice(-4)}
-                      </span>
+                    <div className="flex items-start gap-2">
+                      <div className="flex flex-col">
+                        <span className="font-mono text-lg font-bold text-[#3E2723]">
+                          #{order.orderNumber.toString().slice(-4)}
+                        </span>
+                        {/* Customer Name Badge - NEW */}
+                        {order.customerName && (
+                          <span className="mt-1 line-clamp-1 rounded-md bg-[#FFF8E1] px-2 py-0.5 text-xs font-bold text-[#FF6F00] shadow-sm">
+                            ลูกค้า : {order.customerName}
+                          </span>
+                        )}
+                      </div>
                       <span
                         className={`rounded-md px-1.5 py-0.5 text-[10px] font-bold tracking-wide uppercase ${
                           order.status === "completed"
@@ -128,9 +136,14 @@ export default function OrdersClient({
                           <span className="flex h-5 w-5 items-center justify-center rounded bg-[#EFEBE9] text-xs font-bold text-[#5D4037]">
                             {item.quantity}
                           </span>
-                          <span className="line-clamp-1 font-medium text-[#5D4037]">
-                            {item.product.nameTh ?? item.product.name}
-                          </span>
+                          <div className="flex flex-col">
+                            <span className="line-clamp-1 font-medium text-[#5D4037]">
+                              {item.product.nameTh ?? item.product.name}
+                            </span>
+                            <span className="text-[10px] text-[#A1887F]">
+                              หวาน {item.sweetness}%
+                            </span>
+                          </div>
                         </div>
                         <span className="text-[#8D6E63]">
                           ฿{(item.unitPrice * item.quantity).toLocaleString()}

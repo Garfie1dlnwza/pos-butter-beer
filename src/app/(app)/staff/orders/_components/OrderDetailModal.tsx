@@ -40,6 +40,7 @@ export interface OrderDetail {
   change?: number;
   items: OrderItem[];
   createdBy: User | null;
+  customerName: string | null;
 }
 
 interface OrderDetailModalProps {

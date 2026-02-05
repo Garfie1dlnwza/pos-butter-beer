@@ -37,6 +37,7 @@ export function PaymentPanel({
     "none" | "fixed" | "percent"
   >("none");
   const [discountValue, setDiscountValue] = useState<number>(0);
+  const [customerName, setCustomerName] = useState<string>("");
   const { showToast } = useToast();
 
   const calculateDiscount = () => {
@@ -99,6 +100,7 @@ export function PaymentPanel({
       receivedAmount: paymentMethod === "cash" ? cashReceived : netTotal,
       change: paymentMethod === "cash" ? change : 0,
       paymentMethod,
+      customerName,
     });
   };
 
@@ -156,6 +158,20 @@ export function PaymentPanel({
                 </span>
               </div>
             )}
+          </div>
+
+          {/* Customer Name Input */}
+          <div className="mb-6 rounded-xl border border-[#F0F0F0] bg-[#FAFAFA] p-4">
+            <h4 className="mb-3 text-xs font-bold tracking-wide text-[#8D6E63] uppercase">
+              ชื่อลูกค้า (Optimal)
+            </h4>
+            <input
+              type="text"
+              value={customerName}
+              onChange={(e) => setCustomerName(e.target.value)}
+              className="w-full rounded-lg border border-[#D7CCC8] px-3 py-2 font-bold text-[#3E2723] outline-none focus:border-[#8D6E63]"
+              placeholder="กรอกชื่อลูกค้า..."
+            />
           </div>
 
           {/* Discount Section */}
@@ -342,7 +358,7 @@ export function PaymentPanel({
               <p className="text-sm font-medium text-[#8D6E63]">
                 PromptPay (พร้อมเพย์)
               </p>
-              <p className="mt-1 text-2xl text-normal text-[#3E2723]">
+              <p className="text-normal mt-1 text-2xl text-[#3E2723]">
                 ยอดชำระ: ฿{netTotal.toLocaleString()}
               </p>
             </div>
