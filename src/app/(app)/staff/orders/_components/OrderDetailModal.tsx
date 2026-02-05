@@ -5,45 +5,16 @@ import { api } from "@/trpc/react";
 import { useToast } from "@/components/Toast";
 import { useRouter } from "next/navigation";
 
-interface Product {
-  name: string;
-  nameTh: string | null;
-}
+import { type inferRouterOutputs } from "@trpc/server";
+import { type AppRouter } from "@/server/api/root";
+
+export type OrderDetail =
+  inferRouterOutputs<AppRouter>["orders"]["getAll"][number];
 
 interface Topping {
   id: string;
   name: string;
   price: number;
-}
-
-interface OrderItem {
-  id: string;
-  quantity: number;
-  unitPrice: number;
-  sweetness: number;
-  toppings: string | null; // JSON string
-  note: string | null;
-  product: Product;
-}
-
-interface User {
-  name: string | null;
-}
-
-export interface OrderDetail {
-  id: string;
-  orderNumber: string;
-  createdAt: Date;
-  status: string;
-  paymentMethod: string;
-  totalAmount: number;
-  discount: number;
-  netAmount: number;
-  cashReceived?: number;
-  change?: number;
-  items: OrderItem[];
-  createdBy: User | null;
-  customerName: string | null;
 }
 
 interface OrderDetailModalProps {
@@ -232,20 +203,6 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
               <span>ยอดรวมสุทธิ</span>
               <span>฿{order.netAmount.toLocaleString()}</span>
             </div>
-            {(order.cashReceived ?? 0) > 0 && (
-              <div className="flex items-center justify-between pt-2 text-sm text-[#8D6E63]">
-                <span>
-                  รับเงินมา ({order.paymentMethod === "cash" ? "Cash" : "QR"})
-                </span>
-                <span>฿{(order.cashReceived ?? 0).toLocaleString()}</span>
-              </div>
-            )}
-            {(order.change ?? 0) > 0 && (
-              <div className="flex items-center justify-between text-sm text-[#8D6E63]">
-                <span>เงินทอน</span>
-                <span>฿{(order.change ?? 0).toLocaleString()}</span>
-              </div>
-            )}
           </div>
         </div>
 

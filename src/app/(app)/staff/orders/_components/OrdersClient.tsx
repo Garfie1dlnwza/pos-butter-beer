@@ -1,20 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { OrderDetailModal, type OrderDetail } from "./OrderDetailModal";
+import { api } from "@/trpc/react";
 
 interface OrdersClientProps {
-  orders: OrderDetail[];
-  totalSales: number;
-  totalCount: number;
+  initialOrders: OrderDetail[];
+  startDateProp: number;
+  endDateProp: number;
 }
 
 export default function OrdersClient({
-  orders,
-  totalSales,
-  totalCount,
+  initialOrders,
+  startDateProp,
+  endDateProp,
 }: OrdersClientProps) {
   const [selectedOrder, setSelectedOrder] = useState<OrderDetail | null>(null);
+  const startDate = new Date(startDateProp);
+  const endDate = new Date(endDateProp);
+
+  // Query with manual polling
+  const { data: orders = initialOrders, refetch } = api.orders.getAll.useQuery({
+    startDate,
+    endDate,
+  });
+
+  // Manual polling every 3 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      void refetch();
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [refetch]);
+
+  // Recalculate totals based on latest data
+  const totalSales = orders.reduce(
+    (sum, o) => (o.status === "completed" ? sum + o.netAmount : sum),
+    0,
+  );
+  const totalCount = orders.length;
 
   const formatTime = (date: Date | string) => {
     return new Date(date).toLocaleTimeString("th-TH", {

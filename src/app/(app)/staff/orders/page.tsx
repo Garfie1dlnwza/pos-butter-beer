@@ -104,9 +104,9 @@ export default async function OrdersPage(props: {
       </header>
 
       <OrdersClient
-        orders={orders}
-        totalSales={totalSales}
-        totalCount={totalCount}
+        initialOrders={orders}
+        startDateProp={start.getTime()}
+        endDateProp={end.getTime()}
       />
     </div>
   );

@@ -295,7 +295,7 @@ export function PaymentPanel({
                   </div>
                 </div>
 
-                <div className="mx-4 h-8 w-[1px] bg-[#D7CCC8]/40"></div>
+                <div className="mx-4 h-8 w-px bg-[#D7CCC8]/40"></div>
 
                 <div className="flex flex-col text-right">
                   <span className="text-xs font-bold tracking-wide text-[#8D6E63] uppercase">
