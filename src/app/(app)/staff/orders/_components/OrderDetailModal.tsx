@@ -1,6 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { api } from "@/trpc/react";
+import { useToast } from "@/components/Toast";
+import { useRouter } from "next/navigation";
 
 interface Product {
   name: string;
@@ -49,6 +52,44 @@ interface OrderDetailModalProps {
 }
 
 export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
+  const router = useRouter();
+  const { showToast } = useToast();
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const completeOrder = api.orders.complete.useMutation({
+    onSuccess: () => {
+      showToast("ออเดอร์เสร็จสิ้นเรียบร้อยแล้ว", "success");
+      router.refresh();
+      onClose();
+    },
+    onError: (err) => {
+      showToast(err.message, "error");
+      setIsProcessing(false);
+    },
+  });
+
+  const cancelOrder = api.orders.cancel.useMutation({
+    onSuccess: () => {
+      showToast("ยกเลิกออเดอร์เรียบร้อยแล้ว", "success");
+      router.refresh();
+      onClose();
+    },
+    onError: (err) => {
+      showToast(err.message, "error");
+      setIsProcessing(false);
+    },
+  });
+
+  const handleComplete = () => {
+    setIsProcessing(true);
+    completeOrder.mutate({ id: order.id });
+  };
+
+  const handleCancel = () => {
+    if (!confirm("คุณแน่ใจหรือไม่ที่จะยกเลิกออเดอร์นี้?")) return;
+    setIsProcessing(true);
+    cancelOrder.mutate({ id: order.id });
+  };
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => {
@@ -210,12 +251,31 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
 
         {/* Footer Actions */}
         <div className="border-t border-[#E0E0E0] bg-[#FAFAFA] p-4">
-          <button
-            onClick={onClose}
-            className="w-full rounded-xl bg-[#3E2723] py-3 text-sm font-bold text-white transition hover:bg-[#2D1B18] active:scale-[0.98]"
-          >
-            ปิดหน้าต่าง
-          </button>
+          {order.status === "pending" ? (
+            <div className="flex gap-2">
+              <button
+                onClick={handleCancel}
+                disabled={isProcessing}
+                className="flex-1 rounded-xl border border-red-200 bg-red-50 py-3 text-sm font-bold text-red-600 transition hover:bg-red-100 disabled:opacity-50"
+              >
+                {isProcessing ? "Processing..." : "ยกเลิกออเดอร์"}
+              </button>
+              <button
+                onClick={handleComplete}
+                disabled={isProcessing}
+                className="flex-1 rounded-xl bg-green-600 py-3 text-sm font-bold text-white transition hover:bg-green-700 active:scale-[0.98] disabled:opacity-50"
+              >
+                {isProcessing ? "Processing..." : "เสร็จสิ้น (Serve)"}
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={onClose}
+              className="w-full rounded-xl bg-[#3E2723] py-3 text-sm font-bold text-white transition hover:bg-[#2D1B18] active:scale-[0.98]"
+            >
+              ปิดหน้าต่าง
+            </button>
+          )}
         </div>
       </div>
     </div>

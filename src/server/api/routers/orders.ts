@@ -133,7 +133,7 @@ export const ordersRouter = createTRPCRouter({
               discount: input.discount,
               netAmount: input.netAmount,
               paymentMethod: input.paymentMethod,
-              status: "completed",
+              status: "pending",
               customerName: input.customerName,
               note: input.note,
               createdById: ctx.session.user.id,
@@ -371,6 +371,32 @@ export const ordersRouter = createTRPCRouter({
           where: { id: input.id },
           data: { status: "cancelled" },
         });
+      });
+    }),
+
+  // Complete Order
+  complete: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const order = await ctx.db.order.findUnique({
+        where: { id: input.id },
+      });
+
+      if (!order)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Order not found",
+        });
+
+      if (order.status !== "pending")
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Only pending orders can be completed",
+        });
+
+      return ctx.db.order.update({
+        where: { id: input.id },
+        data: { status: "completed" },
       });
     }),
 });

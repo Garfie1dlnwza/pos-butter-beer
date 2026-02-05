@@ -162,7 +162,7 @@ model Order {
   discount      Float    @default(0) // ส่วนลด
   netAmount     Float // ยอดสุทธิ (totalAmount - discount)
   paymentMethod String // cash, qr, card, delivery
-  status        String   @default("completed") // pending, completed, cancelled
+  status        String   @default("pending") // pending, completed, cancelled
   customerName  String? // ชื่อลูกค้า (optional)
   note          String? // หมายเหตุ
   shiftId       String? // FK to Shift
