@@ -1,0 +1,26 @@
+# Dockerfile.dev
+FROM node:20-alpine
+
+# ติดตั้ง dependencies ที่จำเป็นสำหรับบาง package (เช่น prisma engine บน alpine)
+RUN apk add --no-cache libc6-compat openssl
+
+WORKDIR /app
+
+# Copy เฉพาะไฟล์ package เพื่อ install dependencies ก่อน (ช่วยเรื่อง Cache layer)
+COPY package.json package-lock.json* ./
+COPY prisma ./prisma/
+
+# Install dependencies รวมทั้ง devDependencies
+RUN npm install
+
+# สร้าง Prisma Client
+RUN npx prisma generate
+
+# Copy source code ส่วนที่เหลือ (จริงๆ เดี๋ยวจะโดน Volume ทับ แต่ Copy ไว้เป็น base ก็ดี)
+COPY . .
+
+# Expose port
+EXPOSE 3000
+
+# คำสั่ง Default (สามารถ override ได้ใน docker-compose)
+CMD ["npm", "run", "dev"]

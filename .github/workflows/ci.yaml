@@ -1,0 +1,45 @@
+name: CI/CD Pipeline
+on:
+  push:
+    branches: [ "main", "develop" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup SSH Agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add Known Hosts
+        run: ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Build and Pipe to Remote
+        run: |
+          docker build -t pos-butter-beer:latest .
+        
+          # ส่ง Image ผ่าน SSH ไป Load ที่ปลายทาง
+          docker save pos-butter-beer:latest | gzip | ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} 'gunzip | docker load'
+
+      - name: Restart App via Docker Compose
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd pos-butter-beer
+            
+            # สั่ง up เฉพาะ service ที่ต้องการ (มันจะ recreate ให้เองเพราะ image เปลี่ยน)
+            # สมมติใน compose ตั้งชื่อ service ว่า "pos-butter-beer"
+            docker compose up -d pos-butter-beer
+            
+            docker compose restart nginx
+            
+            # ลบ Image เก่าที่ไม่ได้ใช้แล้ว (Dangling images)
+            docker image prune -f

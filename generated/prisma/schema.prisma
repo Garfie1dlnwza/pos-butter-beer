@@ -16,12 +16,11 @@ datasource db {
 }
 
 model Post {
-  id        Int      @id @default(autoincrement())
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  createdBy   User   @relation(fields: [createdById], references: [id])
+  id          Int      @id @default(autoincrement())
+  name        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   User     @relation(fields: [createdById], references: [id])
   createdById String
 
   @@index([name])
@@ -55,15 +54,27 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+enum Role {
+  ADMIN
+  STAFF
+}
+
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  posts         Post[]
+  id                    String                 @id @default(cuid())
+  name                  String?
+  email                 String?                @unique
+  emailVerified         DateTime?
+  image                 String?
+  role                  Role                   @default(STAFF)
+  accounts              Account[]
+  sessions              Session[]
+  posts                 Post[]
+  orders                Order[]
+  auditLogs             AuditLog[]
+  expenses              Expense[]              @relation("UserExpenses")
+  incomes               Income[]               @relation("UserIncomes")
+  inventoryTransactions InventoryTransaction[] @relation("UserInventoryTransactions")
+  shifts                Shift[]                @relation("UserShifts")
 }
 
 model VerificationToken {
@@ -72,4 +83,236 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+// ==========================================
+// POS System Models
+// ==========================================
+
+// Category - หมวดหมู่สินค้า
+model Category {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  color     String? // สีสำหรับแสดง UI
+  sortOrder Int       @default(0) // ลำดับการแสดง
+  isActive  Boolean   @default(true)
+  deletedAt DateTime? // soft delete
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  products Product[]
+}
+
+// Product - เมนูที่ขายหน้าร้าน
+model Product {
+  id          String    @id @default(cuid())
+  name        String
+  nameTh      String? // ชื่อภาษาไทย
+  description String? // คำอธิบายสินค้า
+  price       Float // ราคาขาย
+  cost        Float?    @default(0) // ต้นทุนสินค้า
+  image       String? // รูปภาพสินค้า
+  categoryId  String? // FK to Category
+  isActive    Boolean   @default(true)
+  deletedAt   DateTime? // soft delete
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  category   Category?    @relation(fields: [categoryId], references: [id])
+  recipe     RecipeItem[] // สูตรการผลิต
+  orderItems OrderItem[] // รายการสั่งซื้อ
+}
+
+// Ingredient - วัตถุดิบหลังร้าน
+model Ingredient {
+  id           String    @id @default(cuid())
+  name         String
+  unit         String // หน่วย (ml, g, piece)
+  costPerUnit  Float // ต้นทุนต่อหน่วย
+  currentStock Float     @default(0) // สต็อกคงเหลือ
+  minStock     Float     @default(0) // จุดสั่งซื้อใหม่
+  deletedAt    DateTime? // soft delete
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  usedIn                RecipeItem[] // ใช้ในสูตรไหนบ้าง
+  stockLots             StockLot[] // ล็อตสต็อก
+  toppingRecipes        ToppingRecipe[] // ใช้ใน Topping ไหนบ้าง
+  inventoryTransactions InventoryTransaction[]
+}
+
+// RecipeItem - สูตรการผลิต (เชื่อม Product กับ Ingredient)
+model RecipeItem {
+  id           String @id @default(cuid())
+  productId    String
+  ingredientId String
+  amountUsed   Float // จำนวนที่ใช้ต่อ 1 แก้ว
+
+  product    Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  ingredient Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, ingredientId])
+}
+
+// Order - รายการขาย
+model Order {
+  id            String   @id @default(cuid())
+  orderNumber   String   @unique
+  totalAmount   Float // ยอดรวมสินค้า
+  discount      Float    @default(0) // ส่วนลด
+  netAmount     Float // ยอดสุทธิ (totalAmount - discount)
+  paymentMethod String // cash, qr, card, delivery
+  status        String   @default("pending") // pending, completed, cancelled
+  customerName  String? // ชื่อลูกค้า (optional)
+  note          String? // หมายเหตุ
+  shiftId       String? // FK to Shift
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  createdById   String?
+
+  createdBy User?       @relation(fields: [createdById], references: [id])
+  items     OrderItem[]
+  shift     Shift?      @relation("ShiftOrders", fields: [shiftId], references: [id])
+}
+
+// OrderItem - รายการสินค้าในออเดอร์
+model OrderItem {
+  id          String  @id @default(cuid())
+  orderId     String
+  productId   String
+  quantity    Int
+  unitPrice   Float // ราคาต่อชิ้น ณ เวลาขาย
+  cost        Float   @default(0) // ต้นทุนรวม ณ เวลาขาย
+  sweetness   Int     @default(100) // 0, 50, 100
+  toppings    String? // JSON string: Array<{ id, name, price }>
+  toppingCost Float   @default(0) // ราคา topping รวม
+  note        String? // หมายเหตุรายรายการ
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+}
+
+// Topping - ท็อปปิ้งที่เพิ่มราคา
+model Topping {
+  id        String          @id @default(cuid())
+  name      String
+  nameTh    String?
+  price     Float // ราคาเพิ่ม
+  isActive  Boolean         @default(true)
+  deletedAt DateTime? // soft delete
+  recipe    ToppingRecipe[] // สูตรท็อปปิ้ง
+}
+
+// ToppingRecipe - สูตรท็อปปิ้ง (เชื่อม Topping กับ Ingredient)
+model ToppingRecipe {
+  id           String @id @default(cuid())
+  toppingId    String
+  ingredientId String
+  amountUsed   Float // จำนวนที่ใช้ต่อ 1 ครั้ง
+
+  topping    Topping    @relation(fields: [toppingId], references: [id], onDelete: Cascade)
+  ingredient Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+
+  @@unique([toppingId, ingredientId])
+}
+
+// StockLot - ล็อตสต็อกสำหรับติดตามต้นทุน
+model StockLot {
+  id           String   @id @default(cuid())
+  ingredientId String
+  quantity     Float // จำนวนที่รับเข้า
+  costPerUnit  Float // ต้นทุนล็อตนี้
+  remainingQty Float // คงเหลือ
+  note         String?
+  createdAt    DateTime @default(now())
+
+  ingredient Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+}
+
+// AuditLog - บันทึกการกระทำสำคัญ
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String // CREATE_ORDER, VOID_ORDER, EDIT_STOCK, EDIT_PRODUCT
+  entityId  String? // ID ของ entity ที่เกี่ยวข้อง
+  details   String? // JSON details
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+// Expense - รายจ่ายทั่วไป (ไม่ใช่วัตถุดิบ)
+model Expense {
+  id          String   @id @default(cuid())
+  title       String // ชื่อรายจ่าย
+  amount      Float // จำนวนเงิน
+  description String? // รายละเอียดเพิ่มเติม
+  date        DateTime @default(now()) // วันที่เกิดรายจ่าย
+  createdById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  createdBy User? @relation("UserExpenses", fields: [createdById], references: [id])
+}
+
+// Income - รายรับอื่นๆ (เงินทุน, ขายขยะ, ฯลฯ)
+model Income {
+  id          String   @id @default(cuid())
+  title       String // ชื่อรายรับ
+  amount      Float // จำนวนเงิน
+  type        String   @default("GENERAL") // GENERAL = รายรับทั่วไป, CAPITAL = เงินทุน
+  description String? // รายละเอียดเพิ่มเติม
+  date        DateTime @default(now()) // วันที่รับเงิน
+  createdById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  createdBy User? @relation("UserIncomes", fields: [createdById], references: [id])
+}
+
+// ==========================================
+// Phase 4 & 5: Inventory & Shift Management
+// ==========================================
+
+enum TransactionType {
+  PURCHASE // รับเข้า (ซื้อสต็อก)
+  SALE // ขายออก (auto จาก Order)
+  ADJUSTMENT // ปรับปรุง (+/-)
+  WASTE // ของเสีย/หมดอายุ
+  STOCK_TAKE // นับสต็อกจริง
+}
+
+// InventoryTransaction - ประวัติการเคลื่อนไหวสต็อก
+model InventoryTransaction {
+  id           String          @id @default(cuid())
+  ingredientId String
+  type         TransactionType
+  quantity     Float // + รับเข้า, - จ่ายออก
+  costPerUnit  Float? // ต้นทุนต่อหน่วย (กรณี PURCHASE)
+  note         String?
+  referenceId  String? // Order ID กรณี SALE
+  createdById  String?
+  createdAt    DateTime        @default(now())
+
+  ingredient Ingredient @relation(fields: [ingredientId], references: [id])
+  createdBy  User?      @relation("UserInventoryTransactions", fields: [createdById], references: [id])
+}
+
+// Shift - กะการทำงาน (เปิด-ปิดกะ)
+model Shift {
+  id           String    @id @default(cuid())
+  userId       String
+  startedAt    DateTime  @default(now())
+  endedAt      DateTime?
+  openingCash  Float // เงินเปิดกะ
+  closingCash  Float? // เงินปิดกะ (นับจริง)
+  expectedCash Float? // เงินที่ควรจะมี (คำนวณจากยอดขาย)
+  cashVariance Float? // ส่วนต่าง (closingCash - expectedCash)
+  status       String    @default("open") // open, closed
+  note         String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  user   User    @relation("UserShifts", fields: [userId], references: [id])
+  orders Order[] @relation("ShiftOrders")
 }
